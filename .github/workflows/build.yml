@@ -1,4 +1,4 @@
-# SiteCalc Pro v1.3 - by Mohamed Shafaf Karumannil
+# SiteCalc Pro v1.3.1 - by Mohamed Shafaf Karumannil
 # This one file contains the whole app and builds the APK.
 name: Build APK
 on:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Create Android project
         run: |
@@ -1014,7 +1014,13 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - uses: android-actions/setup-android@v3
+      - name: Check Android SDK
+        run: |
+          SDK="${ANDROID_HOME:-$ANDROID_SDK_ROOT}"
+          echo "Android SDK at: $SDK"
+          test -d "$SDK"
+          echo "sdk.dir=$SDK" > out/local.properties
+          ls "$SDK/platforms" "$SDK/build-tools" || true
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
