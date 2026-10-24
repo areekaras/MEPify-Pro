@@ -1,0 +1,1029 @@
+# SiteCalc Pro v1.3 - by Mohamed Shafaf Karumannil
+# This one file contains the whole app and builds the APK.
+name: Build APK
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Android project
+        run: |
+          set -e
+          mkdir -p out && cd out
+          mkdir -p "$(dirname settings.gradle)"
+          cat > settings.gradle <<'EOF_FILE'
+          pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
+          dependencyResolutionManagement {
+            repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+            repositories { google(); mavenCentral() }
+          }
+          rootProject.name = "SiteCalcPro"
+          include ':app'
+          EOF_FILE
+          mkdir -p "$(dirname build.gradle)"
+          cat > build.gradle <<'EOF_FILE'
+          plugins { id 'com.android.application' version '8.5.2' apply false }
+          EOF_FILE
+          mkdir -p "$(dirname gradle.properties)"
+          cat > gradle.properties <<'EOF_FILE'
+          org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+          android.nonTransitiveRClass=true
+          EOF_FILE
+          mkdir -p "$(dirname app/build.gradle)"
+          cat > app/build.gradle <<'EOF_FILE'
+          plugins { id 'com.android.application' }
+          android {
+              namespace 'com.shafaf.sitecalc'
+              compileSdk 34
+              defaultConfig {
+                  applicationId 'com.shafaf.sitecalc'
+                  minSdk 26
+                  targetSdk 34
+                  versionCode 4
+                  versionName '1.3'
+              }
+              buildTypes { release { minifyEnabled false } }
+              compileOptions {
+                  sourceCompatibility JavaVersion.VERSION_17
+                  targetCompatibility JavaVersion.VERSION_17
+              }
+          }
+          EOF_FILE
+          mkdir -p "$(dirname app/src/main/AndroidManifest.xml)"
+          cat > app/src/main/AndroidManifest.xml <<'EOF_FILE'
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              <application
+                  android:label="@string/app_name"
+                  android:icon="@mipmap/ic_launcher"
+                  android:roundIcon="@mipmap/ic_launcher"
+                  android:theme="@style/AppTheme"
+                  android:allowBackup="true">
+                  <activity
+                      android:name=".MainActivity"
+                      android:exported="true"
+                      android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|uiMode">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                      </intent-filter>
+                  </activity>
+              </application>
+          </manifest>
+          EOF_FILE
+          mkdir -p "$(dirname app/src/main/java/com/shafaf/sitecalc/MainActivity.java)"
+          cat > app/src/main/java/com/shafaf/sitecalc/MainActivity.java <<'EOF_FILE'
+          package com.shafaf.sitecalc;
+
+          import android.app.Activity;
+          import android.content.Intent;
+          import android.net.Uri;
+          import android.os.Bundle;
+          import android.webkit.WebResourceRequest;
+          import android.webkit.WebSettings;
+          import android.webkit.WebView;
+          import android.webkit.WebViewClient;
+
+          /** SiteCalc Pro by Mohamed Shafaf Karumannil. Runs the calculator fully offline from app assets. */
+          public class MainActivity extends Activity {
+              private WebView web;
+
+              @Override
+              protected void onCreate(Bundle state) {
+                  super.onCreate(state);
+                  web = new WebView(this);
+                  WebSettings s = web.getSettings();
+                  s.setJavaScriptEnabled(true);
+                  s.setDomStorageEnabled(true);
+                  s.setAllowFileAccess(true);
+                  web.setWebViewClient(new WebViewClient() {
+                      @Override
+                      public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest req) {
+                          Uri u = req.getUrl();
+                          if ("file".equals(u.getScheme())) return false;
+                          try { startActivity(new Intent(Intent.ACTION_VIEW, u)); } catch (Exception ignored) { }
+                          return true;
+                      }
+                  });
+                  setContentView(web);
+                  if (state != null) web.restoreState(state);
+                  else web.loadUrl("file:///android_asset/index.html");
+              }
+
+              @Override
+              protected void onSaveInstanceState(Bundle out) {
+                  super.onSaveInstanceState(out);
+                  web.saveState(out);
+              }
+
+              @Override
+              @SuppressWarnings("deprecation")
+              public void onBackPressed() {
+                  web.evaluateJavascript("(window.scBack && window.scBack()) ? '1' : '0'", v -> {
+                      if (v == null || !v.contains("1")) finish();
+                  });
+              }
+          }
+          EOF_FILE
+          mkdir -p "$(dirname app/src/main/res/values/strings.xml)"
+          cat > app/src/main/res/values/strings.xml <<'EOF_FILE'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <string name="app_name">SiteCalc Pro</string>
+          </resources>
+          EOF_FILE
+          mkdir -p "$(dirname app/src/main/res/values/colors.xml)"
+          cat > app/src/main/res/values/colors.xml <<'EOF_FILE'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <color name="logo_bg">#1B2229</color>
+              <color name="bg_light">#ECEFF1</color>
+              <color name="bg_dark">#0F1316</color>
+          </resources>
+          EOF_FILE
+          mkdir -p "$(dirname app/src/main/res/values/styles.xml)"
+          cat > app/src/main/res/values/styles.xml <<'EOF_FILE'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <style name="AppTheme" parent="android:Theme.Material.Light.NoActionBar">
+                  <item name="android:statusBarColor">@color/bg_light</item>
+                  <item name="android:windowLightStatusBar">true</item>
+                  <item name="android:navigationBarColor">@color/bg_light</item>
+                  <item name="android:windowBackground">@color/bg_light</item>
+              </style>
+          </resources>
+          EOF_FILE
+          mkdir -p "$(dirname app/src/main/res/values-night/styles.xml)"
+          cat > app/src/main/res/values-night/styles.xml <<'EOF_FILE'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <style name="AppTheme" parent="android:Theme.Material.NoActionBar">
+                  <item name="android:statusBarColor">@color/bg_dark</item>
+                  <item name="android:windowLightStatusBar">false</item>
+                  <item name="android:navigationBarColor">@color/bg_dark</item>
+                  <item name="android:windowBackground">@color/bg_dark</item>
+              </style>
+          </resources>
+          EOF_FILE
+          mkdir -p "$(dirname app/src/main/res/drawable/ic_launcher_foreground.xml)"
+          cat > app/src/main/res/drawable/ic_launcher_foreground.xml <<'EOF_FILE'
+          <?xml version="1.0" encoding="utf-8"?>
+          <vector xmlns:android="http://schemas.android.com/apk/res/android"
+              android:width="108dp" android:height="108dp"
+              android:viewportWidth="108" android:viewportHeight="108">
+              <group android:scaleX="1.5" android:scaleY="1.5" android:translateX="24" android:translateY="24">
+                  <path android:pathData="M8,5h8a3,3 0,0 1,3,3v8a3,3 0,0 1,-3,3h-8a3,3 0,0 1,-3,-3v-8a3,3 0,0 1,3,-3z" android:fillColor="#2D8FB5" />
+                  <path android:pathData="M24,5h8a3,3 0,0 1,3,3v8a3,3 0,0 1,-3,3h-8a3,3 0,0 1,-3,-3v-8a3,3 0,0 1,3,-3z" android:fillColor="#1F6E8C" />
+                  <path android:pathData="M8,21h8a3,3 0,0 1,3,3v8a3,3 0,0 1,-3,3h-8a3,3 0,0 1,-3,-3v-8a3,3 0,0 1,3,-3z" android:fillColor="#2A6F62" />
+                  <path android:pathData="M24,21h8a3,3 0,0 1,3,3v8a3,3 0,0 1,-3,3h-8a3,3 0,0 1,-3,-3v-8a3,3 0,0 1,3,-3z" android:fillColor="#C9672E" />
+                  <path android:pathData="M12,7.5v9M8.2,9.8l7.6,4.4M8.2,14.2l7.6,-4.4" android:strokeColor="#FFFFFF" android:strokeWidth="1.4" android:strokeLineCap="round" />
+                  <path android:pathData="M28,7.8s3.4,3.8 3.4,6a3.4,3.4 0,0 1,-6.8 0c0,-2.2 3.4,-6 3.4,-6z" android:fillColor="#FFFFFF" />
+                  <path android:pathData="M7.4,29a4.6,4.6 0,1 0,9.2 0a4.6,4.6 0,1 0,-9.2 0z" android:strokeColor="#FFFFFF" android:strokeWidth="1.4" />
+                  <path android:pathData="M12,29l2.6,-2.6" android:strokeColor="#F29A55" android:strokeWidth="1.6" android:strokeLineCap="round" />
+                  <path android:pathData="M29.2,23.5l-4,6h3l-1.4,4.5 4.4,-6.2h-3z" android:fillColor="#FFFFFF" />
+              </group>
+          </vector>
+          EOF_FILE
+          mkdir -p "$(dirname app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml)"
+          cat > app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml <<'EOF_FILE'
+          <?xml version="1.0" encoding="utf-8"?>
+          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+              <background android:drawable="@color/logo_bg" />
+              <foreground android:drawable="@drawable/ic_launcher_foreground" />
+              <monochrome android:drawable="@drawable/ic_launcher_foreground" />
+          </adaptive-icon>
+          EOF_FILE
+          mkdir -p "$(dirname app/src/main/assets/index.html)"
+          cat > app/src/main/assets/index.html <<'EOF_FILE'
+          <!doctype html>
+          <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+          <style>body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
+          <title>SiteCalc Pro</title>
+          <meta name="claude:viewport-fit-sides" content="cover">
+          <link rel="preconnect" href="https://fonts.googleapis.com">
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+          <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+          <style>
+          /* Layout: home grid of big tool buttons -> one tool per screen: question, inputs, then a big plain-English answer */
+          :root{
+            --bg:#ECEFF1; --surface:#FFFFFF; --ink:#14191E; --muted:#56616C; --line:#D3D9DE;
+            --accent:#B0521C; --accent-ink:#FFFFFF; --accent-soft:#F6E6DB;
+            --cool:#1F6E8C; --cool-soft:#DCEBF1;
+            --logo-bg:#17607C; --logo-fg:#FFFFFF; --logo-hot:#F29A55;
+            --ok:#1E7F48; --ok-soft:#DDF0E4; --bad:#B4322A; --bad-soft:#F7DEDB;
+            --plate:#1B2229; --plate-ink:#EEF2F4; --plate-muted:#9AA6B1;
+            --f-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+            --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+            --f-data:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+          }
+          @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+            --bg:#0F1316; --surface:#181D22; --ink:#E7ECEF; --muted:#94A0AB; --line:#2A323A;
+            --accent:#E3884F; --accent-ink:#1A0F08; --accent-soft:#3A2416;
+            --cool:#5DB4D6; --cool-soft:#14303B;
+            --ok:#54C483; --ok-soft:#163223; --bad:#F2766A; --bad-soft:#3A1A17;
+            --plate:#232B33; --plate-ink:#EEF2F4; --plate-muted:#9FABB6; color-scheme:dark }}
+          :root[data-theme="dark"]{
+            --bg:#0F1316; --surface:#181D22; --ink:#E7ECEF; --muted:#94A0AB; --line:#2A323A;
+            --accent:#E3884F; --accent-ink:#1A0F08; --accent-soft:#3A2416;
+            --cool:#5DB4D6; --cool-soft:#14303B;
+            --ok:#54C483; --ok-soft:#163223; --bad:#F2766A; --bad-soft:#3A1A17;
+            --plate:#232B33; --plate-ink:#EEF2F4; --plate-muted:#9FABB6; color-scheme:dark }
+
+          *{box-sizing:border-box}
+          body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5;
+            padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+            padding-block:0 calc(32px + env(safe-area-inset-bottom,0px))}
+          body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+          .wrap{max-width:600px;margin:0 auto}
+          button{font:inherit;color:inherit}
+          :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+          /* home */
+          .top{display:flex;align-items:center;gap:12px;padding-block:20px 8px}
+          .mark{width:44px;height:44px;flex:none}
+          .top h1{font-family:var(--f-display);font-weight:700;font-size:30px;letter-spacing:.02em;margin:0;line-height:1}
+          .top p{margin:3px 0 0;color:var(--muted);font-size:14px}
+          .top p.by{color:var(--accent);font-weight:600;font-size:14.5px;letter-spacing:.01em}
+          .credit{margin-top:28px;padding-top:14px;border-top:1px solid var(--line);color:var(--muted);font-size:13px;text-align:center}
+          .group{display:flex;flex-direction:column;gap:10px;margin-top:22px}
+          .group h2{font-family:var(--f-display);font-weight:600;font-size:20px;letter-spacing:.06em;text-transform:uppercase;margin:0;color:var(--muted)}
+          .tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+          .tile{display:flex;flex-direction:column;align-items:flex-start;gap:8px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;cursor:pointer;min-height:118px}
+          .tile:hover{border-color:var(--muted)}
+          .tile .ic{width:38px;height:38px;border-radius:10px;display:grid;place-items:center}
+          .tile.hvac .ic,.tile.psy .ic,.tile.ref .ic{background:var(--cool-soft);color:var(--cool)}
+          .tile.elec .ic{background:var(--accent-soft);color:var(--accent)}
+          .ic svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+          .tile b{font-size:16px;font-weight:600;line-height:1.25}
+          .tile span{font-size:13px;color:var(--muted);line-height:1.35}
+
+          /* tool screen */
+          .bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;align-items:center;gap:8px;padding-block:12px}
+          .back{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:9px 16px 9px 12px;font-weight:600;font-size:15px;cursor:pointer}
+          .back svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+          .reset{margin-left:auto;border:0;background:transparent;color:var(--muted);font-size:14px;font-weight:600;padding:9px 10px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+          .tool{display:flex;flex-direction:column;gap:14px}
+          .thead{display:flex;gap:12px;align-items:flex-start}
+          .thead .ic{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;flex:none}
+          .thead.hvac .ic,.thead.psy .ic,.thead.ref .ic{background:var(--cool-soft);color:var(--cool)} .thead.elec .ic{background:var(--accent-soft);color:var(--accent)}
+          .thead h2{font-family:var(--f-display);font-weight:700;font-size:28px;line-height:1.05;margin:0;text-wrap:balance}
+          .thead p{margin:4px 0 0;color:var(--muted);font-size:15px;max-width:60ch}
+
+          .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:16px}
+          .field{display:flex;flex-direction:column;gap:6px;min-width:0}
+          .lbl{font-size:15px;font-weight:600}
+          .help{font-size:13px;color:var(--muted);margin-top:-2px}
+          .inp{display:flex;align-items:center;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);transition:border-color .15s}
+          .inp:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+          .inp input,.inp select{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);font:500 20px var(--f-data);padding:12px;outline:none;-moz-appearance:textfield;appearance:none}
+          .inp input::-webkit-outer-spin-button,.inp input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+          .inp em{font-style:normal;color:var(--muted);font:500 15px var(--f-data);padding-right:12px;white-space:nowrap}
+          .inp select.u{flex:none;font-size:15px;color:var(--accent);padding:12px 26px 12px 10px;border-left:1px solid var(--line);background:linear-gradient(45deg,transparent 50%,currentColor 50%) right 12px center/5px 5px no-repeat,linear-gradient(-45deg,transparent 50%,currentColor 50%) right 8px center/5px 5px no-repeat;color:var(--accent)}
+          .row2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+          .chips{display:flex;flex-wrap:wrap;gap:8px}
+          .chips button{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 14px;font-size:14px;font-weight:500;cursor:pointer;min-height:40px}
+          .chips button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--ink);font-weight:600}
+          .chips.sm button{min-height:34px;padding:5px 12px;font-size:13px}
+          details.more{border-top:1px dashed var(--line);padding-top:12px}
+          details.more summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--muted);list-style:none;display:flex;align-items:center;gap:6px}
+          details.more summary::-webkit-details-marker{display:none}
+          details.more summary::before{content:"+";display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;border:1.5px solid currentColor;font-size:14px;line-height:1}
+          details.more[open] summary::before{content:"–"}
+          details.more .in{display:flex;flex-direction:column;gap:16px;padding-top:14px}
+
+          .ans{background:var(--plate);color:var(--plate-ink);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px}
+          .ans .cap{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--plate-muted);font-weight:600}
+          .ans .hero{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+          .ans .hero b{font:500 46px/1 var(--f-data);font-variant-numeric:tabular-nums}
+          .ans .hero i{font:500 18px var(--f-data);font-style:normal;color:var(--accent)}
+          .ans .say{font-size:17px;line-height:1.5;margin:0;max-width:60ch}
+          .ans .say strong{color:var(--plate-ink);font-weight:600;background:rgb(255 255 255/.08);padding:0 4px;border-radius:4px}
+          .ans .hint{font-size:16px;margin:0;color:var(--plate-muted)}
+          .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px 16px;border-top:1px solid rgb(255 255 255/.12);padding-top:12px}
+          .kv div{display:flex;flex-direction:column;gap:2px;min-width:0}
+          .kv span{font-size:12.5px;color:var(--plate-muted)}
+          .kv strong{font:500 17px var(--f-data);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+          .kv small{color:var(--plate-muted);font:500 13px var(--f-data)}
+          .pill{align-self:flex-start;display:inline-flex;align-items:center;gap:7px;font:600 14px var(--f-body);padding:6px 12px;border-radius:999px}
+          .pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.bad{background:var(--bad-soft);color:var(--bad)}
+          .pill::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+          .note{color:var(--muted);font-size:13.5px;margin:0;max-width:65ch}
+          .note b{color:var(--ink);font-weight:600}
+
+          .tbl{display:flex;flex-direction:column;font-family:var(--f-data);font-size:14px;font-variant-numeric:tabular-nums}
+          .tr{display:grid;grid-template-columns:62px 62px 1fr 56px;gap:10px;align-items:center;padding:8px;border-radius:8px;cursor:pointer}
+          .tr.head{color:var(--muted);font:600 12px var(--f-body);cursor:default}
+          .tr:not(.head):hover{background:var(--bg)}
+          .tr.sel{background:var(--accent-soft)}
+          .tr .b{height:7px;background:var(--bg);border-radius:4px;overflow:hidden;position:relative}
+          .tr .b i{position:absolute;inset:0 auto 0 0;border-radius:4px;background:var(--ok)}
+          .tr .b i.over{background:var(--bad)}
+          .tr .r{text-align:right} .tr .x{color:var(--bad)} .tr .rec{color:var(--accent);font-weight:600}
+          .verdict{font-family:var(--f-display);font-weight:700;font-size:30px;line-height:1.1;text-wrap:balance}
+          .ans ul.more-list{margin:10px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:15px}
+          .ptt{display:flex;flex-direction:column;max-height:360px;overflow:auto;font-family:var(--f-data);font-size:14px;font-variant-numeric:tabular-nums;margin-top:8px}
+          .ptt .pr{display:grid;grid-template-columns:48px 1fr 1fr;gap:10px;padding:5px 6px;border-bottom:1px solid var(--line)}
+          .ptt .pr span:not(:first-child){text-align:right}
+          .ptt .pr.head{position:sticky;top:0;background:var(--surface);font:600 12px var(--f-body);color:var(--muted)}
+          .conv{display:flex;flex-direction:column}
+          .conv div{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid rgb(255 255 255/.1);font-family:var(--f-data);font-size:17px;font-variant-numeric:tabular-nums}
+          .conv div:last-child{border-bottom:0}
+          .conv span{color:var(--plate-muted)} .conv .me strong{color:var(--accent)}
+          @media (max-width:400px){.row2{grid-template-columns:1fr}.tile{min-height:0}}
+          @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+          </style>
+
+          <div class="wrap" id="app"></div>
+
+          <script>
+          (function(){
+          const app=document.getElementById("app");
+          const SQ3=Math.sqrt(3);
+          const ICON={
+            cool:'<path d="M12 2v20M4 7l16 10M4 17 20 7M9 3.5 12 6l3-2.5M9 20.5 12 18l3 2.5"/>',
+            ach:'<path d="M20 11a8 8 0 0 0-14.3-4.6L4 8M4 3v5h5M4 13a8 8 0 0 0 14.3 4.6L20 16M20 21v-5h-5"/>',
+            duct:'<path d="M3 7h13v10H3zM16 9l5-2v10l-5-2"/><path d="M7 7v10"/>',
+            chw:'<path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"/><path d="M9 14a3 3 0 0 0 3 3"/>',
+            air:'<circle cx="12" cy="12" r="2"/><path d="M12 10c0-4 1-7 4-7s2 5-2 7M14 12c4 0 7 1 7 4s-5 2-7-2M12 14c0 4-1 7-4 7s-2-5 2-7M10 12c-4 0-7-1-7-4s5-2 7 2"/>',
+            conv:'<path d="M4 8h15l-3.5-3.5M20 16H5l3.5 3.5"/>',
+            pt:'<circle cx="12" cy="13" r="8"/><path d="M12 13l4-4M8.5 17.5h7"/>',
+            sh:'<path d="M10 14V4a2 2 0 1 1 4 0v10a4 4 0 1 1-4 0z"/><path d="M18 4l2 3h-4zM12 9v6"/>',
+            sc:'<path d="M10 14V4a2 2 0 1 1 4 0v10a4 4 0 1 1-4 0z"/><path d="M18 7l2-3h-4zM12 12v3"/>',
+            chg:'<rect x="7" y="6" width="10" height="15" rx="4"/><path d="M10 6V3h4v3M10 13l1.5 1.5L15 11"/>',
+            psy:'<path d="M4 20h16M4 20V4"/><path d="M4 18c6 0 11-4 15-12"/><circle cx="12" cy="14" r="1.6"/>',
+            mix:'<path d="M3 6h6l4 6h8M3 18h6l4-6"/><path d="M18 9l3 3-3 3"/>',
+            proc:'<rect x="6" y="3" width="12" height="14" rx="1.5"/><path d="M9 3v14M12 3v14M15 3v14M9 20.5c0 .8.7 1.5 1.5 1.5S12 21.3 12 20.5c0-1-1.5-2.5-1.5-2.5S9 19.5 9 20.5z"/>',
+            dew:'<path d="M3 10h18M3 14h18"/><path d="M8 17.5c0 1 .8 1.8 1.8 1.8s1.7-.8 1.7-1.8c0-1.2-1.7-3-1.7-3S8 16.3 8 17.5zM15 18c0 .8.6 1.4 1.3 1.4s1.3-.6 1.3-1.4c0-.9-1.3-2.3-1.3-2.3S15 17.1 15 18z"/>',
+            motor:'<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
+            cable:'<path d="M3 7h6a4 4 0 0 1 0 8H7a2 2 0 0 0 0 4h14"/><circle cx="19" cy="7" r="2"/><path d="M9 7h8"/>',
+            ohm:'<path d="M5 20h4v-2a7 7 0 1 1 6 0v2h4"/>',
+            pf:'<path d="M4 20h16M4 20 18 6M4 20V8"/><path d="M8.5 20a5 5 0 0 0-1.6-3.6"/>'
+          };
+          const svg=n=>`<svg viewBox="0 0 24 24" aria-hidden="true">${ICON[n]}</svg>`;
+          const num=v=>{const n=parseFloat(v);return isFinite(n)?n:NaN};
+          function f(x,d){if(!isFinite(x))return "—";const a=Math.abs(x);const dec=d!=null?d:a>=1000?0:a>=100?1:a>=1?2:a>=0.01?3:5;return x.toLocaleString("en-US",{maximumFractionDigits:dec})}
+          const B=(x,u)=>`<strong>${x}${u?" "+u:""}</strong>`;
+
+          /* unit tables */
+          const AIRF={"m³/h":1/3600,"CFM":0.000471947,"L/s":0.001}; // to m³/s
+          const SIZES=[1.5,2.5,4,6,10,16,25,35,50,70,95,120,150,185,240,300];
+          const AMP_CU=[17.5,24,32,41,57,76,96,119,144,184,223,259,299,341,403,464];
+          const ROUND=[100,125,160,200,250,315,355,400,450,500,560,630,710,800,900,1000,1120,1250];
+          const DE=(a,b)=>1.30*Math.pow(a*b,0.625)/Math.pow(a+b,0.25); // equal-friction equivalent diameter
+          const PIPE=[["DN15",15.8],["DN20",20.9],["DN25",26.6],["DN32",35.1],["DN40",40.9],["DN50",52.5],["DN65",62.7],["DN80",77.9],["DN100",102.3],["DN125",128.2],["DN150",154.1],["DN200",202.7],["DN250",254.5],["DN300",303.2],["DN350",333.4],["DN400",381]];
+          const AC=[0.75,1,1.5,2,2.5,3,4,5];
+          const CONV={
+            power:{label:"Cooling / power",u:[["kW",1000],["TR",3516.85],["BTU/h",0.29307107],["W",1],["HP",745.7],["kcal/h",1.163]]},
+            airflow:{label:"Airflow",u:[["m³/h",1/3600],["CFM",0.000471947],["L/s",0.001],["m³/s",1]]},
+            water:{label:"Water flow",u:[["L/s",1],["m³/h",1/3.6],["US GPM",0.0630902],["L/min",1/60]]},
+            pressure:{label:"Pressure",u:[["Pa",1],["kPa",1000],["in WG",249.089],["mm WG",9.80665],["bar",100000],["psi",6894.76]]},
+            temp:{label:"Temperature",u:[["°C"],["°F"],["K"]]},
+            length:{label:"Length",u:[["m",1],["mm",0.001],["ft",0.3048],["in",0.0254]]},
+            area:{label:"Area",u:[["m²",1],["ft²",0.092903]]}
+          };
+          const toC={"°C":x=>x,"°F":x=>(x-32)*5/9,"K":x=>x-273.15}, fromC={"°C":x=>x,"°F":x=>x*9/5+32,"K":x=>x+273.15};
+
+
+          /* ---------- PSYCHROMETRICS (ASHRAE Fundamentals, SI) ---------- */
+          const PSY={
+            p:alt=>101.325*Math.pow(1-2.25577e-5*(alt||0),5.2559), // kPa
+            pws:t=>{const T=t+273.15;let l;
+              if(t<0)l=-5.6745359e3/T+6.3925247-9.677843e-3*T+6.2215701e-7*T*T+2.0747825e-9*T**3-9.484024e-13*T**4+4.1635019*Math.log(T);
+              else l=-5.8002206e3/T+1.3914993-4.8640239e-2*T+4.1764768e-5*T*T-1.4452093e-8*T**3+6.5459673*Math.log(T);
+              return Math.exp(l)/1000;},
+            Wpw:(pw,p)=>0.621945*pw/(p-pw),
+            pwW:(W,p)=>W*p/(0.621945+W),
+            h:(t,W)=>1.006*t+W*(2501+1.86*t),
+            tHW:(h,W)=>(h-2501*W)/(1.006+1.86*W),
+            v:(t,W,p)=>0.287042*(t+273.15)*(1+1.607858*W)/p,
+            Wwb:(t,tw,p)=>{const Ws=PSY.Wpw(PSY.pws(tw),p);
+              return tw>=0?((2501-2.326*tw)*Ws-1.006*(t-tw))/(2501+1.86*t-4.186*tw):((2830-0.24*tw)*Ws-1.006*(t-tw))/(2830+1.86*t-2.1*tw);},
+            bis:(f,a,b)=>{let fa=f(a);for(let i=0;i<80;i++){const m=(a+b)/2,fm=f(m);if((fm>0)===(fa>0)){a=m;fa=fm}else b=m;}return (a+b)/2;},
+            dew:(pw)=>PSY.bis(x=>PSY.pws(x)-pw,-80,100),
+            wb:(t,W,p)=>PSY.bis(x=>PSY.Wwb(t,x,p)-W,-60,t),
+            state(t,W,p){const pw=PSY.pwW(W,p),ps=PSY.pws(t),v=PSY.v(t,W,p);
+              return{t,W,p,pw,rh:pw/ps*100,h:PSY.h(t,W),v,rho:(1+W)/v,td:PSY.dew(pw),tw:PSY.wb(t,W,p),Wsat:PSY.Wpw(ps,p)};},
+            fromRH(t,rh,p){return PSY.state(t,PSY.Wpw(PSY.pws(t)*rh/100,p),p);}
+          };
+          const g1=x=>f(x*1000,2);
+          function psyRows(S){return[["Relative humidity",f(S.rh,1),"%"],["Wet bulb",f(S.tw,1),"°C"],["Dew point",f(S.td,1),"°C"],["Moisture",g1(S.W),"g/kg"],["Enthalpy",f(S.h,2),"kJ/kg"],["Specific volume",f(S.v,3),"m³/kg"],["Air density",f(S.rho,3),"kg/m³"],["Vapour pressure",f(S.pw,3),"kPa"]];}
+          /* mini psychrometric chart: pts=[{S,label}], lines=[[i,j]] */
+          function psyChart(pts,lines,p){
+            const W=340,H=240,L=34,R=W-30,T=22,B=H-30;
+            let tmin=0,tmax=50,wmax=30;
+            pts.forEach(o=>{tmin=Math.min(tmin,Math.floor(o.S.t/5)*5-5);tmax=Math.max(tmax,Math.ceil(o.S.t/5)*5+5);wmax=Math.max(wmax,Math.ceil(o.S.W*1000/5)*5+5);});
+            const X=t=>L+(t-tmin)/(tmax-tmin)*(R-L),Y=w=>B-w/wmax*(B-T);
+            const curve=rh=>{let d="";for(let t=tmin;t<=tmax+0.01;t+=0.5){const w=PSY.Wpw(PSY.pws(t)*rh/100,p)*1000;if(w>wmax){break}d+=(d?"L":"M")+X(t).toFixed(1)+" "+Y(w).toFixed(1);}return d;};
+            let g="";
+            for(let t=tmin;t<=tmax;t+=10)g+=`<line x1="${X(t)}" y1="${T}" x2="${X(t)}" y2="${B}" stroke="var(--line)"/><text x="${X(t)}" y="${B+14}" text-anchor="middle" font-size="10" fill="var(--muted)">${t}</text>`;
+            for(let w=0;w<=wmax;w+=10)g+=`<line x1="${L}" y1="${Y(w)}" x2="${R}" y2="${Y(w)}" stroke="var(--line)"/><text x="${R+4}" y="${Y(w)+3}" font-size="10" fill="var(--muted)">${w}</text>`;
+            [20,40,60,80].forEach(rh=>{g+=`<path d="${curve(rh)}" fill="none" stroke="var(--cool)" stroke-opacity=".35" stroke-width="1"/>`;});
+            g+=`<path d="${curve(100)}" fill="none" stroke="var(--cool)" stroke-width="2"/>`;
+            lines.forEach(([i,j])=>{const a=pts[i].S,b=pts[j].S;g+=`<line x1="${X(a.t)}" y1="${Y(a.W*1000)}" x2="${X(b.t)}" y2="${Y(b.W*1000)}" stroke="var(--accent)" stroke-width="2" stroke-dasharray="4 3"/>`;});
+            pts.forEach(o=>{const x=X(o.S.t),y=Y(o.S.W*1000);let left=o.pos==="l"||(o.pos!=="b"&&x>R-40),ly=o.pos==="b"?y+17:y-9,lx=left?x-8:x+8;
+              g+=`<circle cx="${x}" cy="${y}" r="5" fill="var(--accent)" stroke="var(--surface)" stroke-width="2"/><text x="${lx}" y="${ly}" font-size="11" font-weight="600" fill="var(--ink)" text-anchor="${left?"end":"start"}">${o.label}</text>`;});
+            g+=`<text x="${(L+R)/2}" y="${H-2}" text-anchor="middle" font-size="10" fill="var(--muted)">Dry bulb °C</text><text x="${R+4}" y="${T-10}" font-size="10" fill="var(--muted)">g/kg</text>`;
+            return `<div class="card" style="padding:12px"><div class="lbl" style="font-size:13px">Psychrometric chart</div><svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block" role="img" aria-label="Psychrometric chart with the state points">${g}</svg><p class="note">Dark curve is saturation (100 % RH). Faint curves are 20, 40, 60 and 80 % RH.</p></div>`;
+          }
+
+
+          /* ---------- REFRIGERANTS: saturation pressure, bar absolute, -40..65 °C every 5 °C ----------
+             Pure fluids: NIST Chemistry WebBook. Blends (bubble b / dew d): manufacturer property tables. */
+          const REF={
+           R410A:{n:"R-410A",b:[175.5,218.9,270.3,330.6,400.7,481.7,574.6,680.6,800.7,936.2,1088.4,1258.4,1447.6,1657.4,1889.3,2144.9,2425.6,2733.5,3070.6,3439.1,3841.8,4282.4].map(x=>x/100),
+                  d:[174.9,218.1,269.4,329.4,399.3,480.0,572.7,678.3,798.1,933.2,1084.8,1254.3,1443.0,1652.2,1883.5,2138.5,2418.7,2726.1,3062.8,3431.3,3834.4,4276.0].map(x=>x/100)},
+           R32:{n:"R-32",b:[1.7741,2.2138,2.7344,3.3456,4.0575,4.8807,5.8263,6.9058,8.1310,9.5145,11.069,12.808,14.746,16.896,19.275,21.898,24.783,27.948,31.412,35.199,39.332,43.843]},
+           R22:{n:"R-22",b:[1.0523,1.3203,1.6389,2.0143,2.4531,2.9620,3.5478,4.2180,4.9798,5.8411,6.8094,7.8931,9.1001,10.439,11.919,13.548,15.336,17.292,19.427,21.751,24.275,27.011]},
+           R134a:{n:"R-134a",b:[0.51209,0.66144,0.84378,1.0640,1.3273,1.6394,2.0060,2.4334,2.9280,3.4966,4.1461,4.8837,5.7171,6.6538,7.7020,8.8698,10.166,11.599,13.179,14.915,16.818,18.898]},
+           R407C:{n:"R-407C",b:[120.3,150.8,187.1,229.9,279.9,337.9,404.7,481.1,567.9,666.0,776.4,900.0,1037.6,1190.3,1359.1,1545.0,1749.0,1972.3,2216.0,2481.2,2769.2,3081.4].map(x=>x/100),
+                  d:[85.7,109.7,138.7,173.5,214.7,263.2,319.8,385.3,460.7,546.9,644.9,755.7,880.3,1020.0,1175.9,1349.2,1541.3,1753.6,1987.8,2245.4,2528.7,2840.0].map(x=>x/100)},
+           R404A:{n:"R-404A",b:[136.7,170.1,209.5,255.4,308.7,370.1,440.4,520.5,611.1,713.3,827.8,955.6,1097.7,1255.0,1428.7,1619.7,1829.2,2058.3,2308.2,2580.0,2875.1,3194.6].map(x=>x/100),
+                  d:[132.5,165.3,204.1,249.3,301.8,362.5,432.1,511.4,601.3,702.7,816.5,943.6,1085.1,1241.8,1415.0,1605.6,1814.8,2043.9,2294.0,2566.4,2862.6,3184.0].map(x=>x/100)},
+           R290:{n:"R-290",b:[1.1112,1.3723,1.6783,2.0343,2.4452,2.9162,3.4528,4.0604,4.7446,5.5112,6.3660,7.3151,8.3646,9.5207,10.790,12.179,13.694,15.343,17.133,19.072,21.167,23.429]},
+           R600a:{n:"R-600a",b:[0.28702,0.36797,0.46622,0.58427,0.72477,0.89053,1.0845,1.3098,1.5696,1.8672,2.2061,2.5899,3.0222,3.5067,4.0472,4.6477,5.3121,6.0444,6.8490,7.7299,8.6916,9.7385]},
+           R717:{n:"R-717",b:[0.71633,0.93042,1.1938,1.5142,1.9003,2.3611,2.9064,3.5466,4.2925,5.1556,6.1479,7.2819,8.5704,10.027,11.665,13.500,15.545,17.817,20.330,23.100,26.145,29.481]}
+          };
+          const RT0=-40,RDT=5,PATM=1.01325;
+          const GAUGE={"bar g":1,"psig":0.0689476,"kPa g":0.01};
+          const REFOPTS=Object.keys(REF).map(k=>[k,REF[k].n]);
+          const refCurve=(k,kind)=>{const r=REF[k];return kind==="d"&&r.d?r.d:r.b;};
+          function refP(k,t,kind){const c=refCurve(k,kind),x=(t-RT0)/RDT,i=Math.floor(x);if(x<0||x>c.length-1)return NaN;const j=Math.min(i,c.length-2),fr=x-j;return Math.exp(Math.log(c[j])+(Math.log(c[j+1])-Math.log(c[j]))*fr);}
+          function refT(k,P,kind){const c=refCurve(k,kind);if(!(P>=c[0]&&P<=c[c.length-1]))return NaN;let i=0;while(i<c.length-2&&P>c[i+1])i++;const a=Math.log(c[i]),b=Math.log(c[i+1]);return RT0+RDT*(i+(Math.log(P)-a)/(b-a));}
+          const isBlend=k=>!!REF[k].d;
+          const toAbs=(v,u)=>v*(GAUGE[u]||1)+PATM;
+          function ptTable(k,u){const r=REF[k],bl=isBlend(k),fac=GAUGE[u]||1;let h=`<div class="card" style="padding:12px"><div class="lbl" style="font-size:13px">${r.n} pressure–temperature chart (${u})</div><div class="ptt"><div class="pr head"><span>°C</span>${bl?"<span>Liquid (bubble)</span><span>Vapour (dew)</span>":"<span>Pressure</span>"}</div>`;
+            for(let i=0;i<r.b.length;i++){const t=RT0+i*RDT;const g=x=>f((x-PATM)/fac,fac<0.05?0:2);h+=`<div class="pr"><span>${t}</span><span>${g(r.b[i])}</span>${bl?`<span>${g(r.d[i])}</span>`:""}</div>`;}
+            return h+`</div><p class="note">Gauge pressure at sea level. Negative values are vacuum.</p></div>`;}
+          const shState=x=>x<2?{ok:false,text:"Too low"}:x<4?{ok:false,text:"Low"}:x<=12?{ok:true,text:"Normal range"}:x<=20?{ok:false,text:"High"}:{ok:false,text:"Very high"};
+          const scState=x=>x<1?{ok:false,text:"No subcooling"}:x<3?{ok:false,text:"Low"}:x<=10?{ok:true,text:"Normal range"}:x<=15?{ok:false,text:"High"}:{ok:false,text:"Very high"};
+
+          /* ---------- TOOLS ---------- */
+          const TOOLS=[
+          {id:"cool",g:"hvac",icon:"cool",name:"Room cooling size",short:"How much AC does a room need?",
+           intro:"Enter the floor area and pick the room type. You get the cooling load and the AC unit size to buy.",
+           fields:[
+            {id:"area",label:"Floor area",type:"num",def:"20",units:["m²","ft²"],udef:"m²"},
+            {id:"type",label:"What kind of room?",type:"chips",def:"250",options:[["200","Bedroom"],["230","Living / hall"],["250","Office"],["280","Shop"],["320","Meeting room"],["380","Restaurant"],["500","Server / control room"]]},
+            {id:"equip",label:"Extra equipment heat",help:"Only for big heat sources like ovens or servers. Leave 0 if unsure.",type:"num",def:"0",unit:"kW",adv:true},
+            {id:"margin",label:"Safety margin",type:"num",def:"10",unit:"%",adv:true}
+           ],
+           calc(v){
+            let a=num(v.area);if(!(a>0))return{hint:"Enter the floor area of the room."};
+            if(v.area_u==="ft²")a*=0.092903;
+            const kw=(a*num(v.type)/1000+(num(v.equip)||0))*(1+(num(v.margin)||0)/100),tr=kw/3.51685;
+            const unit=AC.find(s=>s>=tr*0.98);
+            const typ=this.fields[1].options.find(o=>o[0]===v.type)[1].toLowerCase();
+            return{cap:"Cooling needed",value:f(tr,2),unit:"TR",
+             say:unit?`A ${f(a,1)} m² ${typ} needs about ${B(f(kw,1),"kW")} of cooling. Buy a ${B(unit+" TR")} AC unit.`:`A ${f(a,1)} m² ${typ} needs about ${B(f(kw,1),"kW")} of cooling. That is more than one 5 TR split unit, so use ${B(Math.ceil(tr/5)+" × 5 TR")} units or a ducted system.`,
+             rows:[["Cooling load",f(kw,2),"kW"],["Cooling load",f(kw*3412.14,0),"BTU/h"],["Area covered by 1 TR",f(a/tr,1),"m²"]]};
+           },
+           note:"<b>Quick estimate</b> for hot Gulf and Indian summers. Use it for budgets and site checks. Final design still needs a full heat load calculation."},
+
+          {id:"ach",g:"hvac",icon:"ach",name:"Air changes",short:"Airflow needed for a room",
+           intro:"Enter the room size and how many times per hour the air must be replaced.",
+           fields:[
+            {id:"L",label:"Length",type:"num",def:"5",unit:"m",half:true},
+            {id:"W",label:"Width",type:"num",def:"4",unit:"m",half:true},
+            {id:"H",label:"Ceiling height",type:"num",def:"3",unit:"m"},
+            {id:"n",label:"Air changes per hour",type:"num",def:"6",unit:"ACH",presets:[["4","Store 4"],["6","Office 6"],["10","Toilet 10"],["15","Kitchen 15"]]}
+           ],
+           calc(v){
+            const L=num(v.L),W=num(v.W),H=num(v.H),n=num(v.n);
+            if(!(L>0&&W>0&&H>0))return{hint:"Enter length, width and height of the room."};
+            if(!(n>0))return{hint:"Enter how many air changes per hour you need."};
+            const vol=L*W*H,q=vol*n;
+            return{cap:"Airflow needed",value:f(q,0),unit:"m³/h",
+             say:`This ${f(vol,1)} m³ room needs ${B(f(q,0),"m³/h")} of air (${B(f(q/1.699,0),"CFM")}) to change the air ${f(n)} times an hour.`,
+             rows:[["Airflow",f(q/1.699,0),"CFM"],["Airflow",f(q/3.6,1),"L/s"],["Room volume",f(vol,1),"m³"]]};
+           }},
+
+          {id:"duct",g:"hvac",icon:"duct",name:"Duct size",short:"Round and rectangular duct from airflow",
+           intro:"Enter the airflow and pick where the duct is. You get the duct size to use.",
+           fields:[
+            {id:"q",label:"Airflow",type:"num",def:"1500",units:["m³/h","CFM","L/s"],udef:"m³/h"},
+            {id:"v",label:"Where is the duct?",help:"Sets the air speed. Lower speed is quieter but needs a bigger duct.",type:"num",def:"5",unit:"m/s",presets:[["3","Quiet room 3"],["4","Branch 4"],["5","Main duct 5"],["7","Plant room 7"]]},
+            {id:"h",label:"Maximum duct height",help:"For the rectangular size, from the ceiling space you have.",type:"num",def:"250",unit:"mm",adv:true}
+           ],
+           calc(v){
+            const qv=num(v.q),vel=num(v.v),h=num(v.h)||250;
+            if(!(qv>0))return{hint:"Enter the airflow."};if(!(vel>0))return{hint:"Pick or enter an air speed."};
+            const Q=qv*(AIRF[v.q_u]||AIRF["m³/h"]),A=Q/vel,D=Math.sqrt(4*A/Math.PI)*1000;
+            const Dr=ROUND.find(d=>d>=D)||Math.ceil(D/50)*50;
+            const vr=Q/(Math.PI/4*(Dr/1000)**2);
+            let hh=Math.max(100,Math.round(h/50)*50),w=100;
+            while(DE(w,hh)<D&&w<6000)w+=50;
+            if(w<hh){let s2=100;while(DE(s2,s2)<D)s2+=50;w=hh=s2;}
+            const vrect=Q/(w/1000*hh/1000);
+            return{cap:"Round duct",value:"Ø "+Dr,unit:"mm",
+             say:`Use a ${B("Ø "+Dr,"mm")} round duct or a ${B(w+" × "+hh,"mm")} rectangular duct. Air speed will be about ${f(vr,1)} m/s.`,
+             rows:[["Rectangular",w+" × "+hh,"mm"],["Speed in rectangular",f(vrect,1),"m/s"],["Exact round size",f(D,0),"mm"],["Airflow",f(Q*1000,0),"L/s"]]};
+           },
+           note:"Round size is set by air speed. The rectangular size has the same pressure loss as the exact round size, so it can carry the same air. For long runs, check pressure drop too (aim for about 1 Pa per metre)."},
+
+          {id:"chw",g:"hvac",icon:"chw",name:"Chilled water flow",short:"Water flow and pipe size",
+           intro:"Enter the cooling load. You get the water flow and the pipe size to use.",
+           fields:[
+            {id:"load",label:"Cooling load",type:"num",def:"100",units:["kW","TR"],udef:"kW"},
+            {id:"dt",label:"Water temperature difference",help:"Return minus supply, for example 12.5 − 7 = 5.5 °C.",type:"num",def:"5.5",unit:"°C",presets:[["5","5"],["5.5","5.5"],["6","6"],["8","8"]]},
+            {id:"vmax",label:"Maximum water speed in pipe",type:"num",def:"1.5",unit:"m/s",adv:true}
+           ],
+           calc(v){
+            let kw=num(v.load);const dt=num(v.dt),vmax=num(v.vmax)||1.5;
+            if(!(kw>0))return{hint:"Enter the cooling load."};if(!(dt>0))return{hint:"Enter the water temperature difference."};
+            if(v.load_u==="TR")kw*=3.51685;
+            const ls=kw/(4.186*dt),q=ls/1000;
+            const p=PIPE.find(p=>q/(Math.PI/4*(p[1]/1000)**2)<=vmax);
+            const vp=p?q/(Math.PI/4*(p[1]/1000)**2):NaN;
+            return{cap:"Water flow",value:f(ls,2),unit:"L/s",
+             say:p?`Flow needed is ${B(f(ls,2),"L/s")} (${f(ls*3.6,1)} m³/h). Use ${B(p[0])} pipe. Water speed will be ${f(vp,2)} m/s.`:`Flow needed is ${B(f(ls,2),"L/s")} (${f(ls*3.6,1)} m³/h). That is bigger than DN400, so split it over two pipes.`,
+             rows:[["Flow",f(ls*3.6,2),"m³/h"],["Flow",f(ls*15.8503,1),"US GPM"],["Cooling load",f(kw/3.51685,1),"TR"]]};
+           },
+           note:"Plain water, steel pipe sizes (schedule 40). For glycol mixes, add 10 to 15 % to the flow."},
+
+          {id:"air",g:"hvac",icon:"air",name:"Coil capacity check",short:"Cooling from airflow and temperatures",
+           intro:"Use during testing and balancing. Measure the airflow and the air temperature before and after the coil.",
+           fields:[
+            {id:"q",label:"Measured airflow",type:"num",def:"3000",units:["m³/h","CFM","L/s"],udef:"m³/h"},
+            {id:"t1",label:"Air temperature entering coil",type:"num",def:"26",unit:"°C",half:true},
+            {id:"t2",label:"Air temperature leaving coil",type:"num",def:"14",unit:"°C",half:true}
+           ],
+           calc(v){
+            const qv=num(v.q),t1=num(v.t1),t2=num(v.t2);
+            if(!(qv>0))return{hint:"Enter the measured airflow."};if(!isFinite(t1)||!isFinite(t2))return{hint:"Enter both air temperatures."};
+            const ls=qv*(AIRF[v.q_u]||AIRF["m³/h"])*1000,dt=Math.abs(t1-t2),kw=1.2*ls*dt/1000;
+            if(dt===0)return{hint:"Both temperatures are the same, so the coil is not cooling or heating the air."};
+            if(t2>t1)return{cap:"Sensible heating",value:f(kw,1),unit:"kW",
+             say:`The leaving air is warmer, so this coil is heating. It is adding about ${B(f(kw,1),"kW")} of heat to the air, with a ${f(dt,1)} °C temperature rise.`,
+             rows:[["Airflow",f(ls,0),"L/s"],["Temperature rise",f(dt,1),"°C"]]};
+            return{cap:"Sensible cooling",value:f(kw,1),unit:"kW",
+             say:`The coil is removing about ${B(f(kw,1),"kW")} (${f(kw/3.51685,2)} TR) of heat from the air, with a ${f(dt,1)} °C temperature drop.`,
+             rows:[["Sensible cooling",f(kw/3.51685,2),"TR"],["Airflow",f(ls,0),"L/s"],["Temperature drop",f(dt,1),"°C"]]};
+           },
+           note:"This is <b>sensible</b> cooling only. Total cooling, including moisture removed, is usually 20 to 35 % higher in humid weather."},
+
+          {id:"conv",g:"hvac",icon:"conv",name:"Unit converter",short:"TR, kW, CFM, Pa, °F and more",
+           intro:"Pick what you are converting, type the value, and see it in every unit.",
+           fields:[
+            {id:"cat",label:"What are you converting?",type:"chips",def:"power",options:Object.keys(CONV).map(k=>[k,CONV[k].label]),onSet:(v)=>{v.unit=CONV[v.cat].u[0][0];}},
+            {id:"val",label:"Value",type:"num",def:"1",unitsFrom:v=>CONV[v.cat].u.map(u=>u[0]),ukey:"unit",udef:"kW"}
+           ],
+           calc(v){
+            const x=num(v.val),c=CONV[v.cat];if(!isFinite(x))return{hint:"Type a value to convert."};
+            let list;
+            if(v.cat==="temp"){const C=toC[v.unit](x);list=c.u.map(u=>[u[0],fromC[u[0]](C)]);}
+            else{const fac=(c.u.find(u=>u[0]===v.unit)||c.u[0])[1],base=x*fac;list=c.u.map(u=>[u[0],base/u[1]]);}
+            return{extra:`<div class="cap">${f(x)} ${v.unit} equals</div><div class="conv">${list.map(r=>`<div class="${r[0]===v.unit?"me":""}"><span>${r[0]}</span><strong>${f(r[1])}</strong></div>`).join("")}</div>`};
+           },
+           note:"TR is the refrigeration ton (12,000 BTU/h = 3.517 kW). HP is mechanical horsepower."},
+
+          {id:"motor",g:"elec",icon:"motor",name:"Motor current",short:"Amps from kW, or kW from amps",
+           intro:"Find the full-load current of a motor or load, or work out power from a clamp meter reading.",
+           fields:[
+            {id:"mode",label:"What do you know?",type:"chips",def:"kw",options:[["kw","The power (kW / HP)"],["amp","The measured amps"]]},
+            {id:"P",label:"Motor power",type:"num",def:"15",units:["kW","HP"],udef:"kW",show:v=>v.mode==="kw"},
+            {id:"I",label:"Measured current",type:"num",def:"26",unit:"A",show:v=>v.mode==="amp"},
+            {id:"ph",label:"Supply",type:"chips",def:"3",options:[["3","3-phase"],["1","1-phase"]],onSet:v=>{v.V=v.ph==="3"?"415":"230";}},
+            {id:"V",label:"Voltage",type:"num",def:"415",unit:"V",presets:[["400","400"],["415","415"],["230","230"],["240","240"]]},
+            {id:"pf",label:"Power factor",help:"Use 1 for heaters.",type:"num",def:"0.85",unit:"cos φ",adv:true},
+            {id:"eff",label:"Motor efficiency",help:"Use 100 for heaters.",type:"num",def:"90",unit:"%",adv:true}
+           ],
+           calc(v){
+            const k=v.ph==="3"?SQ3:1,V=num(v.V),pf=num(v.pf),eff=num(v.eff)/100,phs=v.ph==="3"?"3-phase":"1-phase";
+            if(!(V>0))return{hint:"Enter the supply voltage."};
+            if(!(pf>0&&pf<=1&&eff>0&&eff<=1))return{hint:"Check More options: power factor must be 0 to 1 and efficiency 1 to 100 %."};
+            if(v.mode==="kw"){
+             let P=num(v.P);if(!(P>0))return{hint:"Enter the motor power."};if(v.P_u==="HP")P*=0.7457;
+             const Pin=P/eff,I=Pin*1000/(k*V*pf);
+             return{cap:"Full-load current",value:f(I,1),unit:"A",
+              say:`A ${f(P,1)} kW motor on ${f(V)} V ${phs} draws about ${B(f(I,1),"A")} at full load. Starting direct-on-line, expect ${f(I*6,0)} to ${f(I*8,0)} A for a few seconds.`,
+              rows:[["Power taken from supply",f(Pin,2),"kW"],["Apparent power",f(Pin/pf,2),"kVA"],["Star-delta start, approx",f(I*2,0)+"–"+f(I*2.7,0),"A"]]};
+            }
+            const I=num(v.I);if(!(I>0))return{hint:"Enter the measured current."};
+            const kva=k*V*I/1000,Pin=kva*pf;
+            return{cap:"Power drawn",value:f(Pin,2),unit:"kW",
+             say:`At ${f(I,1)} A on ${f(V)} V ${phs}, the load is using about ${B(f(Pin,2),"kW")}. A motor at this current is giving about ${f(Pin*eff,2)} kW at the shaft.`,
+             rows:[["Apparent power",f(kva,2),"kVA"],["Shaft output",f(Pin*eff,2),"kW"],["Shaft output",f(Pin*eff/0.7457,1),"HP"]]};
+           },
+           note:"Always check against the motor nameplate FLA."},
+
+          {id:"cable",g:"elec",icon:"cable",name:"Cable size",short:"Voltage drop and the right cable",
+           intro:"Enter the current and cable length. You get the smallest cable that is safe and keeps voltage drop in limits.",
+           fields:[
+            {id:"I",label:"Load current",type:"num",def:"30",unit:"A",half:true},
+            {id:"L",label:"Cable length",help:"One way, from panel to load.",type:"num",def:"80",unit:"m",half:true},
+            {id:"ph",label:"Supply",type:"chips",def:"3",options:[["3","3-phase"],["1","1-phase"]],onSet:v=>{v.V=v.ph==="3"?"415":"230";}},
+            {id:"mat",label:"Conductor",type:"chips",def:"cu",options:[["cu","Copper"],["al","Aluminium"]]},
+            {id:"V",label:"Voltage",type:"num",def:"415",unit:"V",adv:true},
+            {id:"pf",label:"Power factor",type:"num",def:"0.85",unit:"cos φ",adv:true},
+            {id:"lim",label:"Maximum voltage drop allowed",type:"num",def:"4",unit:"%",adv:true,presets:[["3","3 % lighting"],["4","4 %"],["5","5 % power"]]},
+            {id:"size",label:"Check a specific size",type:"select",def:"auto",options:[["auto","Use the recommended size"]].concat(SIZES.map(s=>[String(s),s+" mm²"])),adv:true}
+           ],
+           calc(v){
+            const k=v.ph==="3"?SQ3:2,rho=v.mat==="al"?0.036:0.0225,I=num(v.I),L=num(v.L),V=num(v.V),pf=num(v.pf),lim=num(v.lim),af=v.mat==="al"?0.78:1;
+            if(!(I>0))return{hint:"Enter the load current."};if(!(L>0))return{hint:"Enter the cable length."};
+            if(!(V>0&&pf>0&&pf<=1&&lim>0))return{hint:"Check More options: voltage, power factor and drop limit."};
+            const sn=Math.sqrt(1-pf*pf),X=0.00008;
+            const rows=SIZES.map((a,i)=>{const d=k*L*I*(rho/a*pf+X*sn);return{a,d,pct:d/V*100,amp:AMP_CU[i]*af};}).map(r=>Object.assign(r,{okA:r.amp>=I,okV:r.pct<=lim}));
+            const rec=rows.find(r=>r.okA&&r.okV);
+            const cur=(v.size!=="auto"&&rows.find(r=>String(r.a)===v.size))||rec||rows[rows.length-1];
+            const pass=cur.okA&&cur.okV;
+            const maxP=lim*2;
+            const tbl=`<div class="card" style="padding:10px"><div class="tbl"><div class="tr head"><span>Size mm²</span><span class="r">Rating</span><span>Voltage drop</span><span class="r">%</span></div>${rows.map(r=>`<div class="tr${r===cur?" sel":""}" data-a="${r.a}" role="button" tabindex="0"><span class="${r===rec?"rec":""}">${r.a}${r===rec?" ✓":""}</span><span class="r ${r.okA?"":"x"}">${f(r.amp,0)} A</span><span class="b"><i class="${r.okV?"":"over"}" style="width:${Math.min(100,r.pct/maxP*100)}%"></i></span><span class="r ${r.okV?"":"x"}">${f(r.pct,1)}</span></div>`).join("")}</div><p class="note" style="padding:6px 8px 2px">Tap any size to check it. Red means too small.</p></div>`;
+            const mat=v.mat==="al"?"aluminium":"copper";
+            return{cap:v.size==="auto"?"Recommended cable":"Checking cable",value:cur.a,unit:"mm²",
+             status:{ok:pass,text:pass?"Safe and within voltage drop":!cur.okA?"Too small for this current":"Voltage drop too high"},
+             say:rec?`For ${f(I)} A over ${f(L)} m, use at least ${B(rec.a,"mm²")} ${mat} cable. Voltage drop at ${cur.a} mm² is ${f(cur.pct,1)} % (${f(cur.d,1)} V).`:`No size up to 300 mm² works for ${f(I)} A over ${f(L)} m. Use parallel cables or a higher voltage.`,
+             rows:[["Voltage drop",f(cur.d,1),"V"],["Voltage at load",f(V-cur.d,0),"V"],["Cable rating",f(cur.amp,0),"A"]],after:tbl};
+           },
+           bind(el,st){el.querySelectorAll(".tr[data-a]").forEach(r=>{const go=()=>{st.size=r.dataset.a;show();};r.onclick=go;r.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go();}};});},
+           note:"Ratings are indicative for multicore PVC copper cable in air at 30 °C (IEC 60364-5-52, method C). Voltage drop includes typical cable reactance (0.08 Ω/km). Apply derating for grouping, heat and burial before final selection."},
+
+          {id:"ohm",g:"elec",icon:"ohm",name:"Ohm's law",short:"Volts, amps, ohms, watts",
+           intro:"Type any two values. The other two are worked out. Clear a box to swap which ones you use.",
+           fields:[
+            {id:"V",label:"Voltage",type:"num",def:"230",unit:"V",half:true},
+            {id:"I",label:"Current",type:"num",def:"10",unit:"A",half:true},
+            {id:"R",label:"Resistance",type:"num",def:"",unit:"Ω",half:true},
+            {id:"P",label:"Power",type:"num",def:"",unit:"W",half:true}
+           ],
+           calc(v){
+            const ks=["V","I","R","P"].filter(k=>num(v[k])>0);
+            if(ks.length<2)return{hint:"Type any two of voltage, current, resistance and power."};
+            if(ks.length>2)return{hint:"You have filled in more than two boxes. Clear one so only two are left."};
+            let V,I,R,P;const g={};ks.forEach(k=>g[k]=num(v[k]));({V,I,R,P}=g);const h=x=>x!==undefined;
+            if(h(V)&&h(I)){R=V/I;P=V*I}else if(h(V)&&h(R)){I=V/R;P=V*V/R}else if(h(V)&&h(P)){I=P/V;R=V*V/P}
+            else if(h(I)&&h(R)){V=I*R;P=I*I*R}else if(h(I)&&h(P)){V=P/I;R=P/(I*I)}else{V=Math.sqrt(P*R);I=Math.sqrt(P/R)}
+            const all={V:["Voltage",V,"V"],I:["Current",I,"A"],R:["Resistance",R,"Ω"],P:["Power",P,"W"]};
+            const un=["V","I","R","P"].filter(k=>!ks.includes(k));
+            return{cap:all[un[0]][0],value:f(all[un[0]][1]),unit:all[un[0]][2],
+             say:`${all[un[0]][0]} is ${B(f(all[un[0]][1]),all[un[0]][2])} and ${all[un[1]][0].toLowerCase()} is ${B(f(all[un[1]][1]),all[un[1]][2])}.`,
+             rows:ks.map(k=>[all[k][0]+" (you entered)",f(all[k][1]),all[k][2]])};
+           }},
+
+          {id:"pf",g:"elec",icon:"pf",name:"Power factor fix",short:"Capacitor kVAr to improve PF",
+           intro:"Enter the load and its power factor now. You get the capacitor size to reach your target.",
+           fields:[
+            {id:"kw",label:"Load power",type:"num",def:"100",unit:"kW"},
+            {id:"p1",label:"Power factor now",type:"num",def:"0.78",unit:"cos φ",half:true},
+            {id:"p2",label:"Target power factor",type:"num",def:"0.95",unit:"cos φ",half:true,presets:[["0.9","0.90"],["0.95","0.95"],["0.98","0.98"]]},
+            {id:"V",label:"Voltage (3-phase)",type:"num",def:"415",unit:"V",adv:true}
+           ],
+           calc(v){
+            const P=num(v.kw),p1=num(v.p1),p2=num(v.p2),V=num(v.V);
+            if(!(P>0))return{hint:"Enter the load power."};
+            if(!(p1>0&&p1<1&&p2>0&&p2<=1))return{hint:"Power factors must be between 0 and 1, for example 0.8."};
+            if(p2<=p1)return{hint:"The target power factor must be higher than the one you have now."};
+            const Q=P*(Math.tan(Math.acos(p1))-Math.tan(Math.acos(p2))),s1=P/p1,s2=P/p2,I1=s1*1000/(SQ3*V),I2=s2*1000/(SQ3*V);
+            return{cap:"Capacitor needed",value:f(Q,1),unit:"kVAr",
+             say:`Add about ${B(f(Q,1),"kVAr")} of capacitors. Line current drops from ${f(I1,0)} A to ${f(I2,0)} A, which is ${f((1-I2/I1)*100,0)} % less.`,
+             rows:[["kVA before",f(s1,1),"kVA"],["kVA after",f(s2,1),"kVA"]]};
+           },
+
+           note:"Round up to the next standard capacitor bank size."},
+
+          {id:"psy",g:"psy",icon:"psy",name:"Air properties",short:"RH, wet bulb, dew point, enthalpy",
+           intro:"Enter the dry bulb temperature and one more reading. You get every property of the air, with its point on the chart.",
+           fields:[
+            {id:"t",label:"Dry bulb temperature",type:"num",def:"20",unit:"°C"},
+            {id:"mode",label:"What else did you measure?",type:"chips",def:"rh",options:[["rh","Relative humidity"],["wb","Wet bulb"],["dp","Dew point"],["w","Moisture"]]},
+            {id:"rh",label:"Relative humidity",type:"num",def:"50",unit:"%",show:v=>v.mode==="rh"},
+            {id:"wb",label:"Wet bulb temperature",type:"num",def:"14",unit:"°C",show:v=>v.mode==="wb"},
+            {id:"dp",label:"Dew point temperature",type:"num",def:"9",unit:"°C",show:v=>v.mode==="dp"},
+            {id:"w",label:"Moisture content",type:"num",def:"7.3",unit:"g/kg",show:v=>v.mode==="w"},
+            {id:"alt",label:"Site altitude",help:"Leave 0 for sites near sea level, like Ras Laffan or Kochi.",type:"num",def:"0",unit:"m",adv:true}
+           ],
+           calc(v){
+            const t=num(v.t),p=PSY.p(num(v.alt)||0);
+            if(!isFinite(t)||t<-40||t>90)return{hint:"Enter a dry bulb temperature between −40 and 90 °C."};
+            let W;
+            if(v.mode==="rh"){const rh=num(v.rh);if(!(rh>0&&rh<=100))return{hint:"Relative humidity must be between 0 and 100 %."};W=PSY.Wpw(PSY.pws(t)*rh/100,p);}
+            else if(v.mode==="wb"){const tw=num(v.wb);if(!isFinite(tw))return{hint:"Enter the wet bulb temperature."};if(tw>t)return{hint:"Wet bulb can't be higher than dry bulb. Check the readings."};W=PSY.Wwb(t,tw,p);}
+            else if(v.mode==="dp"){const td=num(v.dp);if(!isFinite(td))return{hint:"Enter the dew point temperature."};if(td>t)return{hint:"Dew point can't be higher than dry bulb. Check the readings."};W=PSY.Wpw(PSY.pws(td),p);}
+            else{const g=num(v.w);if(!(g>=0))return{hint:"Enter the moisture content in grams per kg of dry air."};W=g/1000;}
+            if(!(W>=0))return{hint:"This air is too dry for these readings. Check the numbers."};
+            if(W>PSY.Wpw(PSY.pws(t),p)*1.0005)return{hint:"That is more moisture than air can hold at this temperature (over 100 % RH). Check the readings."};
+            const S=PSY.state(t,W,p);
+            return{cap:"Enthalpy",value:f(S.h,2),unit:"kJ/kg",
+             say:`At ${f(t,1)} °C and ${f(S.rh,0)} % RH, each kg of air holds ${B(g1(W),"g")} of water. Any surface colder than ${B(f(S.td,1),"°C")} will sweat.`,
+             rows:psyRows(S),after:psyChart([{S,label:"Air"}],[],p)};
+           },
+           note:"Calculated with ASHRAE psychrometric equations. Site altitude changes air pressure and is under More options."},
+
+          {id:"mix",g:"psy",icon:"mix",name:"Air mixing",short:"Fresh air + return air mix",
+           intro:"Enter the two air streams that mix, for example return air and fresh air going into an AHU.",
+           fields:[
+            {id:"q1",label:"Return air flow",type:"num",def:"8000",units:["m³/h","CFM","L/s"],udef:"m³/h"},
+            {id:"t1",label:"Return air temperature",type:"num",def:"24",unit:"°C",half:true},
+            {id:"r1",label:"Return air RH",type:"num",def:"50",unit:"%",half:true},
+            {id:"q2",label:"Fresh air flow",type:"num",def:"2000",units:["m³/h","CFM","L/s"],udef:"m³/h"},
+            {id:"t2",label:"Fresh air temperature",type:"num",def:"46",unit:"°C",half:true},
+            {id:"r2",label:"Fresh air RH",type:"num",def:"30",unit:"%",half:true},
+            {id:"alt",label:"Site altitude",type:"num",def:"0",unit:"m",adv:true}
+           ],
+           calc(v){
+            const p=PSY.p(num(v.alt)||0),Q1=num(v.q1)*(AIRF[v.q1_u]||AIRF["m³/h"]),Q2=num(v.q2)*(AIRF[v.q2_u]||AIRF["m³/h"]);
+            const t1=num(v.t1),r1=num(v.r1),t2=num(v.t2),r2=num(v.r2);
+            if(!(Q1>=0&&Q2>=0&&Q1+Q2>0))return{hint:"Enter the two airflows."};
+            if(!isFinite(t1)||!isFinite(t2))return{hint:"Enter both air temperatures."};
+            if(!(r1>0&&r1<=100&&r2>0&&r2<=100))return{hint:"Both RH values must be between 0 and 100 %."};
+            const A=PSY.fromRH(t1,r1,p),C=PSY.fromRH(t2,r2,p),m1=Q1/A.v,m2=Q2/C.v,m=m1+m2;
+            const W=(m1*A.W+m2*C.W)/m,h=(m1*A.h+m2*C.h)/m,M=PSY.state(PSY.tHW(h,W),W,p);
+            const fresh=Q2/(Q1+Q2)*100;
+            return{cap:"Mixed air temperature",value:f(M.t,1),unit:"°C",
+             say:`The mixed air going to the coil is ${B(f(M.t,1),"°C")} at ${B(f(M.rh,0),"% RH")}. Fresh air is ${f(fresh,0)} % of the total airflow.`,
+             rows:[["Mixed RH",f(M.rh,1),"%"],["Mixed wet bulb",f(M.tw,1),"°C"],["Mixed dew point",f(M.td,1),"°C"],["Mixed enthalpy",f(M.h,2),"kJ/kg"],["Moisture",g1(M.W),"g/kg"],["Total airflow",f(m*M.v*3600,0),"m³/h"]],
+             after:psyChart([{S:A,label:"Return",pos:"l"},{S:C,label:"Fresh",pos:"l"},{S:M,label:"Mix",pos:"b"}],[[0,1]],p)};
+           },
+           note:"Mixed by mass of dry air, so the result is exact, not a simple average."},
+
+          {id:"proc",g:"psy",icon:"proc",name:"Coil load",short:"Total, sensible and latent kW",
+           intro:"Enter the airflow and the air before and after a coil. You get the full cooling or heating load and the water condensed.",
+           fields:[
+            {id:"q",label:"Airflow through coil",type:"num",def:"3000",units:["m³/h","CFM","L/s"],udef:"m³/h"},
+            {id:"t1",label:"Air in: temperature",type:"num",def:"26",unit:"°C",half:true},
+            {id:"r1",label:"Air in: RH",type:"num",def:"55",unit:"%",half:true},
+            {id:"t2",label:"Air out: temperature",type:"num",def:"13",unit:"°C",half:true},
+            {id:"r2",label:"Air out: RH",type:"num",def:"95",unit:"%",half:true},
+            {id:"alt",label:"Site altitude",type:"num",def:"0",unit:"m",adv:true}
+           ],
+           calc(v){
+            const p=PSY.p(num(v.alt)||0),Q=num(v.q)*(AIRF[v.q_u]||AIRF["m³/h"]);
+            const t1=num(v.t1),r1=num(v.r1),t2=num(v.t2),r2=num(v.r2);
+            if(!(Q>0))return{hint:"Enter the airflow through the coil."};
+            if(!isFinite(t1)||!isFinite(t2))return{hint:"Enter the air temperature in and out."};
+            if(!(r1>0&&r1<=100&&r2>0&&r2<=100))return{hint:"Both RH values must be between 0 and 100 %."};
+            const A=PSY.fromRH(t1,r1,p),C=PSY.fromRH(t2,r2,p),m=Q/A.v;
+            const tot=m*(A.h-C.h),sen=m*(1.006+1.86*A.W)*(t1-t2),lat=tot-sen,water=m*(A.W-C.W)*3600;
+            const chart=psyChart([{S:A,label:"In",pos:"l"},{S:C,label:"Out"}],[[0,1]],p);
+            if(Math.abs(tot)<0.01)return{hint:"Air in and air out are the same, so there is no load."};
+            if(tot>0){
+             const wet=water>0.05;
+             return{cap:"Total cooling load",value:f(tot,1),unit:"kW",
+              say:`This coil removes ${B(f(tot,1),"kW")} (${f(tot/3.51685,2)} TR): ${f(sen,1)} kW sensible and ${f(lat,1)} kW latent.${wet?` It condenses about ${B(f(water,1),"litres")} of water per hour, so the drain pan must work.`:` No water is condensed.`}`,
+              rows:[["Sensible",f(sen,1),"kW"],["Latent",f(lat,1),"kW"],["Sensible heat ratio",f(sen/tot,2),""],["Condensate",f(Math.max(water,0),1),"L/h"],["Air out dew point",f(C.td,1),"°C"],["Air in enthalpy",f(A.h,1),"kJ/kg"],["Air out enthalpy",f(C.h,1),"kJ/kg"]],after:chart};
+            }
+            const drier=water>0.05,wetter=water<-0.05;
+            return{cap:"Total heating load",value:f(-tot,1),unit:"kW",
+             status:drier?{ok:false,text:"Check the RH readings"}:null,
+             say:`This coil adds ${B(f(-tot,1),"kW")} of heat to the air.`+(wetter?` Moisture is also added: about ${f(-water,1)} litres of water per hour.`:"")+(drier?` But the air out is drier than the air in. A heating coil alone can't remove moisture, so one of the RH readings is probably wrong. With no moisture change, the heat would be ${B(f(m*(1.006+1.86*A.W)*(t2-t1),1),"kW")}.`:""),
+             rows:[["Air in enthalpy",f(A.h,1),"kJ/kg"],["Air out enthalpy",f(C.h,1),"kJ/kg"],["Moisture in",g1(A.W),"g/kg"],["Moisture out",g1(C.W),"g/kg"]],after:chart};
+           },
+           note:"Use the airflow measured at the coil inlet. Water condensed is in litres per hour (1 kg = 1 litre)."},
+
+          {id:"dew",g:"psy",icon:"dew",name:"Sweating check",short:"Will a pipe or duct condense?",
+           intro:"Enter the room air and the surface temperature. Find out if a pipe, duct or wall will sweat.",
+           fields:[
+            {id:"t",label:"Air temperature",type:"num",def:"30",unit:"°C",half:true},
+            {id:"rh",label:"Air RH",type:"num",def:"70",unit:"%",half:true},
+            {id:"s",label:"Surface temperature",type:"num",def:"13",unit:"°C",presets:[["7","Chilled water pipe 7"],["13","Supply duct 13"],["18","Diffuser 18"],["24","Cooled wall 24"]]},
+            {id:"alt",label:"Site altitude",type:"num",def:"0",unit:"m",adv:true}
+           ],
+           calc(v){
+            const t=num(v.t),rh=num(v.rh),ts=num(v.s),p=PSY.p(num(v.alt)||0);
+            if(!isFinite(t))return{hint:"Enter the air temperature."};
+            if(!(rh>0&&rh<=100))return{hint:"RH must be between 0 and 100 %."};
+            if(!isFinite(ts))return{hint:"Enter the surface temperature."};
+            const S=PSY.fromRH(t,rh,p),mg=ts-S.td;
+            const st=mg<=0?{ok:false,text:"Will sweat"}:mg<2?{ok:false,text:"High risk of sweating"}:{ok:true,text:"Safe, no sweating"};
+            return{cap:"Dew point of the air",value:f(S.td,1),unit:"°C",status:st,
+             say:mg<=0?`The surface at ${f(ts,1)} °C is ${B(f(-mg,1),"°C")} below the dew point, so water will form on it. Insulate it with a vapour barrier, or dry the air.`
+               :mg<2?`The surface is only ${B(f(mg,1),"°C")} above the dew point. A small rise in humidity will make it sweat. Insulation is recommended.`
+               :`The surface is ${B(f(mg,1),"°C")} above the dew point, so it will stay dry.`,
+             rows:[["Safety margin",f(mg,1),"°C"],["Wet bulb",f(S.tw,1),"°C"],["Moisture",g1(S.W),"g/kg"]]};
+           },
+
+           note:"Keep at least 2 °C between surface and dew point. Humid sites like Ras Laffan in summer can reach dew points above 28 °C."},
+
+          {id:"pt",g:"ref",icon:"pt",name:"Pressure–temperature",short:"Gauge reading to saturation temp",
+           intro:"Pick the refrigerant and enter a gauge pressure or a temperature. A full pressure–temperature chart is shown below.",
+           fields:[
+            {id:"ref",label:"Refrigerant",type:"chips",def:"R410A",options:REFOPTS},
+            {id:"mode",label:"What do you have?",type:"chips",def:"p",options:[["p","A gauge pressure"],["t","A temperature"]]},
+            {id:"pu",label:"Pressure unit",type:"chips",def:"bar g",options:Object.keys(GAUGE).map(u=>[u,u])},
+            {id:"P",label:"Gauge pressure",type:"num",def:"8.5",unitFrom:v=>v.pu,show:v=>v.mode==="p"},
+            {id:"T",label:"Saturation temperature",type:"num",def:"5",unit:"°C",show:v=>v.mode==="t"}
+           ],
+           calc(v){
+            const k=v.ref,r=REF[k],bl=isBlend(k),pu=GAUGE[v.pu]?v.pu:"bar g",tbl=ptTable(k,pu);
+            if(v.mode==="p"){
+             const pv=num(v.P);if(!isFinite(pv))return{hint:"Enter the gauge pressure.",after:tbl};
+             const P=toAbs(pv,pu),tb=refT(k,P,"b"),td=refT(k,P,"d");
+             if(!isFinite(tb)||!isFinite(td))return{hint:`That pressure is outside the −40 to 65 °C range for ${r.n}. Check the gauge and the unit.`,after:tbl};
+             const lbl=`${f(pv,2)} ${pu}`;
+             if(!bl)return{cap:"Saturation temperature",value:f(td,1),unit:"°C",say:`At ${lbl}, ${r.n} boils and condenses at ${B(f(td,1),"°C")}.`,rows:[["Absolute pressure",f(P,2),"bar a"],["In psig",f((P-PATM)/0.0689476,1),"psig"]],after:tbl};
+             return{cap:"Dew temperature (vapour)",value:f(td,1),unit:"°C",
+              say:`At ${lbl}, ${r.n} starts to boil at ${B(f(tb,1),"°C")} (bubble) and is all vapour at ${B(f(td,1),"°C")} (dew). Use the dew value for superheat and the bubble value for subcooling.`,
+              rows:[["Bubble temperature (liquid)",f(tb,1),"°C"],["Temperature glide",f(td-tb,1),"K"],["Absolute pressure",f(P,2),"bar a"]],after:tbl};
+            }
+            const T=num(v.T);if(!isFinite(T))return{hint:"Enter the temperature.",after:tbl};
+            const pb=refP(k,T,"b"),pd=refP(k,T,"d");
+            if(!isFinite(pb))return{hint:`Enter a temperature between −40 and 65 °C for ${r.n}.`,after:tbl};
+            const fac=GAUGE[pu],g=x=>f((x-PATM)/fac,2);
+            if(!bl)return{cap:"Gauge pressure",value:g(pb),unit:pu,say:`To boil or condense at ${f(T,1)} °C, ${r.n} must be at ${B(g(pb),pu)}.`,rows:[["Absolute pressure",f(pb,2),"bar a"],["In psig",f((pb-PATM)/0.0689476,1),"psig"]],after:tbl};
+            return{cap:"Dew pressure (vapour)",value:g(pd),unit:pu,
+             say:`At ${f(T,1)} °C, ${r.n} reads ${B(g(pd),pu)} on the vapour side (dew) and ${B(g(pb),pu)} on the liquid side (bubble).`,
+             rows:[["Bubble pressure (liquid)",g(pb),pu],["Dew pressure",f(pd,2),"bar a"]],after:tbl};
+           },
+           note:"Data: NIST for pure refrigerants and manufacturer property tables for R-410A, R-407C and R-404A. Gauge readings assume sea-level air pressure."},
+
+          {id:"sh",g:"ref",icon:"sh",name:"Superheat",short:"Suction pressure + line temp",
+           intro:"Measure suction pressure at the service port and the suction line temperature near the evaporator outlet or compressor.",
+           fields:[
+            {id:"ref",label:"Refrigerant",type:"chips",def:"R410A",options:REFOPTS},
+            {id:"P",label:"Suction pressure",type:"num",def:"8.5",units:Object.keys(GAUGE),udef:"bar g"},
+            {id:"T",label:"Suction line temperature",help:"Clamp the probe on bare pipe and insulate over it.",type:"num",def:"12",unit:"°C"}
+           ],
+           calc(v){
+            const k=v.ref,pv=num(v.P),Tl=num(v.T);
+            if(!isFinite(pv))return{hint:"Enter the suction pressure."};if(!isFinite(Tl))return{hint:"Enter the suction line temperature."};
+            const P=toAbs(pv,v.P_u),Te=refT(k,P,"d");
+            if(!isFinite(Te))return{hint:`That suction pressure is outside the −40 to 65 °C range for ${REF[k].n}. Check the gauge and unit.`};
+            const SH=Tl-Te,st=shState(SH);
+            if(SH<-1)return{hint:`The line is ${f(-SH,1)} K colder than the boiling temperature (${f(Te,1)} °C), which is not possible. Check the probe position, the pressure reading and the refrigerant type.`};
+            const msg=SH<2?"Liquid refrigerant may be reaching the compressor. Check for overcharge, TXV overfeeding or low evaporator airflow."
+             :SH<4?"On the low side. Watch for liquid floodback, especially on fixed-orifice systems."
+             :SH<=12?"This is a normal range for most systems. TXV systems usually run 5 to 8 K at the evaporator outlet."
+             :"The evaporator is starved of refrigerant. Common causes are low charge, a restriction or a TXV that is underfeeding.";
+            return{cap:"Superheat",value:f(Math.max(SH,0),1),unit:"K",status:st,
+             say:`Refrigerant boils at ${B(f(Te,1),"°C")} and the suction line is ${f(Tl,1)} °C, so superheat is ${B(f(Math.max(SH,0),1),"K")}. ${msg}`,
+             rows:[["Evaporating temperature",f(Te,1),"°C"],["Suction pressure",f(P,2),"bar a"]]};
+           },
+           note:"For R-407C and other blends, the dew temperature is used, which is correct for superheat. 1 K = 1 °C difference."},
+
+          {id:"sc",g:"ref",icon:"sc",name:"Subcooling",short:"Liquid pressure + liquid line temp",
+           intro:"Measure the liquid line pressure (or discharge pressure) and the liquid line temperature near the condenser outlet.",
+           fields:[
+            {id:"ref",label:"Refrigerant",type:"chips",def:"R410A",options:REFOPTS},
+            {id:"P",label:"Liquid line pressure",type:"num",def:"26",units:Object.keys(GAUGE),udef:"bar g"},
+            {id:"T",label:"Liquid line temperature",type:"num",def:"40",unit:"°C"}
+           ],
+           calc(v){
+            const k=v.ref,pv=num(v.P),Tl=num(v.T);
+            if(!isFinite(pv))return{hint:"Enter the liquid line pressure."};if(!isFinite(Tl))return{hint:"Enter the liquid line temperature."};
+            const P=toAbs(pv,v.P_u),Tc=refT(k,P,"b");
+            if(!isFinite(Tc))return{hint:`That pressure is outside the −40 to 65 °C range for ${REF[k].n}. Check the gauge and unit.`};
+            const SC=Tc-Tl,st=scState(SC);
+            if(SC<-1)return{hint:`The liquid line is ${f(-SC,1)} K hotter than the condensing temperature (${f(Tc,1)} °C), which is not possible. Check the probe, the gauge and the refrigerant type.`};
+            const msg=SC<1?"There is no liquid seal, so flash gas may reach the expansion valve. This usually means low charge."
+             :SC<3?"On the low side. This may point to a slight undercharge."
+             :SC<=10?"This is a normal range for most systems. Many TXV units target 4 to 6 K, but check the unit's label."
+             :"Too much liquid is backing up in the condenser. Common causes are overcharge or a restriction after the measuring point.";
+            return{cap:"Subcooling",value:f(Math.max(SC,0),1),unit:"K",status:st,
+             say:`Refrigerant condenses at ${B(f(Tc,1),"°C")} and the liquid line is ${f(Tl,1)} °C, so subcooling is ${B(f(Math.max(SC,0),1),"K")}. ${msg}`,
+             rows:[["Condensing temperature",f(Tc,1),"°C"],["Liquid pressure",f(P,2),"bar a"]]};
+           },
+           note:"For blends, the bubble temperature is used, which is correct for subcooling."},
+
+          {id:"chg",g:"ref",icon:"chg",name:"Charge check",short:"Diagnose charge from 4 readings",
+           intro:"Enter suction and liquid readings and the outdoor temperature. You get superheat, subcooling and the most likely problem.",
+           fields:[
+            {id:"ref",label:"Refrigerant",type:"chips",def:"R410A",options:REFOPTS},
+            {id:"meter",label:"Expansion device",type:"chips",def:"txv",options:[["txv","TXV / EEV"],["fixed","Fixed orifice / capillary"]]},
+            {id:"Ps",label:"Suction pressure",type:"num",def:"8.5",units:Object.keys(GAUGE),udef:"bar g"},
+            {id:"Ts",label:"Suction line temperature",type:"num",def:"12",unit:"°C"},
+            {id:"Pl",label:"Liquid line pressure",type:"num",def:"26",units:Object.keys(GAUGE),udef:"bar g"},
+            {id:"Tl",label:"Liquid line temperature",type:"num",def:"40",unit:"°C"},
+            {id:"amb",label:"Outdoor air temperature",help:"Air entering the condenser.",type:"num",def:"35",unit:"°C"},
+            {id:"tsc",label:"Target subcooling",help:"From the unit's label or charging chart.",type:"num",def:"5",unit:"K",adv:true,show:v=>v.meter==="txv"},
+            {id:"tsh",label:"Target superheat",help:"From the unit's charging chart (depends on indoor wet bulb and outdoor temperature).",type:"num",def:"10",unit:"K",adv:true,show:v=>v.meter==="fixed"}
+           ],
+           calc(v){
+            const k=v.ref,ps=num(v.Ps),ts=num(v.Ts),pl=num(v.Pl),tl=num(v.Tl),amb=num(v.amb);
+            if(![ps,ts,pl,tl].every(isFinite))return{hint:"Enter all four readings: suction pressure and temperature, liquid pressure and temperature."};
+            const Te=refT(k,toAbs(ps,v.Ps_u),"d"),Tc=refT(k,toAbs(pl,v.Pl_u),"b");
+            if(!isFinite(Te)||!isFinite(Tc))return{hint:`A pressure is outside the −40 to 65 °C range for ${REF[k].n}. Check the gauges, units and refrigerant type.`};
+            const SH=ts-Te,SC=Tc-tl;
+            if(SH<-1||SC<-1)return{hint:"A temperature reading is impossible for these pressures. Check probe positions, gauge units and the refrigerant type."};
+            if(Tc<=Te)return{hint:"The liquid pressure must be higher than the suction pressure. Check which gauge is which."};
+            let dx,ok=false,more=[];
+            if(v.meter==="txv"){const t=num(v.tsc)||5;
+             if(SC<t-2&&SH>10)dx="Low charge, probably a leak";
+             else if(SC>t+4&&SH>10)dx="Liquid line restriction or TXV starving";
+             else if(SC>t+4)dx="Overcharged";
+             else if(SH<3)dx="TXV overfeeding or low indoor airflow";
+             else if(SH>12)dx="TXV underfeeding";
+             else{dx="Charge looks correct";ok=true;}
+            }else{const t=num(v.tsh)||10;
+             if(SH>t+5&&SC<4)dx="Low charge, probably a leak";
+             else if(SH>t+5)dx="Underfeeding: low charge or a restriction";
+             else if(SH<t-5&&SC>8)dx="Overcharged";
+             else if(SH<t-5)dx="Low indoor airflow or overcharge";
+             else{dx="Charge looks correct";ok=true;}
+            }
+            const why={"Low charge, probably a leak":"High superheat with low subcooling means not enough refrigerant. Find and fix the leak before adding any refrigerant.",
+             "Liquid line restriction or TXV starving":"Liquid is backing up and the evaporator is starved. Check the filter drier (temperature drop across it), the sight glass and the TXV bulb.",
+             "Overcharged":"High subcooling with normal or low superheat means too much refrigerant. Recover some charge and recheck.",
+             "TXV overfeeding or low indoor airflow":"Very low superheat risks liquid reaching the compressor. Check the indoor filter, fan and coil first, then the TXV bulb mounting and setting.",
+             "TXV underfeeding":"Superheat is high but subcooling is fine, so the charge is OK. Check the TXV bulb, the setting, or a blocked TXV strainer.",
+             "Underfeeding: low charge or a restriction":"Superheat is high. If subcooling is normal, look for a restriction at the orifice or strainer.",
+             "Low indoor airflow or overcharge":"Superheat is low. Check the indoor filter, fan speed and coil before removing any refrigerant.",
+             "Charge looks correct":"Superheat and subcooling are both in range for this type of system."}[dx];
+            if(isFinite(amb)){const ap=Tc-amb;
+             if(ap>20)more.push(`Condensing temperature is ${f(ap,0)} K above outdoor air, which is high. Check the condenser coil, condenser fan, overcharge or non-condensable gas.`);
+             else if(ap<5)more.push(`Condensing temperature is only ${f(ap,0)} K above outdoor air. That usually means low charge or a compressor that is not pumping.`);}
+            if(Te<0&&["R410A","R32","R22","R407C"].includes(k))more.push(`Evaporating temperature is ${f(Te,1)} °C. On an air-conditioning coil this will freeze it. Check airflow and charge.`);
+            if(more.length)ok=false;
+            return{cap:"Most likely",big:dx,status:{ok,text:ok?"No problem found":"Needs attention"},
+             say:why+(more.length?`<ul class="more-list">${more.map(m=>`<li>${m}</li>`).join("")}</ul>`:""),
+             rows:[["Superheat",f(Math.max(SH,0),1),"K"],["Subcooling",f(Math.max(SC,0),1),"K"],["Evaporating",f(Te,1),"°C"],["Condensing",f(Tc,1),"°C"],...(isFinite(amb)?[["Condenser approach",f(Tc-amb,1),"K"]]:[])]};
+           },
+           note:"Field guide only. Always confirm with the manufacturer's charging chart, and repair leaks before adding refrigerant."}
+          ];
+
+          /* ---------- STATE ---------- */
+          const ST={};let open={},view="home";
+          function defs(t){const o={};t.fields.forEach(fl=>{o[fl.id]=fl.def;if(fl.units)o[fl.id+"_u"]=fl.udef;if(fl.ukey)o[fl.ukey]=fl.udef;});return o;}
+          TOOLS.forEach(t=>ST[t.id]=defs(t));
+          try{const raw=localStorage.getItem("fieldvolt.v2");if(raw){const o=JSON.parse(raw);TOOLS.forEach(t=>Object.assign(ST[t.id],o[t.id]||{}));}}catch(e){}
+          const save=()=>{try{localStorage.setItem("fieldvolt.v2",JSON.stringify(ST))}catch(e){}};
+          const byId=id=>TOOLS.find(t=>t.id===id);
+          const h0=(location.hash||"").slice(1);if(byId(h0))view=h0;
+
+          /* ---------- RENDER ---------- */
+          function home(){
+            const tile=t=>`<button class="tile ${t.g}" data-go="${t.id}"><span class="ic">${svg(t.icon)}</span><b>${t.name}</b><span>${t.short}</span></button>`;
+            app.innerHTML=`<header class="top"><svg class="mark" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#1B2229"/><rect x="5" y="5" width="14" height="14" rx="3" fill="#2D8FB5"/><rect x="21" y="5" width="14" height="14" rx="3" fill="#1F6E8C"/><rect x="5" y="21" width="14" height="14" rx="3" fill="#2A6F62"/><rect x="21" y="21" width="14" height="14" rx="3" fill="#C9672E"/><path d="M12 7.5v9M8.2 9.8l7.6 4.4M8.2 14.2l7.6-4.4" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/><path d="M28 7.8s3.4 3.8 3.4 6a3.4 3.4 0 0 1-6.8 0c0-2.2 3.4-6 3.4-6z" fill="#fff"/><circle cx="12" cy="29" r="4.6" fill="none" stroke="#fff" stroke-width="1.4"/><path d="M12 29l2.6-2.6" stroke="#F29A55" stroke-width="1.6" stroke-linecap="round"/><path d="M29.2 23.5l-4 6h3l-1.4 4.5 4.4-6.2h-3z" fill="#fff"/></svg>
+            <div><h1>SiteCalc Pro</h1><p class="by">by Mohamed Shafaf Karumannil</p><p>HVAC, refrigeration and electrical calculators for site work</p></div></header>
+            <div class="group"><h2>HVAC</h2><div class="tiles">${TOOLS.filter(t=>t.g==="hvac").map(tile).join("")}</div></div>
+            <div class="group"><h2>Psychrometrics</h2><div class="tiles">${TOOLS.filter(t=>t.g==="psy").map(tile).join("")}</div></div>
+            <div class="group"><h2>Refrigeration</h2><div class="tiles">${TOOLS.filter(t=>t.g==="ref").map(tile).join("")}</div></div>
+            <div class="group"><h2>Electrical</h2><div class="tiles">${TOOLS.filter(t=>t.g==="elec").map(tile).join("")}</div></div>
+            <p class="note" style="margin-top:22px">Pick a tool. Every box comes filled with an example, so you can see how it works before you type.</p>
+            <p class="credit">SiteCalc Pro · Designed by Mohamed Shafaf Karumannil</p>`;
+            app.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{view=b.dataset.go;render();window.scrollTo(0,0);});
+          }
+
+          function fieldHTML(t,fl,st){
+            if(fl.show&&!fl.show(st))return "";
+            const lab=`<span class="lbl">${fl.label}</span>${fl.help?`<span class="help">${fl.help}</span>`:""}`;
+            if(fl.type==="chips")return `<div class="field">${lab}<div class="chips" data-chips="${fl.id}">${fl.options.map(o=>`<button type="button" data-v="${o[0]}" aria-pressed="${st[fl.id]===o[0]}">${o[1]}</button>`).join("")}</div></div>`;
+            if(fl.type==="select")return `<label class="field">${lab}<span class="inp"><select id="f-${t.id}-${fl.id}" data-k="${fl.id}">${fl.options.map(o=>`<option value="${o[0]}"${st[fl.id]===o[0]?" selected":""}>${o[1]}</option>`).join("")}</select></span></label>`;
+            const us=fl.units||(fl.unitsFrom&&fl.unitsFrom(st)),uk=fl.ukey||fl.id+"_u";
+            const unit=us?`<select class="u" aria-label="Unit" id="f-${t.id}-${uk}" data-k="${uk}">${us.map(u=>`<option${st[uk]===u?" selected":""}>${u}</option>`).join("")}</select>`:(fl.unitFrom||fl.unit)?`<em>${fl.unitFrom?fl.unitFrom(st):fl.unit}</em>`:"";
+            const pre=fl.presets?`<div class="chips sm" data-pre="${fl.id}">${fl.presets.map(p=>`<button type="button" data-v="${p[0]}" aria-pressed="${st[fl.id]===p[0]}">${p[1]}</button>`).join("")}</div>`:"";
+            return `<label class="field" data-half="${fl.half?1:0}">${lab}<span class="inp"><input id="f-${t.id}-${fl.id}" data-k="${fl.id}" type="number" inputmode="decimal" step="any" value="${st[fl.id]}" placeholder="0">${unit}</span></label>${pre?`<div style="margin-top:-8px">${pre}</div>`:""}`;
+          }
+          function group(t,list,st){
+            let out="",buf=[];
+            const flush=()=>{if(buf.length){out+=buf.length===2?`<div class="row2">${buf.join("")}</div>`:buf.join("");buf=[];}};
+            list.forEach(fl=>{const hh=fieldHTML(t,fl,st);if(!hh)return;if(fl.half&&!fl.presets){buf.push(hh);if(buf.length===2)flush();}else{flush();out+=hh;}});
+            flush();return out;
+          }
+          function tool(){
+            const t=byId(view),st=ST[t.id];
+            const main=t.fields.filter(x=>!x.adv),adv=t.fields.filter(x=>x.adv);
+            app.innerHTML=`<div class="bar"><button class="back" data-home><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>All tools</button><button class="reset" data-reset>Reset example</button></div>
+            <div class="tool">
+             <div class="thead ${t.g}"><span class="ic">${svg(t.icon)}</span><div><h2>${t.name}</h2><p>${t.intro}</p></div></div>
+             <div class="card">${group(t,main,st)}${adv.length?`<details class="more"${open[t.id]?" open":""}><summary>More options (defaults are fine for most jobs)</summary><div class="in">${group(t,adv,st)}</div></details>`:""}</div>
+             <div class="ans" id="ans" aria-live="polite"></div>
+             <div id="after"></div>
+             ${t.note?`<p class="note">${t.note}</p>`:""}
+            </div>`;
+            app.querySelector("[data-home]").onclick=()=>{view="home";render();window.scrollTo(0,0);};
+            app.querySelector("[data-reset]").onclick=()=>{ST[t.id]=defs(t);save();render();};
+            const det=app.querySelector("details.more");if(det)det.ontoggle=()=>{open[t.id]=det.open;};
+            app.querySelectorAll("input[data-k],select[data-k]").forEach(el=>{el.addEventListener("input",()=>{st[el.dataset.k]=el.value;save();answer();});});
+            app.querySelectorAll("[data-chips]").forEach(c=>{const fl=t.fields.find(x=>x.id===c.dataset.chips);c.querySelectorAll("button").forEach(b=>b.onclick=()=>{st[fl.id]=b.dataset.v;if(fl.onSet)fl.onSet(st);save();show();});});
+            app.querySelectorAll("[data-pre]").forEach(c=>{const id=c.dataset.pre;c.querySelectorAll("button").forEach(b=>b.onclick=()=>{st[id]=b.dataset.v;save();show();});});
+            answer();
+          }
+          function answer(){
+            const t=byId(view),st=ST[t.id],r=t.calc(st),el=document.getElementById("ans"),af=document.getElementById("after");
+            if(r.hint){el.innerHTML=`<div class="cap">Answer</div><p class="hint">${r.hint}</p>`;af.innerHTML=r.after||"";return}
+            if(r.extra){el.innerHTML=r.extra;af.innerHTML="";return}
+            el.innerHTML=`<div class="cap">${r.cap}</div>${r.big?`<div class="verdict">${r.big}</div>`:`<div class="hero"><b>${r.value}</b><i>${r.unit}</i></div>`}
+             ${r.status?`<span class="pill ${r.status.ok?"ok":"bad"}">${r.status.text}</span>`:""}
+             <p class="say">${r.say}</p>
+             ${r.rows&&r.rows.length?`<div class="kv">${r.rows.map(x=>`<div><span>${x[0]}</span><strong>${x[1]} <small>${x[2]}</small></strong></div>`).join("")}</div>`:""}`;
+            af.innerHTML=r.after||"";if(t.bind)t.bind(af,st);
+          }
+          function show(){const y=window.scrollY;const a=document.activeElement&&document.activeElement.id;tool();window.scrollTo(0,y);if(a&&document.getElementById(a))document.getElementById(a).focus({preventScroll:true});}
+          function render(){view==="home"?home():tool();}
+          window.scBack=function(){if(view!=="home"){view="home";render();window.scrollTo(0,0);return true}return false};
+          render();
+          })();
+          </script>
+
+          </html>
+          EOF_FILE
+          find . -type f | sort
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Build APK
+        working-directory: out
+        run: gradle assembleDebug --stacktrace
+      - name: Rename APK
+        run: cp out/app/build/outputs/apk/debug/app-debug.apk SiteCalc-Pro.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SiteCalc-Pro-apk
+          path: SiteCalc-Pro.apk
