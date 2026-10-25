@@ -1,0 +1,106 @@
+# SiteCalc Pro - refrigerant data generator (by Mohamed Shafaf Karumannil)
+# Runs only when started by hand: Actions -> "Generate refrigerant data" -> Run workflow.
+# Uses the open-source CoolProp library to compute saturation (bubble/dew) pressures.
+name: Generate refrigerant data
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  refdata:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install CoolProp
+        run: pip install "CoolProp>=6.6,<8"
+      - name: Generate tables
+        run: |
+          mkdir -p out
+          cat > gen.py <<'EOF_PY'
+          import json, math, CoolProp
+          import CoolProp.CoolProp as CP
+
+          # Name shown in app: (CoolProp components, mass fractions)
+          FLUIDS = {
+            "R32":    ("R-32",    ["R32"], [1]),
+            "R410A":  ("R-410A",  ["R32","R125"], [.5,.5]),
+            "R454B":  ("R-454B",  ["R32","R1234yf"], [.689,.311]),
+            "R452B":  ("R-452B",  ["R32","R125","R1234yf"], [.67,.07,.26]),
+            "R22":    ("R-22",    ["R22"], [1]),
+            "R407C":  ("R-407C",  ["R32","R125","R134a"], [.23,.25,.52]),
+            "R134a":  ("R-134a",  ["R134a"], [1]),
+            "R513A":  ("R-513A",  ["R1234yf","R134a"], [.56,.44]),
+            "R1234yf":("R-1234yf",["R1234yf"], [1]),
+            "R1234ze":("R-1234ze(E)",["R1234ze(E)"], [1]),
+            "R1233zd":("R-1233zd(E)",["R1233zd(E)"], [1]),
+            "R404A":  ("R-404A",  ["R125","R143a","R134a"], [.44,.52,.04]),
+            "R507A":  ("R-507A",  ["R125","R143a"], [.5,.5]),
+            "R448A":  ("R-448A",  ["R32","R125","R1234yf","R134a","R1234ze(E)"], [.26,.26,.20,.21,.07]),
+            "R449A":  ("R-449A",  ["R32","R125","R1234yf","R134a"], [.243,.247,.253,.257]),
+            "R452A":  ("R-452A",  ["R32","R125","R1234yf"], [.11,.59,.30]),
+            "R454C":  ("R-454C",  ["R32","R1234yf"], [.215,.785]),
+            "R407A":  ("R-407A",  ["R32","R125","R134a"], [.20,.40,.40]),
+            "R407F":  ("R-407F",  ["R32","R125","R134a"], [.30,.30,.40]),
+            "R422D":  ("R-422D",  ["R125","R134a","IsoButane"], [.651,.315,.034]),
+            "R417A":  ("R-417A",  ["R125","R134a","n-Butane"], [.466,.50,.034]),
+            "R290":   ("R-290",   ["Propane"], [1]),
+            "R1270":  ("R-1270",  ["Propylene"], [1]),
+            "R600a":  ("R-600a",  ["IsoButane"], [1]),
+            "R744":   ("R-744 (CO₂)", ["CarbonDioxide"], [1]),
+            "R717":   ("R-717",   ["Ammonia"], [1]),
+          }
+          TMIN, TMAX = -60, 70
+          sig = lambda x: float(f"{x:.5g}")
+          out, report = {}, [f"CoolProp {CoolProp.__version__}"]
+
+          for key, (label, comps, w) in FLUIDS.items():
+              try:
+                  AS = CP.AbstractState("HEOS", "&".join(comps))
+                  if len(comps) > 1:
+                      AS.set_mass_fractions(w)
+              except Exception as e:
+                  report.append(f"FAIL {key}: {e}"); continue
+              def sat(T, Q):
+                  try:
+                      AS.update(CP.QT_INPUTS, Q, T + 273.15)
+                      p = AS.p() / 1e5
+                      return sig(p) if math.isfinite(p) and p > 0 else None
+                  except Exception:
+                      return None
+              b = {t: sat(t, 0) for t in range(TMIN, TMAX + 1)}
+              d = {t: sat(t, 1) for t in range(TMIN, TMAX + 1)} if len(comps) > 1 else None
+              ok = [t for t in b if b[t] is not None and (d is None or d[t] is not None)]
+              if not ok:
+                  report.append(f"FAIL {key}: no valid points"); continue
+              # longest unbroken run of valid temperatures
+              best, run = [], []
+              for t in range(TMIN, TMAX + 1):
+                  if t in ok: run.append(t)
+                  else:
+                      if len(run) > len(best): best = run
+                      run = []
+              if len(run) > len(best): best = run
+              t0, t1 = best[0], best[-1]
+              rec = {"n": label, "t0": t0, "b": [b[t] for t in best]}
+              if d: rec["d"] = [d[t] for t in best]
+              out[key] = rec
+              glide = ""
+              if d and 0 in best:
+                  try:
+                      AS.update(CP.PQ_INPUTS, d[0] * 1e5, 0)
+                      glide = f", glide at 0C dew pressure {0 - (AS.T() - 273.15):.1f} K"
+                  except Exception:
+                      glide = ", glide n/a"
+              report.append(f"OK   {key:8s} {t0:>4} to {t1:>3} C  P(0C)={b.get(0)} / {d.get(0) if d else '-'} bar a{glide}")
+
+          json.dump(out, open("out/refdata.json", "w"), separators=(",", ":"))
+          open("out/report.txt", "w").write("\n".join(report) + "\n")
+          print("\n".join(report))
+          EOF_PY
+          python gen.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: refdata
+          path: out/

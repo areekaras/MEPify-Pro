@@ -1,4 +1,4 @@
-# SiteCalc Pro v1.4 - by Mohamed Shafaf Karumannil
+# SiteCalc Pro v1.5 - by Mohamed Shafaf Karumannil
 # This one file contains the whole app and builds the APK.
 name: Build APK
 on:
@@ -41,10 +41,23 @@ jobs:
                   applicationId 'com.shafaf.sitecalc'
                   minSdk 26
                   targetSdk 34
-                  versionCode 5
-                  versionName '1.4'
+                  versionCode 6
+                  versionName '1.5'
               }
-              buildTypes { release { minifyEnabled false } }
+              // Fixed signing key (from GitHub secrets) so every new APK installs over the old one.
+              def ks = file('sitecalc-release.jks')
+              signingConfigs {
+                  fixed {
+                      storeFile ks
+                      storePassword System.getenv('KS_PASS') ?: ''
+                      keyAlias 'sitecalc'
+                      keyPassword System.getenv('KS_PASS') ?: ''
+                  }
+              }
+              buildTypes {
+                  release { minifyEnabled false }
+                  debug { if (ks.exists()) signingConfig signingConfigs.fixed }
+              }
               compileOptions {
                   sourceCompatibility JavaVersion.VERSION_17
                   targetCompatibility JavaVersion.VERSION_17
@@ -395,6 +408,13 @@ jobs:
           const AIRF={"m³/h":1/3600,"CFM":0.000471947,"L/s":0.001}; // to m³/s
           const SIZES=[1.5,2.5,4,6,10,16,25,35,50,70,95,120,150,185,240,300];
           const AMP_CU=[17.5,24,32,41,57,76,96,119,144,184,223,259,299,341,403,464];
+          /* Cable derating, IEC 60364-5-52. Air temperature, PVC 70 °C (Table B.52.14) */
+          const DER_T=[[10,1.22],[15,1.17],[20,1.12],[25,1.06],[30,1.00],[35,0.94],[40,0.87],[45,0.79],[50,0.71],[55,0.61],[60,0.50]];
+          function derT(t){if(t<=10)return 1.22;for(let i=1;i<DER_T.length;i++){const[a,fa]=DER_T[i-1],[b,fb]=DER_T[i];if(t<=b)return fa+(fb-fa)*(t-a)/(b-a);}return 0.5;}
+          /* Grouping (Table B.52.17): bunched/enclosed, or single layer on wall/tray. Between listed counts the larger group is used. */
+          const DER_G={bunch:[[1,1],[2,.80],[3,.70],[4,.65],[5,.60],[6,.57],[7,.54],[8,.52],[9,.50],[12,.45],[16,.41],[20,.38]],
+                       layer:[[1,1],[2,.85],[3,.79],[4,.75],[5,.73],[6,.72],[7,.72],[8,.71],[9,.70]]};
+          function derG(n,arr){const t=DER_G[arr]||DER_G.bunch;if(n<=1)return 1;for(const[c,fc]of t)if(n<=c)return fc;return t[t.length-1][1];}
           const ROUND=[100,125,160,200,250,315,355,400,450,500,560,630,710,800,900,1000,1120,1250];
           const DE=(a,b)=>1.30*Math.pow(a*b,0.625)/Math.pow(a+b,0.25); // equal-friction equivalent diameter
           const PIPE=[["DN15",15.8],["DN20",20.9],["DN25",26.6],["DN32",35.1],["DN40",40.9],["DN50",52.5],["DN65",62.7],["DN80",77.9],["DN100",102.3],["DN125",128.2],["DN150",154.1],["DN200",202.7],["DN250",254.5],["DN300",303.2],["DN350",333.4],["DN400",381]];
@@ -730,6 +750,9 @@ jobs:
             {id:"L",label:"Cable length",help:"One way, from panel to load.",type:"num",def:"80",unit:"m",half:true},
             {id:"ph",label:"Supply",type:"chips",def:"3",options:[["3","3-phase"],["1","1-phase"]],onSet:v=>{v.V=v.ph==="3"?"415":"230";}},
             {id:"mat",label:"Conductor",type:"chips",def:"cu",options:[["cu","Copper"],["al","Aluminium"]]},
+            {id:"amb",label:"Air temperature around the cable",help:"The hottest it will see in service. The base table is for 30 °C.",type:"num",def:"40",unit:"°C",presets:[["30","30"],["40","40"],["45","45"],["50","50"]]},
+            {id:"grp",label:"Circuits running together",help:"Count this circuit plus any others touching it in the same tray, trunking or bunch.",type:"num",def:"1",unit:"circuits",presets:[["1","Alone"],["2","2"],["3","3"],["4","4"],["6","6"],["9","9"]]},
+            {id:"arr",label:"How are they laid?",type:"chips",def:"bunch",options:[["bunch","Bunched or in trunking / conduit"],["layer","Single layer on tray or wall"]],show:v=>num(v.grp)>1},
             {id:"V",label:"Voltage",type:"num",def:"415",unit:"V",adv:true},
             {id:"pf",label:"Power factor",type:"num",def:"0.85",unit:"cos φ",adv:true},
             {id:"lim",label:"Maximum voltage drop allowed",type:"num",def:"4",unit:"%",adv:true,presets:[["3","3 % lighting"],["4","4 %"],["5","5 % power"]]},
@@ -739,8 +762,13 @@ jobs:
             const k=v.ph==="3"?SQ3:2,rho=v.mat==="al"?0.036:0.0225,I=num(v.I),L=num(v.L),V=num(v.V),pf=num(v.pf),lim=num(v.lim),af=v.mat==="al"?0.78:1;
             if(!(I>0))return{hint:"Enter the load current."};if(!(L>0))return{hint:"Enter the cable length."};
             if(!(V>0&&pf>0&&pf<=1&&lim>0))return{hint:"Check More options: voltage, power factor and drop limit."};
+            const amb=num(v.amb),grp=Math.round(num(v.grp));
+            if(!isFinite(amb))return{hint:"Enter the air temperature around the cable."};
+            if(amb>=60)return{hint:"PVC cable cannot be used at 60 °C or above. Use XLPE or heat-resistant cable and the manufacturer's ratings."};
+            if(!(grp>=1))return{hint:"Enter how many circuits run together (1 if it runs alone)."};
+            const Ct=derT(amb),Cg=derG(grp,v.arr),Cd=Ct*Cg;
             const sn=Math.sqrt(1-pf*pf),X=0.00008;
-            const rows=SIZES.map((a,i)=>{const d=k*L*I*(rho/a*pf+X*sn);return{a,d,pct:d/V*100,amp:AMP_CU[i]*af};}).map(r=>Object.assign(r,{okA:r.amp>=I,okV:r.pct<=lim}));
+            const rows=SIZES.map((a,i)=>{const d=k*L*I*(rho/a*pf+X*sn);return{a,d,pct:d/V*100,amp:AMP_CU[i]*af*Cd};}).map(r=>Object.assign(r,{okA:r.amp>=I,okV:r.pct<=lim}));
             const rec=rows.find(r=>r.okA&&r.okV);
             const cur=(v.size!=="auto"&&rows.find(r=>String(r.a)===v.size))||rec||rows[rows.length-1];
             const pass=cur.okA&&cur.okV;
@@ -749,11 +777,12 @@ jobs:
             const mat=v.mat==="al"?"aluminium":"copper";
             return{cap:v.size==="auto"?"Recommended cable":"Checking cable",value:cur.a,unit:"mm²",
              status:{ok:pass,text:pass?"Safe and within voltage drop":!cur.okA?"Too small for this current":"Voltage drop too high"},
-             say:rec?`For ${f(I)} A over ${f(L)} m, use at least ${B(rec.a,"mm²")} ${mat} cable. Voltage drop at ${cur.a} mm² is ${f(cur.pct,1)} % (${f(cur.d,1)} V).`:`No size up to 300 mm² works for ${f(I)} A over ${f(L)} m. Use parallel cables or a higher voltage.`,
-             rows:[["Voltage drop",f(cur.d,1),"V"],["Voltage at load",f(V-cur.d,0),"V"],["Cable rating",f(cur.amp,0),"A"]],after:tbl};
+             say:(rec?`For ${f(I)} A over ${f(L)} m, use at least ${B(rec.a,"mm²")} ${mat} cable. Voltage drop at ${cur.a} mm² is ${f(cur.pct,1)} % (${f(cur.d,1)} V).`:`No size up to 300 mm² works for ${f(I)} A over ${f(L)} m. Use parallel cables or a higher voltage.`)
+              +(Cd<0.995?` Ratings are reduced to ${B(f(Cd*100,0),"%")} for ${f(amb,0)} °C${grp>1?` and ${grp} grouped circuits`:""}.`:""),
+             rows:[["Voltage drop",f(cur.d,1),"V"],["Voltage at load",f(V-cur.d,0),"V"],["Derated cable rating",f(cur.amp,0),"A"],["Temperature factor",f(Ct,2),"Ca"],["Grouping factor",f(Cg,2),"Cg"]],after:tbl};
            },
            bind(el,st){el.querySelectorAll(".tr[data-a]").forEach(r=>{const go=()=>{st.size=r.dataset.a;show();};r.onclick=go;r.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go();}};});},
-           note:"Ratings are indicative for multicore PVC copper cable in air at 30 °C (IEC 60364-5-52, method C). Voltage drop includes typical cable reactance (0.08 Ω/km). Apply derating for grouping, heat and burial before final selection."},
+           note:"Base ratings: multicore PVC (70 °C) cable in air, IEC 60364-5-52 method C, derated for air temperature (Table B.52.14) and grouping (Table B.52.17). Not covered: buried cables, thermal insulation, direct sun, XLPE cables (these carry more: use the manufacturer's table). Voltage drop includes typical reactance (0.08 Ω/km)."},
 
           {id:"ohm",g:"elec",icon:"ohm",name:"Ohm's law",short:"Volts, amps, ohms, watts",
            intro:"Type any two values. The other two are worked out. Clear a box to swap which ones you use.",
@@ -1140,7 +1169,8 @@ jobs:
             app.querySelector("[data-home]").onclick=()=>{view="home";render();window.scrollTo(0,0);};
             app.querySelector("[data-reset]").onclick=()=>{ST[t.id]=defs(t);save();render();};
             const det=app.querySelector("details.more");if(det)det.ontoggle=()=>{open[t.id]=det.open;};
-            app.querySelectorAll("input[data-k],select[data-k]").forEach(el=>{el.addEventListener("input",()=>{st[el.dataset.k]=el.value;save();answer();});});
+            const vis=()=>t.fields.map(x=>!x.show||x.show(st)?1:0).join("");
+            app.querySelectorAll("input[data-k],select[data-k]").forEach(el=>{el.addEventListener("input",()=>{const b4=vis();st[el.dataset.k]=el.value;save();if(vis()!==b4)show();else answer();});});
             app.querySelectorAll("[data-chips]").forEach(c=>{const fl=t.fields.find(x=>x.id===c.dataset.chips);c.querySelectorAll("button").forEach(b=>b.onclick=()=>{st[fl.id]=b.dataset.v;if(fl.onSet)fl.onSet(st);save();show();});});
             app.querySelectorAll("[data-pre]").forEach(c=>{const id=c.dataset.pre;c.querySelectorAll("button").forEach(b=>b.onclick=()=>{st[id]=b.dataset.v;save();show();});});
             answer();
@@ -1183,8 +1213,20 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
+      - name: Add signing key
+        env:
+          KS_B64: ${{ secrets.SIGNING_KEY_B64 }}
+        run: |
+          if [ -n "$KS_B64" ]; then
+            echo "$KS_B64" | base64 -d > out/app/sitecalc-release.jks
+            echo "Signing with the fixed SiteCalc Pro key"
+          else
+            echo "::warning::SIGNING_KEY_B64 secret not set - APK uses a temporary key and will not update over the installed app"
+          fi
       - name: Build APK
         working-directory: out
+        env:
+          KS_PASS: ${{ secrets.SIGNING_KEY_PASS }}
         run: gradle assembleDebug --stacktrace
       - name: Rename APK
         run: cp out/app/build/outputs/apk/debug/app-debug.apk SiteCalc-Pro.apk
