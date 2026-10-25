@@ -140,6 +140,29 @@ details.more .in{display:flex;flex-direction:column;gap:16px;padding-top:14px}
 .conv div{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid rgb(255 255 255/.1);font-family:var(--f-data);font-size:17px;font-variant-numeric:tabular-nums}
 .conv div:last-child{border-bottom:0}
 .conv span{color:var(--plate-muted)} .conv .me strong{color:var(--accent)}
+/* P/T slider */
+.slide{gap:12px}
+.sl-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.sl-b{width:52px;height:52px;flex:none;border-radius:50%;border:1.5px solid var(--line);background:var(--bg);font:500 26px/1 var(--f-data);cursor:pointer}
+.sl-b:active{border-color:var(--accent);background:var(--accent-soft)}
+.sl-t{text-align:center;display:flex;flex-direction:column}
+.sl-t b{font:500 40px/1 var(--f-data);font-variant-numeric:tabular-nums}
+.sl-t span{font-size:13px;color:var(--muted)}
+.sl-r{-webkit-appearance:none;appearance:none;width:100%;height:12px;border-radius:999px;margin:10px 0 0;background:linear-gradient(90deg,var(--cool),#7FA7A0 45%,var(--accent))}
+.sl-r::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;background:var(--surface);border:3px solid var(--ink);box-shadow:0 1px 4px rgb(0 0 0/.3);cursor:grab}
+.sl-r::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:var(--surface);border:3px solid var(--ink);cursor:grab}
+.sl-sc{position:relative;height:44px;margin:0 15px;font:500 12px var(--f-data);font-variant-numeric:tabular-nums;color:var(--muted)}
+.sl-sc span{position:absolute;top:0;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;white-space:nowrap}
+.sl-sc i{width:1px;height:6px;background:var(--line);margin-bottom:2px}
+.sl-sc em{font-style:normal;color:var(--ink)}
+/* troubleshooter */
+.causes{margin:4px 0 0;padding-left:22px;display:flex;flex-direction:column;gap:14px}
+.causes li{padding-left:2px}
+.causes b{font-weight:600;font-size:16px}
+.causes p{margin:4px 0 0;font-size:14.5px;color:var(--ink)}
+.causes p span{display:inline-block;min-width:38px;margin-right:6px;font:600 11px var(--f-body);letter-spacing:.06em;text-transform:uppercase;color:var(--cool)}
+.causes p+p span{color:var(--ok)}
+.golink{align-self:flex-start;border:1.5px solid var(--accent);background:var(--accent-soft);color:var(--ink);border-radius:999px;padding:9px 16px;font-weight:600;font-size:14px;cursor:pointer}
 @media (max-width:400px){.row2{grid-template-columns:1fr}.tile{min-height:0}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -161,6 +184,8 @@ const ICON={
   sh:'<path d="M10 14V4a2 2 0 1 1 4 0v10a4 4 0 1 1-4 0z"/><path d="M18 4l2 3h-4zM12 9v6"/>',
   sc:'<path d="M10 14V4a2 2 0 1 1 4 0v10a4 4 0 1 1-4 0z"/><path d="M18 7l2-3h-4zM12 12v3"/>',
   chg:'<rect x="7" y="6" width="10" height="15" rx="4"/><path d="M10 6V3h4v3M10 13l1.5 1.5L15 11"/>',
+  slide:'<path d="M3 12h18"/><circle cx="14" cy="12" r="3"/><path d="M5 8v8M19 8v8"/>',
+  fix:'<circle cx="11" cy="11" r="6"/><path d="M15.5 15.5 21 21M11 8v4M11 14.5v.01"/>',
   psy:'<path d="M4 20h16M4 20V4"/><path d="M4 18c6 0 11-4 15-12"/><circle cx="12" cy="14" r="1.6"/>',
   mix:'<path d="M3 6h6l4 6h8M3 18h6l4-6"/><path d="M18 9l3 3-3 3"/>',
   proc:'<rect x="6" y="3" width="12" height="14" rx="1.5"/><path d="M9 3v14M12 3v14M15 3v14M9 20.5c0 .8.7 1.5 1.5 1.5S12 21.3 12 20.5c0-1-1.5-2.5-1.5-2.5S9 19.5 9 20.5z"/>',
@@ -267,6 +292,96 @@ function ptTable(k,u){const r=REF[k],bl=isBlend(k),fac=GAUGE[u]||1;let h=`<div c
   return h+`</div><p class="note">Gauge pressure at sea level. Negative values are vacuum.</p></div>`;}
 const shState=x=>x<2?{ok:false,text:"Too low"}:x<4?{ok:false,text:"Low"}:x<=12?{ok:true,text:"Normal range"}:x<=20?{ok:false,text:"High"}:{ok:false,text:"Very high"};
 const scState=x=>x<1?{ok:false,text:"No subcooling"}:x<3?{ok:false,text:"Low"}:x<=10?{ok:true,text:"Normal range"}:x<=15?{ok:false,text:"High"}:{ok:false,text:"Very high"};
+
+/* P/T slider */
+const slideT=v=>{const t=num(v.ts);return isFinite(t)?Math.min(65,Math.max(-40,t)):5;};
+function slideHTML(k,pu,T){
+  const fac=GAUGE[pu],kind=isBlend(k)?"d":"b",ticks=[-40,-20,0,20,40,60];
+  const pos=t=>((t+40)/105*100).toFixed(2);
+  const g=t=>f((refP(k,t,kind)-PATM)/fac,fac<0.05?0:1);
+  return `<div class="card slide"><div class="sl-top"><button type="button" class="sl-b" data-step="-0.5" aria-label="Down 0.5 °C">−</button>
+   <div class="sl-t"><b id="slT">${f(T,1)}</b><span>°C saturation</span></div>
+   <button type="button" class="sl-b" data-step="0.5" aria-label="Up 0.5 °C">+</button></div>
+   <input type="range" id="slR" class="sl-r" min="-40" max="65" step="0.5" value="${T}" aria-label="Saturation temperature">
+   <div class="sl-sc" aria-hidden="true">${ticks.map(t=>`<span style="left:${pos(t)}%"><i></i>${t}°<em>${g(t)}</em></span>`).join("")}</div>
+   <p class="note">Top row °C, bottom row ${pu}${isBlend(k)?" (dew)":""}.</p></div>`;
+}
+
+/* Troubleshooter: [cause, what to check, how to fix], most common first */
+const FAULTS={
+ lowsuc:{n:"Low suction pressure",d:"The evaporator is boiling colder than it should. Most often the coil is short of refrigerant or short of air.",go:["chg","Measure it with Charge check"],c:[
+  ["Low charge from a leak","High superheat and low subcooling. Oil marks at joints, flare nuts or valve caps.","Find and repair the leak, pressure test, evacuate, then weigh in the charge."],
+  ["Low airflow over the evaporator","Dirty filter or coil, fan slow or stopped, belt slipping, dampers shut. Large air temperature drop across the coil.","Clean the filter and coil, fix the fan, open dampers."],
+  ["Restriction in the liquid line","More than 2 K drop across the filter drier, sweating or frost after it, high subcooling with high superheat.","Replace the filter drier. Check the service valves and solenoid are fully open."],
+  ["Expansion valve underfeeding","High superheat but normal subcooling. Loose or uninsulated bulb, blocked inlet strainer, lost bulb charge.","Refit and insulate the bulb, clean the strainer, adjust or replace the valve."],
+  ["Low load","Return air already cold, or set point too low.","Check the thermostat and controls, and the low-pressure cut-out setting."]]},
+ hisuc:{n:"High suction pressure",d:"The evaporator is boiling warmer than it should. Either the load is high, the valve is overfeeding, or the compressor is not pumping.",go:["chg","Measure it with Charge check"],c:[
+  ["High heat load","High return air temperature, doors left open, added equipment in the room.","Compare the real load against the unit capacity."],
+  ["Expansion valve overfeeding","Low superheat, cold or sweating suction line back to the compressor.","Check bulb contact and insulation, raise the superheat setting, replace if stuck open."],
+  ["Compressor not pumping","Suction high and discharge low at the same time, current below normal.","Do a valve or pump-down test. Replace the compressor if it cannot pull down."],
+  ["Overcharge","High subcooling and high head pressure as well.","Recover refrigerant back to the nameplate charge or target subcooling."],
+  ["Hot gas leaking into suction","Hot gas bypass valve set too high, or a heat pump reversing valve leaking across.","Reset the bypass valve. Check temperatures across the reversing valve and replace if leaking."]]},
+ hihead:{n:"High head (discharge) pressure",d:"The condenser cannot reject heat fast enough. Start outside at the condenser before touching the charge.",go:["chg","Check condenser approach with Charge check"],c:[
+  ["Dirty or blocked condenser coil","Approach (condensing minus air-on temperature) above about 15 K. Dust, leaves, bent fins.","Clean the coil with water or coil cleaner, comb the fins."],
+  ["Condenser fan fault","Fan stopped, slow, wrong rotation, or a fan stage not coming on.","Check the motor, capacitor, rotation and the fan speed or pressure control."],
+  ["Hot air recirculating","Discharge air re-entering the coil, units too close together, high ambient around the unit.","Fix the clearance or add a baffle so the condenser gets fresh air."],
+  ["Overcharge","High subcooling with high head pressure.","Recover refrigerant back to the target subcooling."],
+  ["Air or nitrogen in the system","Head pressure higher than the condensing temperature explains, with normal subcooling. Shut-down pressure higher than the P/T value at ambient.","Recover the charge, evacuate properly and recharge with new refrigerant."]]},
+ lohead:{n:"Low head (discharge) pressure",d:"Condensing is too cold. Low head starves the expansion valve, so cooling drops too.",go:["chg","Measure it with Charge check"],c:[
+  ["Low charge","Low subcooling and high superheat.","Find and repair the leak, then charge to target."],
+  ["Low outdoor temperature without head pressure control","Cold weather, condenser fans all running.","Fit or repair fan speed control, fan cycling or a head pressure valve."],
+  ["Compressor not pumping","Low head and high suction together, low amps, small pressure difference.","Do a valve test. Replace the compressor if it cannot build pressure."],
+  ["Scroll running backwards (3-phase)","Loud, no pressure difference, suction and discharge almost equal.","Swap two supply phases and fit a phase monitor."]]},
+ hish:{n:"High superheat",d:"The evaporator is starved. Not enough liquid reaches it, or the valve is holding it back.",go:["sh","Measure it with Superheat"],c:[
+  ["Low charge","Subcooling low too, bubbles in the sight glass.","Leak test and repair before adding refrigerant."],
+  ["Restriction before the valve","Temperature drop across the drier or a partly closed valve, subcooling high.","Replace the drier, open service valves fully."],
+  ["Expansion valve underfeeding or set too high","Subcooling normal. Bulb loose, strainer blocked, power head lost charge.","Clean the strainer, refit the bulb, adjust or replace the valve."],
+  ["Moisture freezing at the valve","Superheat swings, valve hunts, moisture indicator shows wet.","Replace the drier, evacuate deeply, recharge."]]},
+ losh:{n:"Low superheat or liquid floodback",d:"Liquid may be reaching the compressor. This washes out oil and breaks valves, so fix it quickly.",go:["sh","Measure it with Superheat"],c:[
+  ["Low airflow over the evaporator","Dirty filter or coil, fan fault, frosted coil.","Clean, fix the fan, defrost the coil."],
+  ["Expansion valve overfeeding","Bulb loose or in the wrong place, valve oversized or stuck open.","Mount the bulb tight at 4 or 8 o'clock on the suction line and insulate it. Adjust or replace."],
+  ["Overcharge on a fixed orifice or capillary system","High subcooling and low superheat.","Recover refrigerant to the manufacturer's charging chart."],
+  ["Very low load","Space cold, coil running nearly empty of heat.","Check controls and the low-load protection."]]},
+ nostart:{n:"Compressor will not start",d:"Work from the power supply inward. Do not reset a safety again and again without finding the cause.",c:[
+  ["No power or control voltage","Breaker, fuses, isolator, thermostat call, control transformer.","Restore supply and find why it tripped."],
+  ["Safety switch open","High or low pressure switch, thermal overload or motor protector tripped.","Find the cause behind the trip before resetting. A hot shell needs time to cool."],
+  ["Failed capacitor (single-phase)","Compressor hums, draws high current then trips. Capacitor bulged or out of tolerance.","Test with a capacitance meter and replace with the same µF and voltage rating."],
+  ["Contactor fault","Coil energised but contacts not closing, burnt or pitted contacts.","Replace the contactor."],
+  ["Motor winding fault","Open, shorted or grounded winding on ohm and insulation tests.","Replace the compressor. Check the oil for acid after a burnout."],
+  ["Mechanically seized","Draws locked-rotor current and does not turn even with good voltage and capacitor.","Replace the compressor."]]},
+ short:{n:"Compressor short cycling",d:"Many starts per hour overheat the motor and starve it of oil. Find which control is stopping it.",c:[
+  ["Low pressure switch tripping","Suction falls fast after start: low charge, restriction or low airflow.","Fix the root cause listed under Low suction pressure."],
+  ["High pressure switch tripping","Head rises fast: condenser blocked, fan fault, overcharge.","Fix the root cause listed under High head pressure."],
+  ["Thermostat or control fault","Differential too small, sensor in a supply air stream, loose wiring.","Move the sensor, widen the differential, add an anti-short-cycle timer."],
+  ["Overload tripping","High current, hot compressor shell, low voltage.","Check voltage under load, current against RLA, and suction superheat."],
+  ["Unit oversized for the load","Reaches set point in a few minutes.","Use capacity control, staging or a correctly sized unit."]]},
+ nocool:{n:"Runs but poor cooling",d:"Everything is running but capacity is low. Measure before you guess.",go:["chg","Check the charge with Charge check"],c:[
+  ["Low charge","High superheat, low subcooling, low suction pressure.","Leak test, repair, then charge to target."],
+  ["Dirty coils or filters","Low airflow indoors, high approach outdoors.","Clean filters and both coils."],
+  ["Compressor not pumping","Small pressure difference, low amps.","Valve test, replace if needed."],
+  ["Scroll running backwards (3-phase)","Noisy, no pressure difference.","Swap two phases."],
+  ["Unit too small or load increased","Runs non-stop at normal pressures and still cannot hold temperature.","Recheck the heat load with the Room cooling size tool."]]},
+ ice:{n:"Evaporator coil icing",d:"Ice blocks the coil and makes things worse. Defrost fully before taking readings.",c:[
+  ["Low airflow","Dirty filter or coil, fan slow, blocked return grille.","Clean and fix airflow first, then recheck."],
+  ["Low charge","Ice starting near the expansion valve outlet, high superheat.","Leak test and repair."],
+  ["Running at low load or low outdoor temperature","AC running at night or in cool weather with low suction.","Add freeze protection or low-ambient control."],
+  ["Defrost not working (refrigeration)","Heater, timer, termination sensor or drain heater failed.","Test each defrost component and the drain line."]]},
+ bubbles:{n:"Bubbles in the sight glass",d:"Bubbles mean vapour in the liquid line. Do not charge on bubbles alone: confirm with subcooling.",go:["sc","Measure it with Subcooling"],c:[
+  ["Low charge","Low subcooling, high superheat.","Leak test and repair, then charge to target."],
+  ["Restriction before the sight glass","Temperature drop across the drier.","Replace the drier."],
+  ["Low head pressure","Cold weather, low condensing temperature.","Fix head pressure control."],
+  ["Liquid line picking up heat or lifting high","Long vertical riser, line running through a hot space.","Insulate the line or increase subcooling."]]},
+ hidisch:{n:"High discharge temperature",d:"Hot discharge gas breaks down oil. Above about 110 °C at the discharge line, act now.",c:[
+  ["High suction superheat","Low charge or starving valve, so the gas arrives already hot.","Fix the cause of high superheat."],
+  ["High compression ratio","Head pressure high and suction low together.","Clean the condenser and fix the low suction cause."],
+  ["Air or nitrogen in the system","High head with normal subcooling.","Recover, evacuate and recharge."],
+  ["Internal leak in the compressor","Hot gas leaking back to suction, low capacity.","Valve test, replace the compressor."]]},
+ oil:{n:"Low oil or oil loss",d:"Oil leaves with the gas. If it does not come back, bearings fail.",c:[
+  ["Poor oil return in the pipework","Suction risers without traps, horizontal lines not sloped toward the compressor, low gas speed.","Correct slopes, add traps or a double riser, check line sizes."],
+  ["Short cycling","Compressor stops before oil returns.","Fix the cause of short cycling."],
+  ["Floodback diluting the oil","Foaming in the crankcase sight glass, low superheat.","Fix the floodback cause and check the crankcase heater."],
+  ["Oil trapped in the evaporator","Low load or low gas velocity in the coil.","Check minimum load and coil circuiting."]]}
+};
 
 /* ---------- TOOLS ---------- */
 const TOOLS=[
@@ -637,6 +752,33 @@ const TOOLS=[
  },
  note:"Data: NIST for pure refrigerants and manufacturer property tables for R-410A, R-407C and R-404A. Gauge readings assume sea-level air pressure."},
 
+{id:"slide",g:"ref",icon:"slide",name:"P/T slider",short:"Drag temperature, read pressure",
+ intro:"Drag the slider to any saturation temperature and the gauge pressure follows. Use − and + for 0.5 °C steps.",
+ fields:[
+  {id:"ref",label:"Refrigerant",type:"chips",def:"R410A",options:REFOPTS},
+  {id:"pu",label:"Pressure unit",type:"chips",def:"bar g",options:Object.keys(GAUGE).map(u=>[u,u])}
+ ],
+ calc(v){
+  const k=v.ref,r=REF[k],bl=isBlend(k),pu=GAUGE[v.pu]?v.pu:"bar g",fac=GAUGE[pu];
+  const T=slideT(v),pb=refP(k,T,"b"),pd=bl?refP(k,T,"d"):pb,g=x=>f((x-PATM)/fac,fac<0.05?0:2);
+  const vac=pd<PATM?" That is below atmospheric pressure, so the gauge shows vacuum.":"";
+  const after=slideHTML(k,pu,T);
+  if(!bl)return{cap:`${r.n} at ${f(T,1)} °C`,value:g(pb),unit:pu,
+   say:`At ${B(f(T,1),"°C")}, ${r.n} boils and condenses at ${B(g(pb),pu)}.${vac}`,
+   rows:[["Absolute",f(pb,2),"bar a"],["psig",f((pb-PATM)/0.0689476,1),"psig"],["kPa g",f((pb-PATM)*100,0),"kPa g"]],after};
+  return{cap:`${r.n} at ${f(T,1)} °C`,value:g(pd),unit:pu,
+   say:`At ${B(f(T,1),"°C")}, ${r.n} reads ${B(g(pd),pu)} as vapour (dew) and ${B(g(pb),pu)} as liquid (bubble). Use dew for superheat and bubble for subcooling.${vac}`,
+   rows:[["Dew (vapour)",g(pd),pu],["Bubble (liquid)",g(pb),pu],["Glide at dew pressure",f(T-refT(k,pd,"b"),1),"K"]],after};
+ },
+ bind(af,st){
+  const R=af.querySelector("#slR"),lab=af.querySelector("#slT");if(!R)return;
+  const upd=x=>{const T=Math.min(65,Math.max(-40,Math.round(x*2)/2));st.ts=String(T);save();R.value=T;lab.textContent=f(T,1);
+   document.getElementById("ans").innerHTML=ansHTML(byId("slide").calc(st));};
+  R.addEventListener("input",()=>upd(+R.value));
+  af.querySelectorAll("[data-step]").forEach(b=>b.onclick=()=>upd(slideT(st)+ +b.dataset.step));
+ },
+ note:"Range −40 to 65 °C. Same property data as the Pressure–temperature tool. Gauge readings assume sea-level air pressure."},
+
 {id:"sh",g:"ref",icon:"sh",name:"Superheat",short:"Suction pressure + line temp",
  intro:"Measure suction pressure at the service port and the suction line temperature near the evaporator outlet or compressor.",
  fields:[
@@ -738,7 +880,20 @@ const TOOLS=[
    say:why+(more.length?`<ul class="more-list">${more.map(m=>`<li>${m}</li>`).join("")}</ul>`:""),
    rows:[["Superheat",f(Math.max(SH,0),1),"K"],["Subcooling",f(Math.max(SC,0),1),"K"],["Evaporating",f(Te,1),"°C"],["Condensing",f(Tc,1),"°C"],...(isFinite(amb)?[["Condenser approach",f(Tc-amb,1),"K"]]:[])]};
  },
- note:"Field guide only. Always confirm with the manufacturer's charging chart, and repair leaks before adding refrigerant."}
+ note:"Field guide only. Always confirm with the manufacturer's charging chart, and repair leaks before adding refrigerant."},
+
+{id:"fix",g:"ref",icon:"fix",name:"Troubleshooter",short:"Symptom to cause to fix",
+ intro:"Pick what you see on the system. You get the likely causes, most common first, with what to check and how to fix each one.",
+ fields:[
+  {id:"s",label:"What is the symptom?",type:"select",def:"lowsuc",options:Object.keys(FAULTS).map(k=>[k,FAULTS[k].n])}
+ ],
+ calc(v){
+  const F=FAULTS[v.s]||FAULTS.lowsuc;
+  const list=`<div class="card"><div class="lbl">Likely causes, most common first</div><ol class="causes">${F.c.map(c=>`<li><b>${c[0]}</b><p><span>Check</span>${c[1]}</p><p><span>Fix</span>${c[2]}</p></li>`).join("")}</ol>${F.go?`<button type="button" class="golink" data-goto="${F.go[0]}">${F.go[1]} →</button>`:""}</div>`;
+  return{cap:"Symptom",big:F.n,say:F.d,rows:[["Causes to check",String(F.c.length),""],["Start with",F.c[0][0],""]],after:list};
+ },
+ bind(af){af.querySelectorAll("[data-goto]").forEach(b=>b.onclick=()=>{view=b.dataset.goto;render();window.scrollTo(0,0);});},
+ note:"Field guide only. Isolate power before electrical checks, recover refrigerant before opening the circuit, and follow the manufacturer's service data."}
 ];
 
 /* ---------- STATE ---------- */
@@ -803,11 +958,15 @@ function answer(){
   const t=byId(view),st=ST[t.id],r=t.calc(st),el=document.getElementById("ans"),af=document.getElementById("after");
   if(r.hint){el.innerHTML=`<div class="cap">Answer</div><p class="hint">${r.hint}</p>`;af.innerHTML=r.after||"";return}
   if(r.extra){el.innerHTML=r.extra;af.innerHTML="";return}
-  el.innerHTML=`<div class="cap">${r.cap}</div>${r.big?`<div class="verdict">${r.big}</div>`:`<div class="hero"><b>${r.value}</b><i>${r.unit}</i></div>`}
+  el.innerHTML=ansHTML(r);
+  af.innerHTML=r.after||"";if(t.bind)t.bind(af,st);
+}
+function ansHTML(r){
+  if(r.hint)return `<div class="cap">Answer</div><p class="hint">${r.hint}</p>`;
+  return `<div class="cap">${r.cap}</div>${r.big?`<div class="verdict">${r.big}</div>`:`<div class="hero"><b>${r.value}</b><i>${r.unit}</i></div>`}
    ${r.status?`<span class="pill ${r.status.ok?"ok":"bad"}">${r.status.text}</span>`:""}
    <p class="say">${r.say}</p>
    ${r.rows&&r.rows.length?`<div class="kv">${r.rows.map(x=>`<div><span>${x[0]}</span><strong>${x[1]} <small>${x[2]}</small></strong></div>`).join("")}</div>`:""}`;
-  af.innerHTML=r.after||"";if(t.bind)t.bind(af,st);
 }
 function show(){const y=window.scrollY;const a=document.activeElement&&document.activeElement.id;tool();window.scrollTo(0,y);if(a&&document.getElementById(a))document.getElementById(a).focus({preventScroll:true});}
 function render(){view==="home"?home():tool();}
