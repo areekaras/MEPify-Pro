@@ -140,90 +140,8 @@ details.more .in{display:flex;flex-direction:column;gap:16px;padding-top:14px}
 .conv div{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid rgb(255 255 255/.1);font-family:var(--f-data);font-size:17px;font-variant-numeric:tabular-nums}
 .conv div:last-child{border-bottom:0}
 .conv span{color:var(--plate-muted)} .conv .me strong{color:var(--accent)}
-/* P/T slider */
-.slide{gap:12px}
-.sl-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.sl-b{width:52px;height:52px;flex:none;border-radius:50%;border:1.5px solid var(--line);background:var(--bg);font:500 26px/1 var(--f-data);cursor:pointer}
-.sl-b:active{border-color:var(--accent);background:var(--accent-soft)}
-.sl-t{text-align:center;display:flex;flex-direction:column}
-.sl-t b{font:500 40px/1 var(--f-data);font-variant-numeric:tabular-nums}
-.sl-t span{font-size:13px;color:var(--muted)}
-.sl-r{-webkit-appearance:none;appearance:none;width:100%;height:12px;border-radius:999px;margin:10px 0 0;background:linear-gradient(90deg,var(--cool),#7FA7A0 45%,var(--accent))}
-.sl-r::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;background:var(--surface);border:3px solid var(--ink);box-shadow:0 1px 4px rgb(0 0 0/.3);cursor:grab}
-.sl-r::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:var(--surface);border:3px solid var(--ink);cursor:grab}
-.sl-sc{position:relative;height:44px;margin:0 15px;font:500 12px var(--f-data);font-variant-numeric:tabular-nums;color:var(--muted)}
-.sl-sc span{position:absolute;top:0;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;white-space:nowrap}
-.sl-sc i{width:1px;height:6px;background:var(--line);margin-bottom:2px}
-.sl-sc em{font-style:normal;color:var(--ink)}
-/* troubleshooter */
-.causes{margin:4px 0 0;padding-left:22px;display:flex;flex-direction:column;gap:14px}
-.causes li{padding-left:2px}
-.causes b{font-weight:600;font-size:16px}
-.causes p{margin:4px 0 0;font-size:14.5px;color:var(--ink)}
-.causes p span{display:inline-block;min-width:38px;margin-right:6px;font:600 11px var(--f-body);letter-spacing:.06em;text-transform:uppercase;color:var(--cool)}
-.causes p+p span{color:var(--ok)}
-.golink{align-self:flex-start;border:1.5px solid var(--accent);background:var(--accent-soft);color:var(--ink);border-radius:999px;padding:9px 16px;font-weight:600;font-size:14px;cursor:pointer}
-/* heat load */
-.hlrow{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;cursor:pointer;margin-bottom:8px}
-.hlrow:hover{border-color:var(--muted)}
-.hlrow span:first-child{display:flex;flex-direction:column;gap:2px;min-width:0}
-.hlrow b{font-weight:600;font-size:16px;overflow-wrap:anywhere}
-.hlrow small{color:var(--muted);font-size:13px}
-.hlv{font:500 22px var(--f-data);font-variant-numeric:tabular-nums;white-space:nowrap}
-.hlv i{font-style:normal;font-size:13px;color:var(--accent);margin-left:4px}
-.hlgo{font-size:26px;color:var(--muted);line-height:1}
-.hladd{width:100%;border:1.5px dashed var(--line);background:transparent;border-radius:14px;padding:14px;font-weight:600;font-size:15px;color:var(--accent);cursor:pointer}
-.hlbtns{display:flex;flex-wrap:wrap;gap:10px}
-.golink.del{border-color:var(--bad);background:var(--bad-soft)}
-.golink.armed{background:var(--bad);color:#fff}
-.hlchart{width:100%;height:auto;display:block}
-.hlchart text{font:500 9px var(--f-data);fill:var(--plate-muted)}
-.hlgrid{display:grid;grid-template-columns:34px minmax(0,1fr) minmax(0,1fr);gap:8px 10px;align-items:center}
-.hlgrid .inp{min-width:0}
-.hlgrid>span:not(.inp){font-size:12.5px;color:var(--muted);font-weight:600}
-.hlgrid b{font:600 14px var(--f-data)}
-.hlgrid .inp input{font-size:17px;padding:9px 10px}
-.hlbk{display:grid;grid-template-columns:minmax(0,1.3fr) 1fr 52px;gap:7px 10px;align-items:center;font-size:14px}
-.hlbk .b{height:8px;background:var(--bg);border-radius:4px;overflow:hidden;position:relative}
-.hlbk .b i{position:absolute;inset:0 auto 0 0;border-radius:4px;background:var(--cool)}
-.hlbk .b i.neg{background:var(--ok)}
-.hlbk .r{text-align:right;font:500 14px var(--f-data);font-variant-numeric:tabular-nums}
-/* air / water / schedule */
-.sumg{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px 16px;border-top:1px solid var(--line);padding-top:12px}
-.sumg div{display:flex;flex-direction:column;gap:2px;min-width:0}
-.sumg span{font-size:12.5px;color:var(--muted)}
-.sumg strong{font:500 15.5px var(--f-data);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
-.sumg small{color:var(--muted);font:500 12.5px var(--f-data)}
-details.more.card summary{padding:0}
-.schtbl{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -4px}
-.schtbl table{border-collapse:collapse;font:500 13px var(--f-data);font-variant-numeric:tabular-nums;min-width:100%}
-.schtbl th{font:600 11.5px var(--f-body);color:var(--muted);text-align:left;padding:6px 8px;border-bottom:1.5px solid var(--line);white-space:nowrap;vertical-align:bottom}
-.schtbl td{padding:7px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
-.schtbl tr:last-child td{border-bottom:0}
-#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--plate);color:var(--plate-ink);padding:12px 18px;border-radius:12px;font-size:15px;max-width:calc(100% - 32px);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:20}
-#toast.show{opacity:1;transform:translate(-50%,0)}
-/* save bar, continue card */
-.hlact{position:sticky;bottom:0;z-index:4;margin:6px -16px 0;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:var(--bg);border-top:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
-.hlstat{font-size:12.5px;color:var(--muted)}
-.hlactb{display:grid;grid-template-columns:1fr 1fr 1.6fr;gap:8px}
-.hlactb .golink{align-self:stretch;text-align:center;padding:10px 8px;font-size:13.5px}
-.golink.pri{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-.hlcont{display:flex;align-items:center;gap:12px;width:100%;text-align:left;margin-top:14px;background:var(--accent-soft);border:1.5px solid var(--accent);border-radius:14px;padding:12px 14px;cursor:pointer}
-.hlcont .ic{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:var(--surface);color:var(--accent);flex:none}
-.hlcont span:nth-child(2){display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
-.hlcont b{font-weight:600}.hlcont small{color:var(--muted);font-size:13px}
-.badge{font-style:normal;font:600 11px var(--f-body);letter-spacing:.04em;text-transform:uppercase;background:var(--accent-soft);color:var(--accent);padding:2px 7px;border-radius:999px;vertical-align:2px}
-.schtbl tr.tot td{font-weight:700;border-top:1.5px solid var(--line)}
 @media (max-width:400px){.row2{grid-template-columns:1fr}.tile{min-height:0}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
-@media print{
-  :root,:root:not([data-theme="light"]),:root[data-theme="dark"]{--bg:#fff;--surface:#fff;--ink:#000;--muted:#444;--line:#bbb;--plate:#fff;--plate-ink:#000;--plate-muted:#444;color-scheme:light}
-  body{background:#fff;padding:0}body::before{display:none}.wrap{max-width:none}
-  .bar,.hlexp,.hlbtns,.hlact,.hlcont,#toast{display:none!important}
-  .card{border:0;padding:0;break-inside:avoid}.schcard{margin-top:10px}
-  .schtbl{overflow:visible}.schtbl table{font-size:8.5pt}.schtbl th,.schtbl td{padding:3px 5px;white-space:normal}
-  .thead .ic{display:none}.thead h2{font-size:18pt}
-}
 </style>
 
 <div class="wrap" id="app"></div>
@@ -243,9 +161,6 @@ const ICON={
   sh:'<path d="M10 14V4a2 2 0 1 1 4 0v10a4 4 0 1 1-4 0z"/><path d="M18 4l2 3h-4zM12 9v6"/>',
   sc:'<path d="M10 14V4a2 2 0 1 1 4 0v10a4 4 0 1 1-4 0z"/><path d="M18 7l2-3h-4zM12 12v3"/>',
   chg:'<rect x="7" y="6" width="10" height="15" rx="4"/><path d="M10 6V3h4v3M10 13l1.5 1.5L15 11"/>',
-  load:'<path d="M3 21V9l9-6 9 6v12z"/><path d="M9 21v-6h6v6"/><path d="M12 8v3M10.5 9.5h3"/>',
-  slide:'<path d="M3 12h18"/><circle cx="14" cy="12" r="3"/><path d="M5 8v8M19 8v8"/>',
-  fix:'<circle cx="11" cy="11" r="6"/><path d="M15.5 15.5 21 21M11 8v4M11 14.5v.01"/>',
   psy:'<path d="M4 20h16M4 20V4"/><path d="M4 18c6 0 11-4 15-12"/><circle cx="12" cy="14" r="1.6"/>',
   mix:'<path d="M3 6h6l4 6h8M3 18h6l4-6"/><path d="M18 9l3 3-3 3"/>',
   proc:'<rect x="6" y="3" width="12" height="14" rx="1.5"/><path d="M9 3v14M12 3v14M15 3v14M9 20.5c0 .8.7 1.5 1.5 1.5S12 21.3 12 20.5c0-1-1.5-2.5-1.5-2.5S9 19.5 9 20.5z"/>',
@@ -264,13 +179,6 @@ const B=(x,u)=>`<strong>${x}${u?" "+u:""}</strong>`;
 const AIRF={"m³/h":1/3600,"CFM":0.000471947,"L/s":0.001}; // to m³/s
 const SIZES=[1.5,2.5,4,6,10,16,25,35,50,70,95,120,150,185,240,300];
 const AMP_CU=[17.5,24,32,41,57,76,96,119,144,184,223,259,299,341,403,464];
-/* Cable derating, IEC 60364-5-52. Air temperature, PVC 70 °C (Table B.52.14) */
-const DER_T=[[10,1.22],[15,1.17],[20,1.12],[25,1.06],[30,1.00],[35,0.94],[40,0.87],[45,0.79],[50,0.71],[55,0.61],[60,0.50]];
-function derT(t){if(t<=10)return 1.22;for(let i=1;i<DER_T.length;i++){const[a,fa]=DER_T[i-1],[b,fb]=DER_T[i];if(t<=b)return fa+(fb-fa)*(t-a)/(b-a);}return 0.5;}
-/* Grouping (Table B.52.17): bunched/enclosed, or single layer on wall/tray. Between listed counts the larger group is used. */
-const DER_G={bunch:[[1,1],[2,.80],[3,.70],[4,.65],[5,.60],[6,.57],[7,.54],[8,.52],[9,.50],[12,.45],[16,.41],[20,.38]],
-             layer:[[1,1],[2,.85],[3,.79],[4,.75],[5,.73],[6,.72],[7,.72],[8,.71],[9,.70]]};
-function derG(n,arr){const t=DER_G[arr]||DER_G.bunch;if(n<=1)return 1;for(const[c,fc]of t)if(n<=c)return fc;return t[t.length-1][1];}
 const ROUND=[100,125,160,200,250,315,355,400,450,500,560,630,710,800,900,1000,1120,1250];
 const DE=(a,b)=>1.30*Math.pow(a*b,0.625)/Math.pow(a+b,0.25); // equal-friction equivalent diameter
 const PIPE=[["DN15",15.8],["DN20",20.9],["DN25",26.6],["DN32",35.1],["DN40",40.9],["DN50",52.5],["DN65",62.7],["DN80",77.9],["DN100",102.3],["DN125",128.2],["DN150",154.1],["DN200",202.7],["DN250",254.5],["DN300",303.2],["DN350",333.4],["DN400",381]];
@@ -360,301 +268,6 @@ function ptTable(k,u){const r=REF[k],bl=isBlend(k),fac=GAUGE[u]||1;let h=`<div c
 const shState=x=>x<2?{ok:false,text:"Too low"}:x<4?{ok:false,text:"Low"}:x<=12?{ok:true,text:"Normal range"}:x<=20?{ok:false,text:"High"}:{ok:false,text:"Very high"};
 const scState=x=>x<1?{ok:false,text:"No subcooling"}:x<3?{ok:false,text:"Low"}:x<=10?{ok:true,text:"Normal range"}:x<=15?{ok:false,text:"High"}:{ok:false,text:"Very high"};
 
-/* P/T slider */
-const slideT=v=>{const t=num(v.ts);return isFinite(t)?Math.min(65,Math.max(-40,t)):5;};
-function slideHTML(k,pu,T){
-  const fac=GAUGE[pu],kind=isBlend(k)?"d":"b",ticks=[-40,-20,0,20,40,60];
-  const pos=t=>((t+40)/105*100).toFixed(2);
-  const g=t=>f((refP(k,t,kind)-PATM)/fac,fac<0.05?0:1);
-  return `<div class="card slide"><div class="sl-top"><button type="button" class="sl-b" data-step="-0.5" aria-label="Down 0.5 °C">−</button>
-   <div class="sl-t"><b id="slT">${f(T,1)}</b><span>°C saturation</span></div>
-   <button type="button" class="sl-b" data-step="0.5" aria-label="Up 0.5 °C">+</button></div>
-   <input type="range" id="slR" class="sl-r" min="-40" max="65" step="0.5" value="${T}" aria-label="Saturation temperature">
-   <div class="sl-sc" aria-hidden="true">${ticks.map(t=>`<span style="left:${pos(t)}%"><i></i>${t}°<em>${g(t)}</em></span>`).join("")}</div>
-   <p class="note">Top row °C, bottom row ${pu}${isBlend(k)?" (dew)":""}.</p></div>`;
-}
-
-/* Troubleshooter: [cause, what to check, how to fix], most common first */
-const FAULTS={
- lowsuc:{n:"Low suction pressure",d:"The evaporator is boiling colder than it should. Most often the coil is short of refrigerant or short of air.",go:["chg","Measure it with Charge check"],c:[
-  ["Low charge from a leak","High superheat and low subcooling. Oil marks at joints, flare nuts or valve caps.","Find and repair the leak, pressure test, evacuate, then weigh in the charge."],
-  ["Low airflow over the evaporator","Dirty filter or coil, fan slow or stopped, belt slipping, dampers shut. Large air temperature drop across the coil.","Clean the filter and coil, fix the fan, open dampers."],
-  ["Restriction in the liquid line","More than 2 K drop across the filter drier, sweating or frost after it, high subcooling with high superheat.","Replace the filter drier. Check the service valves and solenoid are fully open."],
-  ["Expansion valve underfeeding","High superheat but normal subcooling. Loose or uninsulated bulb, blocked inlet strainer, lost bulb charge.","Refit and insulate the bulb, clean the strainer, adjust or replace the valve."],
-  ["Low load","Return air already cold, or set point too low.","Check the thermostat and controls, and the low-pressure cut-out setting."]]},
- hisuc:{n:"High suction pressure",d:"The evaporator is boiling warmer than it should. Either the load is high, the valve is overfeeding, or the compressor is not pumping.",go:["chg","Measure it with Charge check"],c:[
-  ["High heat load","High return air temperature, doors left open, added equipment in the room.","Compare the real load against the unit capacity."],
-  ["Expansion valve overfeeding","Low superheat, cold or sweating suction line back to the compressor.","Check bulb contact and insulation, raise the superheat setting, replace if stuck open."],
-  ["Compressor not pumping","Suction high and discharge low at the same time, current below normal.","Do a valve or pump-down test. Replace the compressor if it cannot pull down."],
-  ["Overcharge","High subcooling and high head pressure as well.","Recover refrigerant back to the nameplate charge or target subcooling."],
-  ["Hot gas leaking into suction","Hot gas bypass valve set too high, or a heat pump reversing valve leaking across.","Reset the bypass valve. Check temperatures across the reversing valve and replace if leaking."]]},
- hihead:{n:"High head (discharge) pressure",d:"The condenser cannot reject heat fast enough. Start outside at the condenser before touching the charge.",go:["chg","Check condenser approach with Charge check"],c:[
-  ["Dirty or blocked condenser coil","Approach (condensing minus air-on temperature) above about 15 K. Dust, leaves, bent fins.","Clean the coil with water or coil cleaner, comb the fins."],
-  ["Condenser fan fault","Fan stopped, slow, wrong rotation, or a fan stage not coming on.","Check the motor, capacitor, rotation and the fan speed or pressure control."],
-  ["Hot air recirculating","Discharge air re-entering the coil, units too close together, high ambient around the unit.","Fix the clearance or add a baffle so the condenser gets fresh air."],
-  ["Overcharge","High subcooling with high head pressure.","Recover refrigerant back to the target subcooling."],
-  ["Air or nitrogen in the system","Head pressure higher than the condensing temperature explains, with normal subcooling. Shut-down pressure higher than the P/T value at ambient.","Recover the charge, evacuate properly and recharge with new refrigerant."]]},
- lohead:{n:"Low head (discharge) pressure",d:"Condensing is too cold. Low head starves the expansion valve, so cooling drops too.",go:["chg","Measure it with Charge check"],c:[
-  ["Low charge","Low subcooling and high superheat.","Find and repair the leak, then charge to target."],
-  ["Low outdoor temperature without head pressure control","Cold weather, condenser fans all running.","Fit or repair fan speed control, fan cycling or a head pressure valve."],
-  ["Compressor not pumping","Low head and high suction together, low amps, small pressure difference.","Do a valve test. Replace the compressor if it cannot build pressure."],
-  ["Scroll running backwards (3-phase)","Loud, no pressure difference, suction and discharge almost equal.","Swap two supply phases and fit a phase monitor."]]},
- hish:{n:"High superheat",d:"The evaporator is starved. Not enough liquid reaches it, or the valve is holding it back.",go:["sh","Measure it with Superheat"],c:[
-  ["Low charge","Subcooling low too, bubbles in the sight glass.","Leak test and repair before adding refrigerant."],
-  ["Restriction before the valve","Temperature drop across the drier or a partly closed valve, subcooling high.","Replace the drier, open service valves fully."],
-  ["Expansion valve underfeeding or set too high","Subcooling normal. Bulb loose, strainer blocked, power head lost charge.","Clean the strainer, refit the bulb, adjust or replace the valve."],
-  ["Moisture freezing at the valve","Superheat swings, valve hunts, moisture indicator shows wet.","Replace the drier, evacuate deeply, recharge."]]},
- losh:{n:"Low superheat or liquid floodback",d:"Liquid may be reaching the compressor. This washes out oil and breaks valves, so fix it quickly.",go:["sh","Measure it with Superheat"],c:[
-  ["Low airflow over the evaporator","Dirty filter or coil, fan fault, frosted coil.","Clean, fix the fan, defrost the coil."],
-  ["Expansion valve overfeeding","Bulb loose or in the wrong place, valve oversized or stuck open.","Mount the bulb tight at 4 or 8 o'clock on the suction line and insulate it. Adjust or replace."],
-  ["Overcharge on a fixed orifice or capillary system","High subcooling and low superheat.","Recover refrigerant to the manufacturer's charging chart."],
-  ["Very low load","Space cold, coil running nearly empty of heat.","Check controls and the low-load protection."]]},
- nostart:{n:"Compressor will not start",d:"Work from the power supply inward. Do not reset a safety again and again without finding the cause.",c:[
-  ["No power or control voltage","Breaker, fuses, isolator, thermostat call, control transformer.","Restore supply and find why it tripped."],
-  ["Safety switch open","High or low pressure switch, thermal overload or motor protector tripped.","Find the cause behind the trip before resetting. A hot shell needs time to cool."],
-  ["Failed capacitor (single-phase)","Compressor hums, draws high current then trips. Capacitor bulged or out of tolerance.","Test with a capacitance meter and replace with the same µF and voltage rating."],
-  ["Contactor fault","Coil energised but contacts not closing, burnt or pitted contacts.","Replace the contactor."],
-  ["Motor winding fault","Open, shorted or grounded winding on ohm and insulation tests.","Replace the compressor. Check the oil for acid after a burnout."],
-  ["Mechanically seized","Draws locked-rotor current and does not turn even with good voltage and capacitor.","Replace the compressor."]]},
- short:{n:"Compressor short cycling",d:"Many starts per hour overheat the motor and starve it of oil. Find which control is stopping it.",c:[
-  ["Low pressure switch tripping","Suction falls fast after start: low charge, restriction or low airflow.","Fix the root cause listed under Low suction pressure."],
-  ["High pressure switch tripping","Head rises fast: condenser blocked, fan fault, overcharge.","Fix the root cause listed under High head pressure."],
-  ["Thermostat or control fault","Differential too small, sensor in a supply air stream, loose wiring.","Move the sensor, widen the differential, add an anti-short-cycle timer."],
-  ["Overload tripping","High current, hot compressor shell, low voltage.","Check voltage under load, current against RLA, and suction superheat."],
-  ["Unit oversized for the load","Reaches set point in a few minutes.","Use capacity control, staging or a correctly sized unit."]]},
- nocool:{n:"Runs but poor cooling",d:"Everything is running but capacity is low. Measure before you guess.",go:["chg","Check the charge with Charge check"],c:[
-  ["Low charge","High superheat, low subcooling, low suction pressure.","Leak test, repair, then charge to target."],
-  ["Dirty coils or filters","Low airflow indoors, high approach outdoors.","Clean filters and both coils."],
-  ["Compressor not pumping","Small pressure difference, low amps.","Valve test, replace if needed."],
-  ["Scroll running backwards (3-phase)","Noisy, no pressure difference.","Swap two phases."],
-  ["Unit too small or load increased","Runs non-stop at normal pressures and still cannot hold temperature.","Recheck the heat load with the Room cooling size tool."]]},
- ice:{n:"Evaporator coil icing",d:"Ice blocks the coil and makes things worse. Defrost fully before taking readings.",c:[
-  ["Low airflow","Dirty filter or coil, fan slow, blocked return grille.","Clean and fix airflow first, then recheck."],
-  ["Low charge","Ice starting near the expansion valve outlet, high superheat.","Leak test and repair."],
-  ["Running at low load or low outdoor temperature","AC running at night or in cool weather with low suction.","Add freeze protection or low-ambient control."],
-  ["Defrost not working (refrigeration)","Heater, timer, termination sensor or drain heater failed.","Test each defrost component and the drain line."]]},
- bubbles:{n:"Bubbles in the sight glass",d:"Bubbles mean vapour in the liquid line. Do not charge on bubbles alone: confirm with subcooling.",go:["sc","Measure it with Subcooling"],c:[
-  ["Low charge","Low subcooling, high superheat.","Leak test and repair, then charge to target."],
-  ["Restriction before the sight glass","Temperature drop across the drier.","Replace the drier."],
-  ["Low head pressure","Cold weather, low condensing temperature.","Fix head pressure control."],
-  ["Liquid line picking up heat or lifting high","Long vertical riser, line running through a hot space.","Insulate the line or increase subcooling."]]},
- hidisch:{n:"High discharge temperature",d:"Hot discharge gas breaks down oil. Above about 110 °C at the discharge line, act now.",c:[
-  ["High suction superheat","Low charge or starving valve, so the gas arrives already hot.","Fix the cause of high superheat."],
-  ["High compression ratio","Head pressure high and suction low together.","Clean the condenser and fix the low suction cause."],
-  ["Air or nitrogen in the system","High head with normal subcooling.","Recover, evacuate and recharge."],
-  ["Internal leak in the compressor","Hot gas leaking back to suction, low capacity.","Valve test, replace the compressor."]]},
- oil:{n:"Low oil or oil loss",d:"Oil leaves with the gas. If it does not come back, bearings fail.",c:[
-  ["Poor oil return in the pipework","Suction risers without traps, horizontal lines not sloped toward the compressor, low gas speed.","Correct slopes, add traps or a double riser, check line sizes."],
-  ["Short cycling","Compressor stops before oil returns.","Fix the cause of short cycling."],
-  ["Floodback diluting the oil","Foaming in the crankcase sight glass, low superheat.","Fix the floodback cause and check the crankcase heater."],
-  ["Oil trapped in the evaporator","Low load or low gas velocity in the coil.","Check minimum load and coil circuiting."]]}
-};
-
-/* ---------- HEAT LOAD ENGINE (room by room, 24 h, design day) ----------
-   Method (own implementation, public physics):
-   - Sun position from latitude, longitude, time zone and month (declination, equation of time).
-   - Clear-sky beam irradiance (Meinel air-mass model) x clearness; diffuse = 12 % of beam; ground reflectance 0.3.
-   - Outdoor temperature: cosine daily swing, maximum 15:00, minimum 05:00.
-   - Walls / roof: sol-air temperature, then decrement factor and time lag by construction mass.
-   - Radiant gains (glass solar, part of people, lights, equipment) released over time by room mass.
-   - Fresh air counted at the coil, infiltration in the room. */
-const HL={
-  ORI:[["N",0],["NE",45],["E",90],["SE",135],["S",180],["SW",225],["W",270],["NW",315]],
-  ACT:{office:[75,55,"Seated office work"],light:[90,95,"Standing, light work"],walk:[100,130,"Walking, retail"],heavy:[170,255,"Heavy work"]},
-  MASS:{light:{lam:0.9,lag:1,r:0.25,t:"Light (metal panel, sandwich)"},medium:{lam:0.45,lag:6,r:0.45,t:"Medium (block + insulation)"},heavy:{lam:0.25,lag:9,r:0.6,t:"Heavy (thick concrete)"}},
-  COL:{light:[0.45,"Light"],medium:[0.7,"Medium"],dark:[0.9,"Dark"]},
-  DAY:[17,47,75,105,135,162,198,228,258,288,318,344],
-  MON:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
-  RADF:{people:0.6,lights:0.6,equip:0.3}
-};
-HL.CITIES=[["Qatar",[["Doha",25.29,51.53,3],["Ras Laffan",25.91,51.55,3],["Mesaieed",24.99,51.55,3],["Dukhan",25.43,50.78,3],["Al Khor",25.68,51.5,3]]],
- ["UAE",[["Dubai",25.2,55.27,4],["Abu Dhabi",24.45,54.38,4],["Ruwais",24.11,52.73,4],["Fujairah",25.12,56.33,4]]],
- ["Saudi Arabia",[["Riyadh",24.71,46.68,3],["Jeddah",21.49,39.19,3],["Dammam",26.43,50.1,3],["Jubail",27.0,49.66,3]]],
- ["Gulf, other",[["Kuwait City",29.38,47.99,3],["Manama",26.23,50.59,3],["Muscat",23.59,58.41,4],["Sohar",24.35,56.7,4]]],
- ["India",[["Kochi",9.93,76.27,5.5],["Kozhikode",11.26,75.78,5.5],["Malappuram",11.07,76.07,5.5],["Thiruvananthapuram",8.52,76.94,5.5],["Chennai",13.08,80.27,5.5],["Mumbai",19.08,72.88,5.5],["Bengaluru",12.97,77.59,5.5],["Delhi",28.61,77.21,5.5]]],
- ["Africa",[["Cairo",30.04,31.24,2],["Lagos",6.52,3.38,1],["Port Harcourt",4.82,7.03,1],["Douala",4.05,9.7,1],["Libreville",0.42,9.47,1]]],
- ["Europe",[["London",51.51,-0.13,0],["Madrid",40.42,-3.7,1],["Stavanger",58.97,5.73,1],["Oslo",59.91,10.75,1]]],
- ["Asia-Pacific & Americas",[["Singapore",1.35,103.82,8],["Kuala Lumpur",3.14,101.69,8],["Perth",-31.95,115.86,8],["Sydney",-33.87,151.21,10],["Houston",29.76,-95.37,-6]]]];
-HL.defProject=()=>({city:"Doha",id:"p"+Date.now().toString(36),name:"New project",lat:25.3,lon:51.5,tz:3,month:7,db:46,wb:29,dr:11,alt:0,clr:1,
-  ti:23,rh:50,uw:0.5,ur:0.3,ug:2.1,shgc:0.3,shade:1,col:"medium",mass:"medium",rp:2.5,ra:0.3,dts:11,sf:10,occS:8,occE:18,
-  rooms:[HL.defRoom("Office 1",{walls:{S:12,W:15},wins:{S:3,W:4},roof:true,people:4})]});
-HL.defRoom=(name,o)=>Object.assign({id:"r"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),name,area:30,ht:3,h24:false,
-  walls:{},wins:{},roof:false,part:0,pdt:5,people:2,act:"office",lights:10,equip:15,ach:0.3},o||{});
-
-/* input checks: return a plain-English problem, or "" when fine */
-HL.NAMES={db:"outdoor dry bulb",wb:"wet bulb",dr:"daily range",clr:"sky clearness",lat:"latitude",lon:"longitude",tz:"time zone",alt:"altitude",
-  ti:"room temperature",rh:"room RH",occS:"occupied from",occE:"occupied until",dts:"supply air ΔT",sf:"safety factor",rp:"fresh air per person",
-  ra:"fresh air per m²",uw:"wall U-value",ur:"roof U-value",ug:"glass U-value",shgc:"glass SHGC",shade:"shading factor"};
-HL.check=P=>{
-  for(const k in HL.NAMES){const v=P[k];if(typeof v!=="number"||!isFinite(v))return `Fill in the ${HL.NAMES[k]} (tap Design conditions and building).`;}
-  if(P.wb>P.db)return "Wet bulb cannot be higher than dry bulb. Check the outdoor design conditions.";
-  if(P.dts<=0)return "Supply air ΔT must be more than 0 K (typically 8 to 12 K).";
-  if(P.rh<=0||P.rh>=100)return "Room RH must be between 0 and 100 %.";
-  if(P.ti>=P.db)return "Room temperature must be below the outdoor dry bulb for a cooling load.";
-  if(P.shgc<0||P.shgc>1||P.shade<0||P.shade>1)return "Glass SHGC and shading factor must be between 0 and 1.";
-  if(P.clr<=0||P.clr>1.2)return "Sky clearness should be between 0.5 and 1.";
-  for(const k of ["dr","uw","ur","ug","rp","ra","sf","alt"])if(P[k]<0)return `The ${HL.NAMES[k]} cannot be negative.`;
-  if(P.lat<-90||P.lat>90)return "Latitude must be between −90 and 90 (minus for south).";
-  if(P.lon<-180||P.lon>180)return "Longitude must be between −180 and 180 (minus for west).";
-  if(P.tz<-12||P.tz>14)return "Time zone must be between −12 and +14 hours from UTC.";
-  if(P.occS<0||P.occE>24||P.occS>=P.occE)return "Occupied hours must run between 0 and 24, start before end.";
-  return "";
-};
-HL.checkRoom=R=>{
-  const v=k=>num(R[k]);
-  if(!(v("area")>0))return "Fill in the floor area.";
-  const neg=[["area","floor area"],["ht","ceiling height"],["people","people"],["lights","lighting"],["equip","equipment"],["ach","air leakage"],["part","partition area"],["roofA","roof area"]].find(([k])=>v(k)<0);
-  if(neg)return `The ${neg[1]} cannot be negative.`;
-  const o=HL.ORI.find(([d])=>num(R.walls[d])<0||num(R.wins[d])<0);
-  if(o)return `Wall and glass areas cannot be negative (${o[0]}).`;
-  return "";
-};
-HL.sun=(P,hr)=>{
-  const R=Math.PI/180,n=HL.DAY[(P.month||7)-1],Bq=2*Math.PI*(n-81)/364;
-  const eot=9.87*Math.sin(2*Bq)-7.53*Math.cos(Bq)-1.5*Math.sin(Bq);
-  const lst=hr+(4*(P.lon-15*P.tz)+eot)/60,H=15*(lst-12)*R,L=P.lat*R;
-  const d=23.45*Math.sin(2*Math.PI*(284+n)/365)*R;
-  const sb=Math.cos(L)*Math.cos(d)*Math.cos(H)+Math.sin(L)*Math.sin(d);
-  if(sb<=0.01)return{up:false,sb:0,az:0,dni:0,dh:0};
-  const cb=Math.sqrt(1-sb*sb);
-  let az=Math.acos(Math.max(-1,Math.min(1,(Math.sin(d)-sb*Math.sin(L))/(cb*Math.cos(L)))));
-  if(H>0)az=2*Math.PI-az;
-  const I0=1361*(1+0.033*Math.cos(2*Math.PI*n/365));
-  const dni=I0*Math.pow(0.7,Math.pow(1/sb,0.678))*(P.clr||1);
-  return{up:true,sb,cb,az,dni,dh:0.12*dni};
-};
-// irradiance on a vertical surface facing azimuth deg (from north), or on the roof (deg=null)
-HL.irr=(S,deg)=>{
-  if(!S.up)return{b:0,d:0};
-  if(deg==null)return{b:S.dni*S.sb,d:S.dh};
-  const ct=S.cb*Math.cos(S.az-deg*Math.PI/180);
-  return{b:S.dni*Math.max(0,ct),d:0.5*S.dh+0.3*0.5*(S.dni*S.sb+S.dh)};
-};
-HL.tout=(P,h)=>{const hh=h<5?h+24:h;const x=h>=5&&h<=15?0.5*(1+Math.cos(Math.PI*(h-5)/10)):0.5*(1-Math.cos(Math.PI*(hh-15)/14));return P.db-P.dr*x;};
-HL.on=(P,R,h)=>R.h24||(h>=P.occS&&h<P.occE);
-HL.delay=(q,r)=>{const out=new Array(24).fill(0),norm=(1-r)/(1-Math.pow(r,24));
-  for(let t=0;t<24;t++){let s=0;for(let k=0;k<24;k++)s+=Math.pow(r,k)*q[(t-k+24)%24];out[t]=s*norm;}return out;};
-
-// one room, 24 hourly values for each component (W)
-HL.room=(P,R)=>{
-  const M=HL.MASS[P.mass]||HL.MASS.medium,alpha=(HL.COL[P.col]||HL.COL.medium)[0],p=PSY.p(P.alt||0);
-  const Wo=PSY.Wwb(P.db,Math.min(P.wb,P.db),p),Wi=PSY.Wpw(PSY.pws(P.ti)*P.rh/100,p),dW=Wo-Wi;
-  const hrs=[...Array(24).keys()],To=hrs.map(h=>HL.tout(P,h)),SUN=hrs.map(h=>HL.sun(P,h+0.5));
-  const lagged=(Te,U,A)=>{const m=Te.reduce((a,b)=>a+b,0)/24;return hrs.map(h=>U*A*(m+M.lam*(Te[(h-M.lag+24)%24]-m)-P.ti));};
-  const zero=()=>new Array(24).fill(0),add=(a,b)=>a.map((x,i)=>x+b[i]);
-  let walls=zero(),gcond=zero(),gsolRad=zero(),roof=zero(),glassA=0;
-  HL.ORI.forEach(([o,deg])=>{
-    const aw=num(R.walls[o])||0,ag=num(R.wins[o])||0;glassA+=ag;
-    if(aw>0){const Te=hrs.map(h=>{const I=HL.irr(SUN[h],deg);return To[h]+alpha*(I.b+I.d)/17;});walls=add(walls,lagged(Te,P.uw,aw));}
-    if(ag>0){gcond=add(gcond,To.map(t=>P.ug*ag*(t-P.ti)));
-      gsolRad=add(gsolRad,hrs.map(h=>{const I=HL.irr(SUN[h],deg);return ag*P.shgc*P.shade*(I.b+I.d);}));}
-  });
-  if(R.roof){const ra=num(R.roofA)>0?num(R.roofA):num(R.area);
-    const Te=hrs.map(h=>{const I=HL.irr(SUN[h],null);return To[h]+alpha*(I.b+I.d)/17-3.9;});roof=lagged(Te,P.ur,ra);}
-  const part=new Array(24).fill((num(R.part)||0)*P.uw*(num(R.pdt)||0));
-  const act=HL.ACT[R.act]||HL.ACT.office,occ=hrs.map(h=>HL.on(P,R,h)?1:0),n=num(R.people)||0,A=num(R.area)||0,V=A*(num(R.ht)||0);
-  const pS=occ.map(o=>o*n*act[0]),pL=occ.map(o=>o*n*act[1]),lt=occ.map(o=>o*A*(num(R.lights)||0)),eq=occ.map(o=>o*A*(num(R.equip)||0));
-  const F=HL.RADF,rad=hrs.map(h=>gsolRad[h]+F.people*pS[h]+F.lights*lt[h]+F.equip*eq[h]),radCool=HL.delay(rad,M.r);
-  // split delayed radiant back to its sources for the breakdown (proportional to daily totals)
-  const tot=a=>a.reduce((x,y)=>x+y,0),RT=tot(rad)||1,share=a=>radCool.map(x=>x*tot(a)/RT);
-  const gsol=share(gsolRad),people=add(pS.map(x=>x*(1-F.people)),share(pS.map(x=>x*F.people))),
-        lights=add(lt.map(x=>x*(1-F.lights)),share(lt.map(x=>x*F.lights))),equip=add(eq.map(x=>x*(1-F.equip)),share(eq.map(x=>x*F.equip)));
-  const infL=(num(R.ach)||0)*V/3.6,infS=To.map(t=>1.23*infL*(t-P.ti)),infLat=new Array(24).fill(3010*infL*dW);
-  const oaL=n*P.rp+A*P.ra,oaS=hrs.map(h=>occ[h]*1.23*oaL*(To[h]-P.ti)),oaLat=occ.map(o=>o*3010*oaL*dW);
-  const sf=1+(P.sf||0)/100;
-  const sens=hrs.map(h=>(walls[h]+roof[h]+gcond[h]+gsol[h]+part[h]+people[h]+lights[h]+equip[h]+infS[h])*sf);
-  const lat=hrs.map(h=>(pL[h]+infLat[h])*sf);
-  const oa=hrs.map(h=>(oaS[h]+oaLat[h])*sf),coil=hrs.map(h=>sens[h]+lat[h]+oa[h]);
-  const pk=coil.indexOf(Math.max(...coil)),pkS=sens.indexOf(Math.max(...sens));
-  return{walls,roof,gcond,gsol,part,people,peopleL:pL,lights,equip,infS,infLat,oaS,oaLat,sens,lat,oa,coil,pk,pkS,sf,
-    area:A,oaL,supply:Math.max(0,sens[pkS])/(1.23*P.dts),glassA};
-};
-HL.project=P=>{const rs=P.rooms.map(r=>({r,c:HL.room(P,r)}));
-  if(HL.check(P)||P.rooms.some(r=>HL.checkRoom(r)))return{rs,block:[],bpk:0,peak:NaN,sumPk:NaN,area:NaN,supply:NaN,oaL:NaN};
-  const block=[...Array(24).keys()].map(h=>rs.reduce((s,x)=>s+x.c.coil[h],0));
-  const bpk=block.indexOf(Math.max(...block)),sumPk=rs.reduce((s,x)=>s+x.c.coil[x.c.pk],0);
-  const area=rs.reduce((s,x)=>s+x.c.area,0),supply=rs.reduce((s,x)=>s+x.c.supply,0),oaL=rs.reduce((s,x)=>s+x.c.oaL,0);
-  return{rs,block,bpk,peak:block[bpk]||0,sumPk,area,supply,oaL};
-};
-
-/* ---------- AIR SIDE + WATER SIDE (sizing from the room loads) ---------- */
-HL.defAir=()=>({esp:250,isp:350,effF:65,effM:90,vMain:7,vBranch:4.5,dh:300,nv:3,darea:12,gv:2,boxV:10,minVav:30,fcuEsp:50});
-HL.defChw=()=>({sup:7,dt:5.5,nCh:2,sbCh:1,margin:5,run:150,fit:50,dpCh:60,dpCoil:50,dpVal:40,dpOth:30,effP:70});
-HL.norm=P=>{P.air=Object.assign(HL.defAir(),P.air||{});P.chw=Object.assign(HL.defChw(),P.chw||{});if(!Array.isArray(P.ahus))P.ahus=[];if(P.fahu==null)P.fahu=false;
-  P.rooms.forEach(r=>{if(!r.sys||(r.sys!=="fcu"&&!P.ahus.some(a=>a.id===r.sys)))r.sys="fcu";});return P;};
-HL.MOTOR=[0.18,0.25,0.37,0.55,0.75,1.1,1.5,2.2,3,4,5.5,7.5,11,15,18.5,22,30,37,45,55,75,90,110,132,160,200,250,315,355,400];
-HL.motor=kw=>HL.MOTOR.find(m=>m>=kw)||NaN;
-HL.NECK=[150,200,250,300,350,400,450];
-HL.GRILLE=[200,250,300,400,500,600];
-HL.BOX=[100,125,150,200,250,300,350,400];
-HL.FCU=[200,300,400,500,600,800,1000,1200,1400];
-HL.PIPEX=PIPE.concat([["DN450",431.8],["DN500",482.6],["DN600",584.2]]);
-/* round + rectangular duct for an airflow at a target velocity (equal-friction equivalent diameter) */
-HL.duct=(Lps,v,hmax)=>{const D=Math.sqrt(4*Lps/1000/(Math.PI*v))*1000;const rd=ROUND.find(d=>d>=D);
-  let h=Math.min(hmax,Math.max(150,Math.ceil(D/50)*50)),w=h;while(DE(w,h)<D&&w<4000)w+=50;if(w<h){const t=w;w=h;h=t;}
-  return{D,round:rd||null,w,h};};
-/* water pipe: Darcy-Weisbach + Swamee-Jain, steel 0.045 mm, water ~10 °C */
-HL.fric=(Lps,idmm)=>{const D=idmm/1000,Q=Lps/1000,v=Q/(Math.PI*D*D/4),Re=v*D/1.31e-6,
-  fd=Re<2300?64/Math.max(Re,1):0.25/Math.pow(Math.log10(0.045e-3/(3.7*D)+5.74/Math.pow(Re,0.9)),2);return{v,R:fd*1000*v*v/2/D};};
-HL.pipe=Lps=>{for(const[dn,id]of HL.PIPEX){const r=HL.fric(Lps,id);if(r.R<=300&&r.v<=3)return Object.assign({dn,id},r);}return null;};
-HL.checkSys=P=>{const a=P.air,w=P.chw,bad=(x,lo,hi)=>typeof x!=="number"||!isFinite(x)||x<lo||x>hi;
-  if(bad(a.esp,0,3000)||bad(a.isp,0,3000))return "Check the fan static pressures (Air side settings).";
-  if(bad(a.effF,10,100)||bad(a.effM,10,100)||bad(w.effP,10,100))return "Fan, motor and pump efficiencies must be 10 to 100 %.";
-  if(bad(a.vMain,1,20)||bad(a.vBranch,1,20)||bad(a.nv,0.5,10)||bad(a.gv,0.5,10)||bad(a.boxV,2,25))return "Air velocities must be sensible values (Air side settings).";
-  if(bad(a.dh,100,2000)||bad(a.darea,1,200)||bad(a.minVav,0,100)||bad(a.fcuEsp,0,500))return "Check the duct height, diffuser coverage, VAV minimum and FCU static (Air side settings).";
-  if(bad(w.dt,1,20))return "Chilled water ΔT must be 1 to 20 K.";
-  if(bad(w.nCh,1,20)||bad(w.sbCh,0,10)||w.nCh%1||w.sbCh%1)return "Number of chillers must be whole numbers (at least 1 duty).";
-  if(bad(w.margin,0,100)||bad(w.run,0,10000)||bad(w.fit,0,500))return "Check the plant margin, pipe run and fittings allowance (Water side).";
-  if([w.dpCh,w.dpCoil,w.dpVal,w.dpOth].some(x=>bad(x,0,1000)))return "Check the component pressure drops (Water side).";
-  return "";};
-HL.systems=P=>{
-  HL.norm(P);
-  const bad=HL.check(P)||(P.rooms.find(r=>HL.checkRoom(r))&&`${P.rooms.find(r=>HL.checkRoom(r)).name}: ${HL.checkRoom(P.rooms.find(r=>HL.checkRoom(r)))}`)||HL.checkSys(P);
-  if(bad)return{bad};
-  if(!P.rooms.length)return{bad:"Add rooms in the heat load first."};
-  const A=P.air,W=P.chw,J=HL.project(P),hrs=[...Array(24).keys()],peakOf=a=>{const k=a.indexOf(Math.max(...a));return{k,v:a[k]};};
-  const pad=n=>String(n).padStart(2,"0"),Wcoil=kw=>kw/(4.186*W.dt);
-  const terminals=[];let fcuN=0,boxN=0;
-  // fresh air unit for FCU rooms
-  const fcuRooms=J.rs.filter(x=>x.r.sys==="fcu");
-  let fahu=null;
-  if(P.fahu&&fcuRooms.length){const h=hrs.map(t=>fcuRooms.reduce((s,x)=>s+x.c.oa[t],0)),pk=peakOf(h),q=fcuRooms.reduce((s,x)=>s+x.c.oaL,0);
-    const tsp=A.esp+A.isp,shaft=q/1000*tsp/(A.effF/100)/1000;
-    fahu={tag:"FAHU-1",q,kw:pk.v,pk:pk.k,hourly:h,tsp,shaft,motor:HL.motor(shaft*1.15),flow:Wcoil(pk.v/1000),pipe:HL.pipe(Wcoil(pk.v/1000)),duct:HL.duct(q,A.vMain,A.dh)};}
-  // AHUs
-  const ahus=P.ahus.map(a=>{
-    const rs=J.rs.filter(x=>x.r.sys===a.id),tsp=(num(a.esp)>=0?num(a.esp):A.esp)+A.isp;
-    if(!rs.length)return{a,rs,empty:true};
-    const h=hrs.map(t=>rs.reduce((s,x)=>s+x.c.coil[t],0)),pk=peakOf(h),oa=rs.reduce((s,x)=>s+x.c.oaL,0);
-    const q=a.type==="vav"?Math.max(...hrs.map(t=>rs.reduce((s,x)=>s+Math.max(0,x.c.sens[t]),0)))/(1.23*P.dts):rs.reduce((s,x)=>s+x.c.supply,0);
-    const oaf=q>0?Math.min(1,oa/q):0,shaft=q/1000*tsp/(A.effF/100)/1000;
-    return{a,rs,q,oa,oaf,kw:pk.v,pk:pk.k,hourly:h,tmix:P.ti+oaf*(P.db-P.ti),toff:P.ti-P.dts,tsp,shaft,motor:HL.motor(shaft*1.15),
-      flow:Wcoil(pk.v/1000),pipe:HL.pipe(Wcoil(pk.v/1000)),duct:HL.duct(q,A.vMain,A.dh)};});
-  // room terminals: FCU or box, diffusers, return grilles, branch duct
-  J.rs.forEach(({r,c},i)=>{
-    const q=c.supply,t={r,c,q,branch:HL.duct(q,A.vBranch,A.dh)};
-    const qmax=(HL.NECK[HL.NECK.length-1]/1000)**2*A.nv*1000;
-    t.nd=Math.max(1,Math.ceil(c.area/A.darea),Math.ceil(q/qmax));t.qd=q/t.nd;
-    t.neck=HL.NECK.find(n=>t.qd<=(n/1000)**2*A.nv*1000)||HL.NECK[HL.NECK.length-1];
-    const gmax=(HL.GRILLE[HL.GRILLE.length-1]/1000)**2*A.gv*1000;t.ng=Math.max(1,Math.ceil(q/gmax));t.qg=q/t.ng;
-    t.grille=HL.GRILLE.find(g=>t.qg<=(g/1000)**2*A.gv*1000)||HL.GRILLE[HL.GRILLE.length-1];
-    if(r.sys==="fcu"){fcuN++;const load=P.fahu?hrs.map(h=>c.sens[h]+c.lat[h]):c.coil,pk=peakOf(load),cfm=q*2.119;
-      t.kind="FCU";t.tag="FCU-"+pad(fcuN);t.kw=pk.v;t.pk=pk.k;t.cfm=cfm;t.size=HL.FCU.find(s=>s>=cfm);t.units=t.size?1:Math.ceil(cfm/HL.FCU[HL.FCU.length-1]);
-      if(!t.size)t.size=HL.FCU.find(s=>s>=cfm/t.units);t.flow=Wcoil(pk.v/1000);t.pipe=HL.pipe(t.flow/t.units);t.esp=A.fcuEsp;}
-    else{boxN++;const ah=ahus.find(x=>x.a.id===r.sys);t.kind=ah.a.type==="vav"?"VAV":"CAV";t.tag=t.kind+"-"+pad(boxN);t.ahu=ah.a.name;
-      t.inlet=HL.BOX.find(d=>q/1000/(Math.PI*(d/1000)**2/4)<=A.boxV);t.inV=t.inlet?q/1000/(Math.PI*(t.inlet/1000)**2/4):NaN;
-      t.qmin=t.kind==="VAV"?Math.min(q,Math.max(A.minVav/100*q,ah.oaf>0?c.oaL/ah.oaf:0)):q;}
-    terminals.push(t);});
-  // plant: every coil, hour by hour (FAHU + FCUs + AHUs = the project block)
-  const plantH=hrs.map(t=>J.block[t]),ppk=peakOf(plantH),plant=ppk.v*(1+W.margin/100),flow=Wcoil(plant/1000);
-  const nC=W.nCh,chiller={each:plant/nC,n:nC,sb:W.sbCh,flowEach:flow/nC};
-  const header=HL.pipe(flow),fr=header?header.R*W.run*(1+W.fit/100):NaN;
-  const headPa=fr+(W.dpCh+W.dpCoil+W.dpVal+W.dpOth)*1000,headM=headPa/9810;
-  const pumpShaft=chiller.flowEach/1000*headPa/(W.effP/100)/1000;
-  const pump={n:nC,sb:W.sbCh,flowEach:chiller.flowEach,headM,headPa,fricPa:fr,shaft:pumpShaft,motor:HL.motor(pumpShaft*1.15),pipeEach:HL.pipe(chiller.flowEach)};
-  return{J,ahus,fahu,terminals,plant,plantPk:ppk.k,plantH,flow,header,chiller,pump};
-};
-
 /* ---------- TOOLS ---------- */
 const TOOLS=[
 {id:"cool",g:"hvac",icon:"cool",name:"Room cooling size",short:"How much AC does a room need?",
@@ -676,8 +289,6 @@ const TOOLS=[
    rows:[["Cooling load",f(kw,2),"kW"],["Cooling load",f(kw*3412.14,0),"BTU/h"],["Area covered by 1 TR",f(a/tr,1),"m²"]]};
  },
  note:"<b>Quick estimate</b> for hot Gulf and Indian summers. Use it for budgets and site checks. Final design still needs a full heat load calculation."},
-
-{id:"load",g:"hvac",icon:"load",name:"Heat load",short:"Room by room, saved projects",custom:true,fields:[],calc:()=>({hint:""})},
 
 {id:"ach",g:"hvac",icon:"ach",name:"Air changes",short:"Airflow needed for a room",
  intro:"Enter the room size and how many times per hour the air must be replaced.",
@@ -813,9 +424,6 @@ const TOOLS=[
   {id:"L",label:"Cable length",help:"One way, from panel to load.",type:"num",def:"80",unit:"m",half:true},
   {id:"ph",label:"Supply",type:"chips",def:"3",options:[["3","3-phase"],["1","1-phase"]],onSet:v=>{v.V=v.ph==="3"?"415":"230";}},
   {id:"mat",label:"Conductor",type:"chips",def:"cu",options:[["cu","Copper"],["al","Aluminium"]]},
-  {id:"amb",label:"Air temperature around the cable",help:"The hottest it will see in service. The base table is for 30 °C.",type:"num",def:"40",unit:"°C",presets:[["30","30"],["40","40"],["45","45"],["50","50"]]},
-  {id:"grp",label:"Circuits running together",help:"Count this circuit plus any others touching it in the same tray, trunking or bunch.",type:"num",def:"1",unit:"circuits",presets:[["1","Alone"],["2","2"],["3","3"],["4","4"],["6","6"],["9","9"]]},
-  {id:"arr",label:"How are they laid?",type:"chips",def:"bunch",options:[["bunch","Bunched or in trunking / conduit"],["layer","Single layer on tray or wall"]],show:v=>num(v.grp)>1},
   {id:"V",label:"Voltage",type:"num",def:"415",unit:"V",adv:true},
   {id:"pf",label:"Power factor",type:"num",def:"0.85",unit:"cos φ",adv:true},
   {id:"lim",label:"Maximum voltage drop allowed",type:"num",def:"4",unit:"%",adv:true,presets:[["3","3 % lighting"],["4","4 %"],["5","5 % power"]]},
@@ -825,13 +433,8 @@ const TOOLS=[
   const k=v.ph==="3"?SQ3:2,rho=v.mat==="al"?0.036:0.0225,I=num(v.I),L=num(v.L),V=num(v.V),pf=num(v.pf),lim=num(v.lim),af=v.mat==="al"?0.78:1;
   if(!(I>0))return{hint:"Enter the load current."};if(!(L>0))return{hint:"Enter the cable length."};
   if(!(V>0&&pf>0&&pf<=1&&lim>0))return{hint:"Check More options: voltage, power factor and drop limit."};
-  const amb=num(v.amb),grp=Math.round(num(v.grp));
-  if(!isFinite(amb))return{hint:"Enter the air temperature around the cable."};
-  if(amb>=60)return{hint:"PVC cable cannot be used at 60 °C or above. Use XLPE or heat-resistant cable and the manufacturer's ratings."};
-  if(!(grp>=1))return{hint:"Enter how many circuits run together (1 if it runs alone)."};
-  const Ct=derT(amb),Cg=derG(grp,v.arr),Cd=Ct*Cg;
   const sn=Math.sqrt(1-pf*pf),X=0.00008;
-  const rows=SIZES.map((a,i)=>{const d=k*L*I*(rho/a*pf+X*sn);return{a,d,pct:d/V*100,amp:AMP_CU[i]*af*Cd};}).map(r=>Object.assign(r,{okA:r.amp>=I,okV:r.pct<=lim}));
+  const rows=SIZES.map((a,i)=>{const d=k*L*I*(rho/a*pf+X*sn);return{a,d,pct:d/V*100,amp:AMP_CU[i]*af};}).map(r=>Object.assign(r,{okA:r.amp>=I,okV:r.pct<=lim}));
   const rec=rows.find(r=>r.okA&&r.okV);
   const cur=(v.size!=="auto"&&rows.find(r=>String(r.a)===v.size))||rec||rows[rows.length-1];
   const pass=cur.okA&&cur.okV;
@@ -840,12 +443,11 @@ const TOOLS=[
   const mat=v.mat==="al"?"aluminium":"copper";
   return{cap:v.size==="auto"?"Recommended cable":"Checking cable",value:cur.a,unit:"mm²",
    status:{ok:pass,text:pass?"Safe and within voltage drop":!cur.okA?"Too small for this current":"Voltage drop too high"},
-   say:(rec?`For ${f(I)} A over ${f(L)} m, use at least ${B(rec.a,"mm²")} ${mat} cable. Voltage drop at ${cur.a} mm² is ${f(cur.pct,1)} % (${f(cur.d,1)} V).`:`No size up to 300 mm² works for ${f(I)} A over ${f(L)} m. Use parallel cables or a higher voltage.`)
-    +(Cd<0.995?` Ratings are reduced to ${B(f(Cd*100,0),"%")} for ${f(amb,0)} °C${grp>1?` and ${grp} grouped circuits`:""}.`:""),
-   rows:[["Voltage drop",f(cur.d,1),"V"],["Voltage at load",f(V-cur.d,0),"V"],["Derated cable rating",f(cur.amp,0),"A"],["Temperature factor",f(Ct,2),"Ca"],["Grouping factor",f(Cg,2),"Cg"]],after:tbl};
+   say:rec?`For ${f(I)} A over ${f(L)} m, use at least ${B(rec.a,"mm²")} ${mat} cable. Voltage drop at ${cur.a} mm² is ${f(cur.pct,1)} % (${f(cur.d,1)} V).`:`No size up to 300 mm² works for ${f(I)} A over ${f(L)} m. Use parallel cables or a higher voltage.`,
+   rows:[["Voltage drop",f(cur.d,1),"V"],["Voltage at load",f(V-cur.d,0),"V"],["Cable rating",f(cur.amp,0),"A"]],after:tbl};
  },
  bind(el,st){el.querySelectorAll(".tr[data-a]").forEach(r=>{const go=()=>{st.size=r.dataset.a;show();};r.onclick=go;r.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go();}};});},
- note:"Base ratings: multicore PVC (70 °C) cable in air, IEC 60364-5-52 method C, derated for air temperature (Table B.52.14) and grouping (Table B.52.17). Not covered: buried cables, thermal insulation, direct sun, XLPE cables (these carry more: use the manufacturer's table). Voltage drop includes typical reactance (0.08 Ω/km)."},
+ note:"Ratings are indicative for multicore PVC copper cable in air at 30 °C (IEC 60364-5-52, method C). Voltage drop includes typical cable reactance (0.08 Ω/km). Apply derating for grouping, heat and burial before final selection."},
 
 {id:"ohm",g:"elec",icon:"ohm",name:"Ohm's law",short:"Volts, amps, ohms, watts",
  intro:"Type any two values. The other two are worked out. Clear a box to swap which ones you use.",
@@ -1035,33 +637,6 @@ const TOOLS=[
  },
  note:"Data: NIST for pure refrigerants and manufacturer property tables for R-410A, R-407C and R-404A. Gauge readings assume sea-level air pressure."},
 
-{id:"slide",g:"ref",icon:"slide",name:"P/T slider",short:"Drag temperature, read pressure",
- intro:"Drag the slider to any saturation temperature and the gauge pressure follows. Use − and + for 0.5 °C steps.",
- fields:[
-  {id:"ref",label:"Refrigerant",type:"chips",def:"R410A",options:REFOPTS},
-  {id:"pu",label:"Pressure unit",type:"chips",def:"bar g",options:Object.keys(GAUGE).map(u=>[u,u])}
- ],
- calc(v){
-  const k=v.ref,r=REF[k],bl=isBlend(k),pu=GAUGE[v.pu]?v.pu:"bar g",fac=GAUGE[pu];
-  const T=slideT(v),pb=refP(k,T,"b"),pd=bl?refP(k,T,"d"):pb,g=x=>f((x-PATM)/fac,fac<0.05?0:2);
-  const vac=pd<PATM?" That is below atmospheric pressure, so the gauge shows vacuum.":"";
-  const after=slideHTML(k,pu,T);
-  if(!bl)return{cap:`${r.n} at ${f(T,1)} °C`,value:g(pb),unit:pu,
-   say:`At ${B(f(T,1),"°C")}, ${r.n} boils and condenses at ${B(g(pb),pu)}.${vac}`,
-   rows:[["Absolute",f(pb,2),"bar a"],["psig",f((pb-PATM)/0.0689476,1),"psig"],["kPa g",f((pb-PATM)*100,0),"kPa g"]],after};
-  return{cap:`${r.n} at ${f(T,1)} °C`,value:g(pd),unit:pu,
-   say:`At ${B(f(T,1),"°C")}, ${r.n} reads ${B(g(pd),pu)} as vapour (dew) and ${B(g(pb),pu)} as liquid (bubble). Use dew for superheat and bubble for subcooling.${vac}`,
-   rows:[["Dew (vapour)",g(pd),pu],["Bubble (liquid)",g(pb),pu],["Glide at dew pressure",f(T-refT(k,pd,"b"),1),"K"]],after};
- },
- bind(af,st){
-  const R=af.querySelector("#slR"),lab=af.querySelector("#slT");if(!R)return;
-  const upd=x=>{const T=Math.min(65,Math.max(-40,Math.round(x*2)/2));st.ts=String(T);save();R.value=T;lab.textContent=f(T,1);
-   document.getElementById("ans").innerHTML=ansHTML(byId("slide").calc(st));};
-  R.addEventListener("input",()=>upd(+R.value));
-  af.querySelectorAll("[data-step]").forEach(b=>b.onclick=()=>upd(slideT(st)+ +b.dataset.step));
- },
- note:"Range −40 to 65 °C. Same property data as the Pressure–temperature tool. Gauge readings assume sea-level air pressure."},
-
 {id:"sh",g:"ref",icon:"sh",name:"Superheat",short:"Suction pressure + line temp",
  intro:"Measure suction pressure at the service port and the suction line temperature near the evaporator outlet or compressor.",
  fields:[
@@ -1163,20 +738,7 @@ const TOOLS=[
    say:why+(more.length?`<ul class="more-list">${more.map(m=>`<li>${m}</li>`).join("")}</ul>`:""),
    rows:[["Superheat",f(Math.max(SH,0),1),"K"],["Subcooling",f(Math.max(SC,0),1),"K"],["Evaporating",f(Te,1),"°C"],["Condensing",f(Tc,1),"°C"],...(isFinite(amb)?[["Condenser approach",f(Tc-amb,1),"K"]]:[])]};
  },
- note:"Field guide only. Always confirm with the manufacturer's charging chart, and repair leaks before adding refrigerant."},
-
-{id:"fix",g:"ref",icon:"fix",name:"Troubleshooter",short:"Symptom to cause to fix",
- intro:"Pick what you see on the system. You get the likely causes, most common first, with what to check and how to fix each one.",
- fields:[
-  {id:"s",label:"What is the symptom?",type:"select",def:"lowsuc",options:Object.keys(FAULTS).map(k=>[k,FAULTS[k].n])}
- ],
- calc(v){
-  const F=FAULTS[v.s]||FAULTS.lowsuc;
-  const list=`<div class="card"><div class="lbl">Likely causes, most common first</div><ol class="causes">${F.c.map(c=>`<li><b>${c[0]}</b><p><span>Check</span>${c[1]}</p><p><span>Fix</span>${c[2]}</p></li>`).join("")}</ol>${F.go?`<button type="button" class="golink" data-goto="${F.go[0]}">${F.go[1]} →</button>`:""}</div>`;
-  return{cap:"Symptom",big:F.n,say:F.d,rows:[["Causes to check",String(F.c.length),""],["Start with",F.c[0][0],""]],after:list};
- },
- bind(af){af.querySelectorAll("[data-goto]").forEach(b=>b.onclick=()=>{view=b.dataset.goto;render();window.scrollTo(0,0);});},
- note:"Field guide only. Isolate power before electrical checks, recover refrigerant before opening the circuit, and follow the manufacturer's service data."}
+ note:"Field guide only. Always confirm with the manufacturer's charging chart, and repair leaks before adding refrigerant."}
 ];
 
 /* ---------- STATE ---------- */
@@ -1188,345 +750,18 @@ const save=()=>{try{localStorage.setItem("fieldvolt.v2",JSON.stringify(ST))}catc
 const byId=id=>TOOLS.find(t=>t.id===id);
 const h0=(location.hash||"").slice(1);if(byId(h0))view=h0;
 
-/* ---------- HEAT LOAD SCREENS ---------- */
-const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const HLS={projects:[],cur:null,room:null,screen:"list",armed:null,resume:null};
-try{const o=JSON.parse(localStorage.getItem("sitecalc.load.v1")||"null");if(o&&Array.isArray(o.projects))HLS.projects=o.projects;if(o&&o.resume)HLS.resume=o.resume;}catch(e){}
-if(!HLS.projects.length){const p=HL.defProject();p.name="Example office";HLS.projects.push(p);}
-HLS.projects.forEach(HL.norm);
-const hlSave=(touch=true)=>{const P=HLS.cur&&HLS.projects.find(p=>p.id===HLS.cur);if(P&&touch)P.edited=Date.now();
-  if(HLS.resume&&!HLS.projects.some(p=>p.id===HLS.resume.cur))HLS.resume=null;
-  try{localStorage.setItem("sitecalc.load.v1",JSON.stringify({projects:HLS.projects,resume:HLS.resume}))}catch(e){}};
-const hlWhen=ms=>ms?new Date(ms).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"";
-function hlResumeCard(){const R=HLS.resume,p=R&&HLS.projects.find(x=>x.id===R.cur);if(!p)return "";const r=R.room&&p.rooms.find(x=>x.id===R.room);
-  const where={proj:"Project overview",set:"Design conditions",room:r?"Room: "+r.name:"Rooms",air:"Air side",water:"Water side",preview:"Preview"}[R.screen]||"Project";
-  return `<button class="hlcont" data-resume><span class="ic">${svg("load")}</span><span><b>Continue heat load</b><small>${esc(p.name)} · ${esc(where)} · saved ${hlWhen(R.t)}</small></span><span class="hlgo">›</span></button>`;}
-function hlResume(){const R=HLS.resume,p=R&&HLS.projects.find(x=>x.id===R.cur);if(!p)return;HLS.cur=p.id;
-  HLS.room=R.room&&p.rooms.some(x=>x.id===R.room)?R.room:null;HLS.screen=R.screen==="room"&&!HLS.room?"proj":R.screen||"proj";view="load";render();window.scrollTo(0,0);}
-const hlP=()=>HLS.projects.find(p=>p.id===HLS.cur);
-const hlR=()=>{const p=hlP();return p&&p.rooms.find(r=>r.id===HLS.room);};
-const kW=w=>f(w/1000,2),TR=w=>f(w/3517,2),hh=h=>String(h).padStart(2,"0")+":00";
-function hlGet(path){const[o,...ks]=path.split(".");let x=o==="s"?hlP():hlR();for(const k of ks){if(x==null)return"";x=x[k];}return x==null?"":x;}
-function hlSet(path,val){const[o,...ks]=path.split(".");let x=o==="s"?hlP():hlR();ks.slice(0,-1).forEach(k=>{if(x[k]==null)x[k]={};x=x[k];});
-  const n=parseFloat(val);x[ks[ks.length-1]]=o==="s"&&ks[ks.length-1]!=="name"&&isFinite(n)?n:val;}
-function hlNum(path,label,unit,help,half){return `<label class="field" data-half="${half?1:0}"><span class="lbl">${label}</span>${help?`<span class="help">${help}</span>`:""}<span class="inp"><input data-p="${path}" type="number" inputmode="decimal" step="any" value="${esc(hlGet(path))}" placeholder="0">${unit?`<em>${unit}</em>`:""}</span></label>`;}
-function hlChips(path,label,opts){const v=String(hlGet(path));return `<div class="field"><span class="lbl">${label}</span><div class="chips">${opts.map(o=>`<button type="button" data-c="${path}" data-v="${o[0]}" aria-pressed="${v===String(o[0])}">${o[1]}</button>`).join("")}</div></div>`;}
-const row2=(a,b)=>`<div class="row2">${a}${b}</div>`;
-function hlChart(arr,pk){const mx=Math.max(1,...arr),W=240,H=64;
-  return `<svg viewBox="0 0 ${W} ${H+12}" class="hlchart" role="img" aria-label="Hourly load, peak at ${hh(pk)}">${arr.map((v,i)=>{const bh=Math.max(0,v)/mx*H;return `<rect x="${i*10+1}" y="${H-bh}" width="8" height="${bh}" rx="1.5" fill="${i===pk?"var(--accent)":"var(--cool)"}" opacity="${i===pk?1:0.55}"/>`;}).join("")}${[0,6,12,18].map(h=>`<text x="${h*10+5}" y="${H+10}" text-anchor="middle">${h}</text>`).join("")}</svg>`;}
-
-function hlRender(){
-  const P=hlP(),R=hlR();
-  if(HLS.screen!=="list"&&!P)HLS.screen="list";
-  if(HLS.screen==="room"&&!R)HLS.screen="proj";
-  const backTo=HLS.screen==="list"?"All tools":HLS.screen==="proj"?"Projects":esc(P&&P.name);
-  let body="";
-  body={list:hlList,proj:hlProj,set:hlSettings,room:hlRoom,air:hlAir,water:hlWater,sched:hlPreview,preview:hlPreview}[HLS.screen]();
-  if(["proj","set","room","air","water"].includes(HLS.screen))body+=`<div class="hlact"><span class="hlstat" id="hlstat">${P.savedAt?"Saved "+hlWhen(P.savedAt):"Changes are kept as you type"}${P.status==="draft"?" · draft":""}</span>
-    <div class="hlactb"><button class="golink" data-act="preview">Preview</button><button class="golink" data-act="save">Save</button><button class="golink pri" data-act="later">Save &amp; continue later</button></div></div>`;
-  app.innerHTML=`<div class="bar"><button class="back" data-hlback><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>${backTo}</button></div><div class="tool">${body}</div>`;
-  app.querySelector("[data-hlback]").onclick=()=>{hlBack()||(view="home",render());window.scrollTo(0,0);};
-  app.querySelectorAll("input[data-p]").forEach(el=>el.addEventListener("input",()=>{hlSet(el.dataset.p,el.value);if(/^s\.(lat|lon|tz)$/.test(el.dataset.p))hlP().city="";hlSave();hlLive();}));
-  const cs=app.querySelector("[data-city]");if(cs)cs.onchange=()=>{const c=HL.CITIES.flatMap(g=>g[1]).find(x=>x[0]===cs.value);if(c){const P=hlP();P.city=c[0];P.lat=c[1];P.lon=c[2];P.tz=c[3];hlSave();hlRedraw();}};
-  app.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{const v=b.dataset.v;hlSet(b.dataset.c,v==="true"?true:v==="false"?false:v);hlSave();hlRedraw();});
-  app.querySelectorAll("[data-go-p]").forEach(b=>b.onclick=()=>{HLS.cur=b.dataset.goP;HLS.screen="proj";hlRedraw(true);});
-  app.querySelectorAll("[data-go-r]").forEach(b=>b.onclick=()=>{HLS.room=b.dataset.goR;HLS.screen="room";hlRedraw(true);});
-  app.querySelectorAll("[data-act]").forEach(b=>b.onclick=()=>hlAction(b.dataset.act,b));
-  app.querySelectorAll("[data-resume]").forEach(b=>b.onclick=hlResume);
-  app.querySelectorAll("[data-mem]").forEach(b=>b.onclick=()=>{const[aid,rid]=b.dataset.mem.split(":"),r=hlP().rooms.find(x=>x.id===rid);r.sys=r.sys===aid?"fcu":aid;hlSave();hlRedraw();});
-  hlLive();
-}
-function hlRedraw(top){const y=window.scrollY;HLS.armed=null;hlRender();window.scrollTo(0,top?0:y);}
-function hlBack(){if(["room","set","air","water","sched","preview"].includes(HLS.screen)){HLS.screen="proj";hlRedraw(true);return true;}if(HLS.screen==="proj"){HLS.screen="list";hlRedraw(true);return true;}return false;}
-function hlAction(a,btn){
-  const P=hlP();
-  if(a==="air"||a==="water"||a==="sched"||a==="preview"){HLS.screen=a==="sched"?"preview":a;hlRedraw(true);return;}
-  if(a==="save"){P.savedAt=Date.now();P.status="saved";if(HLS.resume&&HLS.resume.cur===P.id)HLS.resume=null;hlSave(false);
-    const s=document.getElementById("hlstat");if(s)s.textContent="Saved "+hlWhen(P.savedAt);hlToast("Saved "+P.name);return;}
-  if(a==="later"){P.savedAt=Date.now();P.status="draft";HLS.resume={cur:P.id,room:HLS.room,screen:HLS.screen,t:P.savedAt};hlSave(false);
-    view="home";render();window.scrollTo(0,0);hlToast("Saved as a draft. Tap Continue to pick up here.");return;}
-  if(a==="exp-csv"){hlExportCSV();return;}
-  if(a==="exp-pdf"){hlExportPDF();return;}
-  if(a==="addahu"){HL.norm(P);P.ahus.push({id:"a"+Date.now().toString(36),name:"AHU-"+(P.ahus.length+1),type:"vav"});hlSave();hlRedraw();return;}
-  if(a.startsWith("delahu:")){const id=a.slice(7);if(HLS.armed!==a){HLS.armed=a;btn.textContent="Tap again to delete";btn.classList.add("armed");return;}
-    P.ahus=P.ahus.filter(x=>x.id!==id);P.rooms.forEach(r=>{if(r.sys===id)r.sys="fcu";});hlSave();hlRedraw();return;}
-  if(a==="newp"){const p=HL.norm(HL.defProject());p.name="Project "+(HLS.projects.length+1);HLS.projects.push(p);HLS.cur=p.id;HLS.screen="set";}
-  else if(a==="set")HLS.screen="set";
-  else if(a==="addr"){const r=HL.defRoom("Room "+(P.rooms.length+1));r.sys="fcu";P.rooms.push(r);HLS.room=r.id;HLS.screen="room";}
-  else if(a==="dupr"){const r=JSON.parse(JSON.stringify(hlR()));r.id=HL.defRoom("").id;r.name+=" copy";P.rooms.push(r);HLS.room=r.id;}
-  else if(a==="dupp"){const p=JSON.parse(JSON.stringify(P));p.id=HL.defProject().id;p.name+=" copy";p.rooms.forEach(r=>r.id=HL.defRoom("").id);HLS.projects.push(p);HLS.cur=p.id;}
-  else if(a==="delr"||a==="delp"){
-    if(HLS.armed!==a){HLS.armed=a;btn.textContent="Tap again to delete";btn.classList.add("armed");return;}
-    if(a==="delr"){P.rooms=P.rooms.filter(r=>r.id!==HLS.room);HLS.screen="proj";}
-    else{if(HLS.resume&&HLS.resume.cur===HLS.cur)HLS.resume=null;HLS.projects=HLS.projects.filter(p=>p.id!==HLS.cur);HLS.cur=null;HLS.screen="list";}
-  }
-  hlSave();hlRedraw(true);
-}
-
-function hlList(){
-  return `<div class="thead hvac"><span class="ic">${svg("load")}</span><div><h2>Heat load</h2><p>Room-by-room cooling load for a whole project, worked out hour by hour for the design day. Projects are saved on this phone.</p></div></div>
-  ${hlResumeCard()}
-  ${HLS.projects.map(p=>{const r=HL.project(p);return `<button class="hlrow" data-go-p="${p.id}"><span><b>${esc(p.name)}${p.status==="draft"?' <em class="badge">Draft</em>':""}</b><small>${p.rooms.length} room${p.rooms.length===1?"":"s"} · ${f(r.area,0)} m²${p.edited?" · edited "+hlWhen(p.edited):""}</small></span><span class="hlv">${TR(r.peak)}<i>TR</i></span></button>`;}).join("")}
-  <button class="hladd" data-act="newp">+ New project</button>
-  <p class="note">Method: sun position and clear-sky solar for your site and month, wall and roof heat delayed by construction mass, and stored radiant heat. Results are peak design loads for sizing. They are not an annual energy model.</p>`;
-}
-function hlProj(){
-  const P=hlP();
-  return `<label class="field"><span class="lbl">Project name</span><span class="inp"><input data-p="s.name" value="${esc(P.name)}" style="font-family:var(--f-body)"></span></label>
-  <div class="ans" id="hlres"></div>
-  <button class="hlrow" data-act="set"><span><b>Design conditions and building</b><small>${esc(P.city||`${f(P.lat,2)}°, ${f(P.lon,2)}°`)} · ${HL.MON[P.month-1]} · ${f(P.db,1)} °C DB / ${f(P.wb,1)} °C WB · inside ${f(P.ti,1)} °C, ${f(P.rh,0)} %</small></span><span class="hlgo">›</span></button>
-  <button class="hlrow" data-act="air"><span><b>Air side</b><small>AHUs, FCUs, fresh air, ducts, diffusers, VAV/CAV boxes, fans</small></span><span class="hlgo">›</span></button>
-  <button class="hlrow" data-act="water"><span><b>Water side</b><small>Chillers, chilled water flow, pipes, pumps</small></span><span class="hlgo">›</span></button>
-  <button class="hlrow" data-act="preview"><span><b>Preview report</b><small>Design basis, room loads and equipment schedule · export to Excel or PDF</small></span><span class="hlgo">›</span></button>
-  <div class="group" style="margin-top:6px"><h2>Rooms</h2><div id="hlrooms"></div><button class="hladd" data-act="addr">+ Add room</button></div>
-  <div class="hlbtns"><button class="golink" data-act="dupp">Duplicate project</button><button class="golink del" data-act="delp">Delete project</button></div>`;
-}
-function hlSettings(){
-  const P=hlP();
-  return `<div class="thead hvac"><span class="ic">${svg("load")}</span><div><h2>Design conditions</h2><p>These apply to every room in the project. Use the values from your project's basis of design.</p></div></div>
-  <div class="card">
-   <div class="lbl" style="font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Outdoor</div>
-   ${row2(hlNum("s.db","Dry bulb","°C"),hlNum("s.wb","Coincident wet bulb","°C"))}
-   ${row2(hlNum("s.dr","Daily range","K","Max minus min on the design day."),hlNum("s.clr","Sky clearness","×","1 = clear sky. 0.85 for dusty haze."))}
-   ${hlChips("s.month","Design month",HL.MON.map((m,i)=>[i+1,m]))}
-   <p class="note" style="margin-top:-8px">North of the equator the peak is usually Jun–Sep, but sun-facing (south) glass can peak in Sep–Oct. South of the equator, check Dec–Mar.</p>
-  </div>
-  <div class="card">
-   <div class="lbl" style="font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Site location</div>
-   <label class="field"><span class="lbl">Pick a city</span><span class="help">Fills latitude, longitude and time zone. For anywhere else, type them in below.</span><span class="inp"><select data-city style="font-family:var(--f-body);font-size:17px"><option value="">${P.city?"":"Custom location"}</option>${HL.CITIES.map(([g,cs])=>`<optgroup label="${g}">${cs.map(c=>`<option value="${c[0]}"${P.city===c[0]?" selected":""}>${c[0]}</option>`).join("")}</optgroup>`).join("")}</select></span></label>
-   ${row2(hlNum("s.lat","Latitude","°","Minus for south."),hlNum("s.lon","Longitude","°","Minus for west."))}
-   ${row2(hlNum("s.tz","Time zone","h from UTC","Standard time, e.g. India 5.5, London 0, Houston −6."),hlNum("s.alt","Altitude","m"))}
-   <p class="note" style="margin-top:-6px">Times shown are standard time. Daylight saving is not applied.</p>
-  </div>
-  <div class="card">
-   <div class="lbl" style="font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Indoor and system</div>
-   ${row2(hlNum("s.ti","Room temperature","°C"),hlNum("s.rh","Room RH","%"))}
-   ${row2(hlNum("s.occS","Occupied from","h"),hlNum("s.occE","Occupied until","h"))}
-   ${row2(hlNum("s.dts","Supply air ΔT","K","Room minus supply air."),hlNum("s.sf","Safety factor","%"))}
-   ${row2(hlNum("s.rp","Fresh air per person","L/s"),hlNum("s.ra","Fresh air per m²","L/s"))}
-  </div>
-  <div class="card">
-   <div class="lbl" style="font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Building fabric</div>
-   ${row2(hlNum("s.uw","Wall U-value","W/m²K"),hlNum("s.ur","Roof U-value","W/m²K"))}
-   ${row2(hlNum("s.ug","Glass U-value","W/m²K"),hlNum("s.shgc","Glass SHGC","—"))}
-   ${hlNum("s.shade","Shading factor","×","1 = no shading. 0.7 for blinds or a deep overhang.")}
-   ${hlChips("s.col","Outside wall and roof colour",Object.keys(HL.COL).map(k=>[k,HL.COL[k][1]]))}
-   ${hlChips("s.mass","Construction weight",Object.keys(HL.MASS).map(k=>[k,HL.MASS[k].t]))}
-  </div>
-  <p class="note">Defaults are typical for Qatar but are not a basis of design. Fresh air defaults follow the ASHRAE 62.1 office rate.</p>`;
-}
-function hlRoom(){
-  const R=hlR();
-  return `<label class="field"><span class="lbl">Room name</span><span class="inp"><input data-p="r.name" value="${esc(R.name)}" style="font-family:var(--f-body)"></span></label>
-  <div class="ans" id="hlres"></div>
-  <div class="card">
-   ${row2(hlNum("r.area","Floor area","m²"),hlNum("r.ht","Ceiling height","m"))}
-   ${hlChips("r.h24","When is it used?",[[false,"Occupied hours only"],[true,"24 hours (control room, server)"]])}
-  </div>
-  <div class="card">
-   <div class="lbl">Outside walls and glass</div><span class="help" style="margin-top:-10px">Wall area without the windows. Leave 0 where there is no outside wall.</span>
-   <div class="hlgrid"><span></span><span>Wall m²</span><span>Glass m²</span>
-   ${HL.ORI.map(([o])=>`<b>${o}</b><span class="inp"><input data-p="r.walls.${o}" type="number" inputmode="decimal" step="any" value="${esc(hlGet("r.walls."+o))}" placeholder="0" aria-label="${o} wall area"></span><span class="inp"><input data-p="r.wins.${o}" type="number" inputmode="decimal" step="any" value="${esc(hlGet("r.wins."+o))}" placeholder="0" aria-label="${o} glass area"></span>`).join("")}</div>
-   ${hlChips("r.roof","Roof above is exposed to sun?",[[false,"No, floor above"],[true,"Yes, roof"]])}
-   ${R.roof?hlNum("r.roofA","Roof area","m²","Leave empty to use the floor area."):""}
-   ${row2(hlNum("r.part","Wall to unconditioned space","m²","Store, stair, plant room."),hlNum("r.pdt","Temperature difference","K"))}
-  </div>
-  <div class="card">
-   ${row2(hlNum("r.people","People","persons"),hlNum("r.ach","Air leakage","ACH","0.3 typical sealed building."))}
-   ${hlChips("r.act","Activity",Object.keys(HL.ACT).map(k=>[k,HL.ACT[k][2]]))}
-   ${row2(hlNum("r.lights","Lighting","W/m²"),hlNum("r.equip","Equipment","W/m²","PCs ≈ 15, control panels 50 or more."))}
-  </div>
-  <div class="card">${hlChips("r.sys","Served by",[["fcu","Its own FCU"]].concat((hlP().ahus||[]).map(a=>[a.id,esc(a.name)])))}<div id="hlairroom"></div></div>
-  <div class="card" id="hlbreak"></div>
-  <div class="hlbtns"><button class="golink" data-act="dupr">Duplicate room</button><button class="golink del" data-act="delr">Delete room</button></div>`;
-}
-function hlLive(){
-  const P=hlP(),el=document.getElementById("hlres");if(!el||!P)return;
-  const M=HL.MON[P.month-1];
-  if(HLS.screen==="proj"){
-    const J=HL.project(P),list=document.getElementById("hlrooms");
-    if(list)list.innerHTML=J.rs.map(({r,c})=>`<button class="hlrow" data-go-r="${r.id}"><span><b>${esc(r.name)}</b><small>${f(num(r.area)||0,0)} m² · peak ${hh(c.pk)} · ${f(c.supply*3.6,0)} m³/h</small></span><span class="hlv">${!HL.check(P)&&!HL.checkRoom(r)&&isFinite(c.coil[c.pk])?TR(c.coil[c.pk]):"—"}<i>TR</i></span></button>`).join("")||`<p class="note">No rooms yet.</p>`;
-    if(list)list.querySelectorAll("[data-go-r]").forEach(b=>b.onclick=()=>{HLS.room=b.dataset.goR;HLS.screen="room";hlRedraw(true);});
-    if(!P.rooms.length){el.innerHTML=`<div class="cap">Block load</div><p class="hint">Add a room to start.</p>`;return;}
-    const bad=HL.check(P)||(()=>{const r=P.rooms.find(x=>HL.checkRoom(x));return r?`${esc(r.name)}: ${HL.checkRoom(r)}`:"";})();
-    if(bad||!isFinite(J.peak)){el.innerHTML=`<div class="cap">Block load</div><p class="hint">${bad||"Check the design conditions."}</p>`;return;}
-    el.innerHTML=`<div class="cap">Block load · ${M} ${hh(J.bpk)}</div><div class="hero"><b>${TR(J.peak)}</b><i>TR</i></div>
-     <p class="say">The whole project peaks at ${B(kW(J.peak),"kW")} at ${hh(J.bpk)}. Size the chiller or main plant on this. Size each room's unit on its own peak below.</p>
-     ${hlChart(J.block,J.bpk)}
-     <div class="kv"><div><span>Sum of room peaks</span><strong>${TR(J.sumPk)} <small>TR</small></strong></div><div><span>Diversity</span><strong>${f(J.sumPk>0?J.peak/J.sumPk*100:0,0)} <small>%</small></strong></div>
-     <div><span>Load density</span><strong>${f(J.area>0?J.peak/J.area:0,0)} <small>W/m²</small></strong></div><div><span>Area per TR</span><strong>${f(J.peak>0?J.area/(J.peak/3517):0,1)} <small>m²/TR</small></strong></div>
-     <div><span>Supply air (sum)</span><strong>${f(J.supply*3.6,0)} <small>m³/h</small></strong></div><div><span>Fresh air</span><strong>${f(J.oaL,0)} <small>L/s</small></strong></div></div>`;
-    return;
-  }
-  if(HLS.screen==="air"||HLS.screen==="water"){hlSysLive();return;}
-  if(HLS.screen!=="room")return;
-  const R=hlR(),c=HL.room(P,R),k=c.pk,tot=c.coil[k];
-  {const S=HL.systems(P),box=document.getElementById("hlairroom");if(box)box.innerHTML=S.bad?"":hlTermHTML(S.terminals.find(x=>x.r.id===R.id),P);}
-  const bad=HL.check(P)||HL.checkRoom(R);
-  if(bad||!isFinite(tot)){el.innerHTML=`<div class="cap">Room load</div><p class="hint">${bad||"Check the inputs."}</p>`;document.getElementById("hlbreak").innerHTML="";return;}
-  el.innerHTML=`<div class="cap">Room peak · ${M} ${hh(k)}</div><div class="hero"><b>${TR(tot)}</b><i>TR</i></div>
-   <p class="say">${esc(R.name)} needs ${B(kW(tot),"kW")} of cooling at the coil, including ${f(c.oaL,0)} L/s of fresh air. Supply ${B(f(c.supply*3.6,0),"m³/h")} (${f(c.supply,0)} L/s) at ${f(P.dts,0)} K below room temperature.</p>
-   ${hlChart(c.coil,k)}
-   <div class="kv"><div><span>Room sensible</span><strong>${kW(c.sens[k])} <small>kW</small></strong></div><div><span>Room latent</span><strong>${kW(c.lat[k])} <small>kW</small></strong></div>
-   <div><span>Fresh air load</span><strong>${kW(c.oa[k])} <small>kW</small></strong></div><div><span>Sensible heat ratio</span><strong>${f(c.sens[k]/(c.sens[k]+c.lat[k]),2)}</strong></div>
-   <div><span>Load density</span><strong>${f(c.area>0?tot/c.area:0,0)} <small>W/m²</small></strong></div><div><span>Area per TR</span><strong>${f(tot>0?c.area/(tot/3517):0,1)} <small>m²/TR</small></strong></div></div>`;
-  const parts=[["Walls",c.walls],["Roof",c.roof],["Glass, solar",c.gsol],["Glass, conduction",c.gcond],["Partitions",c.part],["People, sensible",c.people],["People, latent",c.peopleL],["Lighting",c.lights],["Equipment",c.equip],["Air leakage, sensible",c.infS],["Air leakage, latent",c.infLat],["Fresh air, sensible",c.oaS],["Fresh air, latent",c.oaLat]]
-    .map(([n,a])=>[n,a[k]*c.sf]).filter(x=>Math.abs(x[1])>0.5);
-  const mx=Math.max(1,...parts.map(x=>Math.abs(x[1])));
-  document.getElementById("hlbreak").innerHTML=`<div class="lbl">Where the load comes from at ${hh(k)}</div><div class="hlbk">${parts.map(([n,w])=>`<span>${n}</span><span class="b"><i style="width:${Math.abs(w)/mx*100}%"${w<0?' class="neg"':""}></i></span><span class="r">${kW(w)}</span>`).join("")}</div><p class="note">kW, including the ${f(P.sf,0)} % safety factor.</p>`;
-}
-
-/* ---------- AIR SIDE / WATER SIDE / SCHEDULE SCREENS ---------- */
-const L2=x=>f(x,0),ductTxt=d=>d?(d.round?`Ø${d.round} or ${d.w}×${d.h}`:`${d.w}×${d.h}`):"—",pipeTxt=p=>p?`${p.dn} (${f(p.v,2)} m/s, ${f(p.R,0)} Pa/m)`:"over DN600";
-const kv2=rows=>`<div class="sumg">${rows.map(r=>`<div><span>${r[0]}</span><strong>${r[1]}${r[2]?` <small>${r[2]}</small>`:""}</strong></div>`).join("")}</div>`;
-const capLbl=t=>`<div class="lbl" style="font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">${t}</div>`;
-function hlTermHTML(t,P){
-  if(!t)return "";
-  const head=t.kind==="FCU"?[["Unit",`${t.tag} · ${t.units>1?t.units+" × ":""}${t.size} CFM`],["Cooling needed",kW(t.kw),"kW"],["Chilled water",f(t.flow,2),"L/s"],["Pipe",t.pipe?t.pipe.dn:"—"]]
-    :[["Box",`${t.tag} on ${esc(t.ahu)}`],["Inlet",t.inlet?`Ø${t.inlet} mm`:"over 400 mm"],["Max airflow",L2(t.q),"L/s"],["Min airflow",L2(t.qmin),"L/s"]];
-  const warn=t.kind==="VAV"&&t.qmin>=t.q-0.5?`<p class="note" style="color:var(--bad)">This room needs so much fresh air that the VAV box cannot turn down. Consider a CAV box or more fresh air on the AHU.</p>`:"";
-  return `${capLbl("Air side for this room")}${kv2(head.concat([["Supply diffusers",`${t.nd} × ${t.neck} mm neck`,`${L2(t.qd)} L/s each`],["Return grilles",`${t.ng} × ${t.grille}×${t.grille}`],["Branch duct",ductTxt(t.branch)]]))}${warn}`;
-}
-function hlAir(){
-  const P=HL.norm(hlP()),A=P.air;
-  return `<div class="thead hvac"><span class="ic">${svg("duct")}</span><div><h2>Air side</h2><p>Put rooms on an AHU (CAV or VAV). Every other room gets its own FCU. Sizes update from the room loads.</p></div></div>
-  <div class="ans" id="hlres"></div>
-  <div class="card">${hlChips("s.fahu","Fresh air for the FCU rooms",[[false,"Each FCU takes its own"],[true,"One fresh air unit (FAHU)"]])}<div id="fahures"></div></div>
-  ${P.ahus.map((a,i)=>`<div class="card">
-    <label class="field"><span class="lbl">AHU name</span><span class="inp"><input data-p="s.ahus.${i}.name" value="${esc(a.name)}" style="font-family:var(--f-body)"></span></label>
-    ${hlChips(`s.ahus.${i}.type`,"Type",[["cav","CAV, constant volume"],["vav","VAV, variable volume"]])}
-    <div class="field"><span class="lbl">Rooms it serves</span><span class="help">Tap to add or remove. A room can be on one AHU only.</span><div class="chips sm">${P.rooms.map(r=>`<button type="button" data-mem="${a.id}:${r.id}" aria-pressed="${r.sys===a.id}">${esc(r.name)}</button>`).join("")||`<span class="help">No rooms yet.</span>`}</div></div>
-    ${hlNum(`s.ahus.${i}.esp`,"External static pressure","Pa",`Leave empty to use the default (${A.esp} Pa).`)}
-    <div id="ahures-${a.id}"></div>
-    <div class="hlbtns"><button class="golink del" data-act="delahu:${a.id}">Delete ${esc(a.name)}</button></div></div>`).join("")}
-  <button class="hladd" data-act="addahu">+ Add AHU</button>
-  <div class="group" style="margin-top:6px"><h2>Room terminals</h2><div id="termlist"></div></div>
-  <details class="more card"><summary>Air side settings</summary><div class="in">
-   ${row2(hlNum("s.air.esp","Default AHU external static","Pa"),hlNum("s.air.isp","AHU internal static","Pa","Filters, coil, casing."))}
-   ${row2(hlNum("s.air.effF","Fan efficiency","%"),hlNum("s.air.effM","Motor efficiency","%"))}
-   ${row2(hlNum("s.air.vMain","Main duct velocity","m/s"),hlNum("s.air.vBranch","Branch duct velocity","m/s"))}
-   ${row2(hlNum("s.air.dh","Max duct height","mm"),hlNum("s.air.fcuEsp","FCU external static","Pa"))}
-   ${row2(hlNum("s.air.nv","Diffuser neck velocity","m/s","About 3 m/s for quiet offices."),hlNum("s.air.darea","Floor area per diffuser","m²"))}
-   ${row2(hlNum("s.air.gv","Return grille face velocity","m/s"),hlNum("s.air.boxV","VAV/CAV inlet velocity","m/s"))}
-   ${hlNum("s.air.minVav","VAV minimum airflow","% of max")}
-  </div></details>
-  <p class="note">Generic sizes for checking and tendering. Confirm noise (NC), throw and capacity in the manufacturer's selection software.</p>`;
-}
-function hlWater(){
-  return `<div class="thead hvac"><span class="ic">${svg("chw")}</span><div><h2>Water side</h2><p>Chillers, chilled water flow, pipe sizes and pump head, from the hour-by-hour load of every coil.</p></div></div>
-  <div class="ans" id="hlres"></div>
-  <div class="card">${capLbl("Chillers")}
-   ${row2(hlNum("s.chw.sup","Chilled water supply","°C"),hlNum("s.chw.dt","Chilled water ΔT","K","Return minus supply, e.g. 12.5 − 7 = 5.5."))}
-   ${row2(hlNum("s.chw.nCh","Duty chillers","no."),hlNum("s.chw.sbCh","Standby chillers","no."))}
-   ${hlNum("s.chw.margin","Plant margin","%","Pump heat, pipe heat gain, future load.")}</div>
-  <div class="card">${capLbl("Pump head (index circuit)")}
-   ${row2(hlNum("s.chw.run","Longest pipe run, flow + return","m"),hlNum("s.chw.fit","Fittings allowance","% of run"))}
-   ${row2(hlNum("s.chw.dpCh","Chiller evaporator","kPa"),hlNum("s.chw.dpCoil","Worst coil","kPa"))}
-   ${row2(hlNum("s.chw.dpVal","Control valve","kPa"),hlNum("s.chw.dpOth","Strainer, check valve, other","kPa"))}
-   ${hlNum("s.chw.effP","Pump efficiency","%")}</div>
-  <div class="card">${capLbl("Pipe sizes")}<div id="pipelist"></div><p class="note">Steel pipe, sized for at most 300 Pa/m and 3 m/s.</p></div>
-  <p class="note">One pump per duty chiller (constant primary). Friction uses the header size along the whole index run, which is slightly conservative.</p>`;
-}
-function hlSysLive(){
-  const P=hlP(),S=HL.systems(P),el=document.getElementById("hlres");
-  const fill=(id,h)=>{const x=document.getElementById(id);if(x)x.innerHTML=h;};
-  if(S.bad){el.innerHTML=`<div class="cap">Check inputs</div><p class="hint">${esc(S.bad)}</p>`;["fahures","termlist","pipelist"].forEach(i=>fill(i,""));P.ahus.forEach(a=>fill("ahures-"+a.id,""));return;}
-  if(HLS.screen==="air"){
-    const real=S.ahus.filter(a=>!a.empty),fans=real.reduce((s,a)=>s+a.motor,0)+(S.fahu?S.fahu.motor:0);
-    el.innerHTML=`<div class="cap">Air side</div><div class="hero"><b>${L2(S.terminals.reduce((s,t)=>s+t.q,0)*3.6)}</b><i>m³/h supply</i></div>
-     <p class="say">${real.length} AHU${real.length===1?"":"s"}${S.fahu?" + 1 FAHU":""}, ${S.terminals.filter(t=>t.kind==="FCU").length} FCU${S.terminals.filter(t=>t.kind==="FCU").length===1?"":"s"} and ${S.terminals.filter(t=>t.kind!=="FCU").length} VAV/CAV box${S.terminals.filter(t=>t.kind!=="FCU").length===1?"":"es"}.</p>
-     <div class="kv"><div><span>Fresh air</span><strong>${L2(S.J.oaL)} <small>L/s</small></strong></div><div><span>AHU fan motors</span><strong>${f(fans,2)} <small>kW installed</small></strong></div></div>`;
-    fill("fahures",S.fahu?kv2([["Tag",S.fahu.tag],["Fresh air",L2(S.fahu.q),"L/s"],["Coil",`${kW(S.fahu.kw)} kW · ${TR(S.fahu.kw)}`,"TR"],["Peak",hh(S.fahu.pk)],["Fan motor",f(S.fahu.motor,2),"kW"],["Duct",ductTxt(S.fahu.duct)],["Chilled water",f(S.fahu.flow,2),"L/s"],["Pipe",pipeTxt(S.fahu.pipe)]])
-      :`<p class="note">Fresh air is counted in each FCU's cooling.</p>`);
-    S.ahus.forEach(x=>fill("ahures-"+x.a.id,x.empty?`<p class="note">Tap rooms above to put them on this AHU.</p>`
-      :kv2([["Supply air",`${L2(x.q)} L/s · ${L2(x.q*3.6)}`,"m³/h"],["Fresh air",`${L2(x.oa)} L/s · ${f(x.oaf*100,0)}`,"%"],["Coil load",`${kW(x.kw)} kW · ${TR(x.kw)}`,"TR"],["Peak",hh(x.pk)],
-        ["Air on coil (mixed)",f(x.tmix,1),"°C"],["Air off coil",f(x.toff,1),"°C"],["Total static",L2(x.tsp),"Pa"],["Fan power",f(x.shaft,2),"kW"],["Motor",f(x.motor,2),"kW"],
-        ["Main duct",ductTxt(x.duct)],["Chilled water",f(x.flow,2),"L/s"],["Pipe",pipeTxt(x.pipe)]])));
-    fill("termlist",S.terminals.map(t=>`<button class="hlrow" data-go-r="${t.r.id}"><span><b>${t.tag} · ${esc(t.r.name)}</b><small>${t.kind==="FCU"?`${t.units>1?t.units+" × ":""}${t.size} CFM · ${kW(t.kw)} kW`:`${esc(t.ahu)} · Ø${t.inlet||"—"} inlet · min ${L2(t.qmin)} L/s`} · ${t.nd} × ${t.neck} diffusers</small></span><span class="hlv">${L2(t.q)}<i>L/s</i></span></button>`).join(""));
-    document.querySelectorAll("#termlist [data-go-r]").forEach(b=>b.onclick=()=>{HLS.room=b.dataset.goR;HLS.screen="room";hlRedraw(true);});
-    return;
-  }
-  const C=S.chiller,U=S.pump,W=P.chw;
-  el.innerHTML=`<div class="cap">Chiller plant · ${HL.MON[P.month-1]} ${hh(S.plantPk)}</div><div class="hero"><b>${TR(S.plant)}</b><i>TR</i></div>
-   <p class="say">Plant load ${B(kW(S.plant),"kW")} including ${f(W.margin,0)} % margin. Use ${B(C.n+" × "+f(C.each/3517,1),"TR")} duty chillers${C.sb?` plus ${C.sb} standby`:""}.</p>
-   <div class="kv"><div><span>Chilled water</span><strong>${f(S.flow,2)} <small>L/s · ${f(S.flow*3.6,1)} m³/h</small></strong></div><div><span>Header pipe</span><strong>${S.header?S.header.dn:"—"}</strong></div>
-   <div><span>Pumps</span><strong>${U.n}${U.sb?" + "+U.sb:""} × ${f(U.flowEach,2)} <small>L/s</small></strong></div><div><span>Pump head</span><strong>${f(U.headM,1)} <small>m</small></strong></div>
-   <div><span>Pump power each</span><strong>${f(U.shaft,2)} <small>kW</small></strong></div><div><span>Pump motor each</span><strong>${f(U.motor,2)} <small>kW</small></strong></div>
-   <div><span>Supply / return</span><strong>${f(W.sup,1)} / ${f(W.sup+W.dt,1)} <small>°C</small></strong></div><div><span>Pipe friction part</span><strong>${f(U.fricPa/1000,0)} <small>kPa</small></strong></div></div>`;
-  const coils=[...S.ahus.filter(a=>!a.empty).map(a=>[esc(a.a.name),a.kw,a.flow,a.pipe]),...(S.fahu?[[S.fahu.tag,S.fahu.kw,S.fahu.flow,S.fahu.pipe]]:[]),
-    ...S.terminals.filter(t=>t.kind==="FCU").map(t=>[`${t.tag} · ${esc(t.r.name)}`,t.kw,t.flow,t.pipe]),["Chiller (each)",C.each,C.flowEach,U.pipeEach],["Main header",S.plant,S.flow,S.header]];
-  fill("pipelist",`<div class="schtbl"><table><thead><tr><th>Unit</th><th>kW</th><th>L/s</th><th>Pipe</th><th>m/s</th><th>Pa/m</th></tr></thead><tbody>${coils.map(c=>`<tr><td>${c[0]}</td><td>${kW(c[1])}</td><td>${f(c[2],2)}</td><td>${c[3]?c[3].dn:"—"}</td><td>${c[3]?f(c[3].v,2):"—"}</td><td>${c[3]?f(c[3].R,0):"—"}</td></tr>`).join("")}</tbody></table></div>`);
-}
-function hlSchedData(S,P){
-  const C=S.chiller,U=S.pump,W=P.chw,out=[],real=S.ahus.filter(a=>!a.empty);
-  out.push({title:"Chillers",head:["Tag","Duty / standby","Capacity TR","Capacity kW","CHW flow L/s","Supply / return °C"],
-    rows:[...Array(C.n+C.sb)].map((_,i)=>["CH-"+(i+1),i<C.n?"Duty":"Standby",f(C.each/3517,1),f(C.each/1000,1),f(C.flowEach,2),`${f(W.sup,1)} / ${f(W.sup+W.dt,1)}`])});
-  out.push({title:"Chilled water pumps",head:["Tag","Duty / standby","Flow L/s","Head m","Absorbed kW","Motor kW"],
-    rows:[...Array(U.n+U.sb)].map((_,i)=>["CHWP-"+(i+1),i<U.n?"Duty":"Standby",f(U.flowEach,2),f(U.headM,1),f(U.shaft,2),f(U.motor,2)])});
-  const ahuRows=real.map(a=>[a.a.name,a.a.type.toUpperCase(),a.rs.map(x=>x.r.name).join("; "),L2(a.q),L2(a.q*3.6),L2(a.oa),f(a.tmix,1),f(a.toff,1),kW(a.kw),TR(a.kw),f(a.flow,2),a.pipe?a.pipe.dn:"—",L2(a.tsp),f(a.motor,2),ductTxt(a.duct)]);
-  if(S.fahu)ahuRows.push([S.fahu.tag,"100 % fresh air","All FCU rooms",L2(S.fahu.q),L2(S.fahu.q*3.6),L2(S.fahu.q),f(P.db,1),"—",kW(S.fahu.kw),TR(S.fahu.kw),f(S.fahu.flow,2),S.fahu.pipe?S.fahu.pipe.dn:"—",L2(S.fahu.tsp),f(S.fahu.motor,2),ductTxt(S.fahu.duct)]);
-  if(ahuRows.length)out.push({title:"Air handling units",head:["Tag","Type","Rooms served","Supply L/s","Supply m³/h","Fresh air L/s","Air on °C","Air off °C","Coil kW","Coil TR","CHW L/s","Pipe","Total static Pa","Motor kW","Main duct mm"],rows:ahuRows});
-  const fcu=S.terminals.filter(t=>t.kind==="FCU");
-  if(fcu.length)out.push({title:"Fan coil units",head:["Tag","Room","Airflow L/s","Airflow CFM","Size CFM","Qty","Cooling kW","CHW L/s","Pipe","ESP Pa"],
-    rows:fcu.map(t=>[t.tag,t.r.name,L2(t.q),L2(t.cfm),t.size,t.units,kW(t.kw),f(t.flow,2),t.pipe?t.pipe.dn:"—",L2(t.esp)])});
-  const box=S.terminals.filter(t=>t.kind!=="FCU");
-  if(box.length)out.push({title:"VAV / CAV boxes",head:["Tag","Type","Room","AHU","Max L/s","Min L/s","Inlet mm","Inlet velocity m/s"],
-    rows:box.map(t=>[t.tag,t.kind,t.r.name,t.ahu,L2(t.q),L2(t.qmin),t.inlet||"over 400",f(t.inV,1)])});
-  out.push({title:"Diffusers, grilles and branch ducts",head:["Room","Supply L/s","Diffusers","Neck mm","L/s each","Return grilles","Grille mm","Branch duct mm"],
-    rows:S.terminals.map(t=>[t.r.name,L2(t.q),t.nd,t.neck,L2(t.qd),t.ng,`${t.grille}×${t.grille}`,ductTxt(t.branch)])});
-  return out;
-}
-function hlReportData(P,S){
-  const J=HL.project(P),out=[],C=P.chw||HL.defChw();
-  out.push({title:"Design basis",head:["Item","Value"],rows:[["Site",P.city||`${f(P.lat,2)}°, ${f(P.lon,2)}°`],["Latitude / longitude",`${f(P.lat,2)}° / ${f(P.lon,2)}°, UTC ${P.tz>=0?"+":""}${P.tz}`],
-    ["Design month",HL.MON[P.month-1]],["Outdoor",`${f(P.db,1)} °C DB / ${f(P.wb,1)} °C WB, daily range ${f(P.dr,1)} K`],["Indoor",`${f(P.ti,1)} °C, ${f(P.rh,0)} % RH`],
-    ["U-values (W/m²K)",`wall ${P.uw}, roof ${P.ur}, glass ${P.ug}`],["Glass",`SHGC ${P.shgc}, shading factor ${P.shade}`],["Construction",`${(HL.MASS[P.mass]||HL.MASS.medium).t}, ${(HL.COL[P.col]||HL.COL.medium)[1].toLowerCase()} colour`],
-    ["Fresh air",`${P.rp} L/s per person + ${P.ra} L/s per m²`],["Occupied hours",`${hh(P.occS)} to ${hh(P.occE)}`],["Supply air ΔT / safety factor",`${P.dts} K / ${P.sf} %`],
-    ["Chilled water",`${f(C.sup,1)} / ${f(C.sup+C.dt,1)} °C`]]});
-  const rows=J.rs.map(({r,c})=>{const k=c.pk;return[r.name,f(c.area,1),r.sys&&r.sys!=="fcu"?((P.ahus||[]).find(a=>a.id===r.sys)||{name:"—"}).name:"FCU",hh(k),kW(c.sens[k]),kW(c.lat[k]),kW(c.oa[k]),kW(c.coil[k]),TR(c.coil[k]),f(c.area>0?c.coil[k]/c.area:0,0),L2(c.supply),L2(c.oaL)];});
-  const tot=["Block load (all rooms together)",f(J.area,1),"",hh(J.bpk),"","","",kW(J.peak),TR(J.peak),f(J.area>0?J.peak/J.area:0,0),L2(J.supply),L2(J.oaL)];tot.total=true;rows.push(tot);
-  out.push({title:"Room cooling loads",head:["Room","Area m²","Served by","Peak","Sensible kW","Latent kW","Fresh air kW","Total kW","TR","W/m²","Supply L/s","Fresh air L/s"],rows});
-  if(S&&!S.bad)out.push(...hlSchedData(S,P));
-  return out;
-}
-function hlPreview(){
-  const P=hlP(),S=HL.systems(P),lb=HL.check(P)||(()=>{const r=P.rooms.find(x=>HL.checkRoom(x));return r?`${r.name}: ${HL.checkRoom(r)}`:(P.rooms.length?"":"Add a room first.");})();
-  const top=`<div class="thead hvac"><span class="ic">${svg("chg")}</span><div><h2>${esc(P.name)}</h2><p>Heat load and equipment schedule · ${esc(P.city||`${f(P.lat,2)}°, ${f(P.lon,2)}°`)} · ${HL.MON[P.month-1]}${P.savedAt?" · saved "+hlWhen(P.savedAt):""}</p></div></div>`;
-  if(lb)return top+`<div class="ans"><div class="cap">Check inputs</div><p class="hint">${esc(lb)}</p></div>`;
-  return top+`<div class="hlbtns hlexp"><button class="golink" data-act="exp-csv">Export to Excel (CSV)</button><button class="golink" data-act="exp-pdf">Print or save PDF</button></div>
-  ${S.bad?`<p class="note" style="color:var(--bad)">Equipment schedule not shown: ${esc(S.bad)}</p>`:""}
-  ${hlReportData(P,S).map(s=>`<div class="card schcard"><div class="lbl">${s.title}</div><div class="schtbl"><table><thead><tr>${s.head.map(h=>`<th>${h}</th>`).join("")}</tr></thead><tbody>${s.rows.map(r=>`<tr${r.total?' class="tot"':""}>${r.map(c=>`<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div></div>`).join("")}
-  <p class="note">${S.bad?"":`Plant ${TR(S.plant)} TR including ${f(P.chw.margin,0)} % margin. `}Prepared with SiteCalc Pro by Mohamed Shafaf Karumannil. Generic sizes: confirm models, noise and capacity with the manufacturer.</p>`;
-}
-function hlToast(m){let el=document.getElementById("toast");if(!el){el=document.createElement("div");el.id="toast";el.setAttribute("role","status");document.body.appendChild(el);}
-  el.textContent=m;el.className="show";clearTimeout(el._t);el._t=setTimeout(()=>{el.className="";},3500);}
-function hlExportCSV(){
-  const P=hlP(),S=HL.systems(P),lb=HL.check(P)||P.rooms.some(r=>HL.checkRoom(r))||!P.rooms.length;if(lb){hlToast("Fix the inputs before exporting.");return;}
-  const q=v=>{const s=String(v==null?"":v);return /[",\r\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
-  const lines=[q(P.name+" - Heat load and equipment schedule"),q("SiteCalc Pro by Mohamed Shafaf Karumannil"),
-    ["Site",P.city||`${P.lat}, ${P.lon}`,"Month",HL.MON[P.month-1],"Outdoor",`${P.db} C DB / ${P.wb} C WB`,"Indoor",`${P.ti} C / ${P.rh} %`].map(q).join(","),""];
-  hlReportData(P,S).forEach(s=>{lines.push(q(s.title));lines.push(s.head.map(q).join(","));s.rows.forEach(r=>lines.push(r.map(q).join(",")));lines.push("");});
-  const csv="﻿"+lines.join("\r\n"),name=(String(P.name).replace(/[^\w\- ]+/g,"").trim()||"Project")+" - report.csv";
-  if(window.SiteCalcNative&&window.SiteCalcNative.save){hlToast(window.SiteCalcNative.save(name,"text/csv",csv));return;}
-  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));a.download=name;document.body.appendChild(a);a.click();
-  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);hlToast("Saved "+name);
-}
-function hlExportPDF(){const P=hlP();if(window.SiteCalcNative&&window.SiteCalcNative.print){window.SiteCalcNative.print(P.name+" - report");return;}window.print();}
-
 /* ---------- RENDER ---------- */
 function home(){
   const tile=t=>`<button class="tile ${t.g}" data-go="${t.id}"><span class="ic">${svg(t.icon)}</span><b>${t.name}</b><span>${t.short}</span></button>`;
   app.innerHTML=`<header class="top"><svg class="mark" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#1B2229"/><rect x="5" y="5" width="14" height="14" rx="3" fill="#2D8FB5"/><rect x="21" y="5" width="14" height="14" rx="3" fill="#1F6E8C"/><rect x="5" y="21" width="14" height="14" rx="3" fill="#2A6F62"/><rect x="21" y="21" width="14" height="14" rx="3" fill="#C9672E"/><path d="M12 7.5v9M8.2 9.8l7.6 4.4M8.2 14.2l7.6-4.4" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/><path d="M28 7.8s3.4 3.8 3.4 6a3.4 3.4 0 0 1-6.8 0c0-2.2 3.4-6 3.4-6z" fill="#fff"/><circle cx="12" cy="29" r="4.6" fill="none" stroke="#fff" stroke-width="1.4"/><path d="M12 29l2.6-2.6" stroke="#F29A55" stroke-width="1.6" stroke-linecap="round"/><path d="M29.2 23.5l-4 6h3l-1.4 4.5 4.4-6.2h-3z" fill="#fff"/></svg>
   <div><h1>SiteCalc Pro</h1><p class="by">by Mohamed Shafaf Karumannil</p><p>HVAC, refrigeration and electrical calculators for site work</p></div></header>
-  ${hlResumeCard()}
   <div class="group"><h2>HVAC</h2><div class="tiles">${TOOLS.filter(t=>t.g==="hvac").map(tile).join("")}</div></div>
   <div class="group"><h2>Psychrometrics</h2><div class="tiles">${TOOLS.filter(t=>t.g==="psy").map(tile).join("")}</div></div>
   <div class="group"><h2>Refrigeration</h2><div class="tiles">${TOOLS.filter(t=>t.g==="ref").map(tile).join("")}</div></div>
   <div class="group"><h2>Electrical</h2><div class="tiles">${TOOLS.filter(t=>t.g==="elec").map(tile).join("")}</div></div>
   <p class="note" style="margin-top:22px">Pick a tool. Every box comes filled with an example, so you can see how it works before you type.</p>
   <p class="credit">SiteCalc Pro · Designed by Mohamed Shafaf Karumannil</p>`;
-  app.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{view=b.dataset.go;if(view==="load")HLS.screen="list";render();window.scrollTo(0,0);});
-  app.querySelectorAll("[data-resume]").forEach(b=>b.onclick=hlResume);
+  app.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{view=b.dataset.go;render();window.scrollTo(0,0);});
 }
 
 function fieldHTML(t,fl,st){
@@ -1547,7 +782,6 @@ function group(t,list,st){
 }
 function tool(){
   const t=byId(view),st=ST[t.id];
-  if(t.custom){hlRender();return;}
   const main=t.fields.filter(x=>!x.adv),adv=t.fields.filter(x=>x.adv);
   app.innerHTML=`<div class="bar"><button class="back" data-home><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>All tools</button><button class="reset" data-reset>Reset example</button></div>
   <div class="tool">
@@ -1560,8 +794,7 @@ function tool(){
   app.querySelector("[data-home]").onclick=()=>{view="home";render();window.scrollTo(0,0);};
   app.querySelector("[data-reset]").onclick=()=>{ST[t.id]=defs(t);save();render();};
   const det=app.querySelector("details.more");if(det)det.ontoggle=()=>{open[t.id]=det.open;};
-  const vis=()=>t.fields.map(x=>!x.show||x.show(st)?1:0).join("");
-  app.querySelectorAll("input[data-k],select[data-k]").forEach(el=>{el.addEventListener("input",()=>{const b4=vis();st[el.dataset.k]=el.value;save();if(vis()!==b4)show();else answer();});});
+  app.querySelectorAll("input[data-k],select[data-k]").forEach(el=>{el.addEventListener("input",()=>{st[el.dataset.k]=el.value;save();answer();});});
   app.querySelectorAll("[data-chips]").forEach(c=>{const fl=t.fields.find(x=>x.id===c.dataset.chips);c.querySelectorAll("button").forEach(b=>b.onclick=()=>{st[fl.id]=b.dataset.v;if(fl.onSet)fl.onSet(st);save();show();});});
   app.querySelectorAll("[data-pre]").forEach(c=>{const id=c.dataset.pre;c.querySelectorAll("button").forEach(b=>b.onclick=()=>{st[id]=b.dataset.v;save();show();});});
   answer();
@@ -1570,19 +803,15 @@ function answer(){
   const t=byId(view),st=ST[t.id],r=t.calc(st),el=document.getElementById("ans"),af=document.getElementById("after");
   if(r.hint){el.innerHTML=`<div class="cap">Answer</div><p class="hint">${r.hint}</p>`;af.innerHTML=r.after||"";return}
   if(r.extra){el.innerHTML=r.extra;af.innerHTML="";return}
-  el.innerHTML=ansHTML(r);
-  af.innerHTML=r.after||"";if(t.bind)t.bind(af,st);
-}
-function ansHTML(r){
-  if(r.hint)return `<div class="cap">Answer</div><p class="hint">${r.hint}</p>`;
-  return `<div class="cap">${r.cap}</div>${r.big?`<div class="verdict">${r.big}</div>`:`<div class="hero"><b>${r.value}</b><i>${r.unit}</i></div>`}
+  el.innerHTML=`<div class="cap">${r.cap}</div>${r.big?`<div class="verdict">${r.big}</div>`:`<div class="hero"><b>${r.value}</b><i>${r.unit}</i></div>`}
    ${r.status?`<span class="pill ${r.status.ok?"ok":"bad"}">${r.status.text}</span>`:""}
    <p class="say">${r.say}</p>
    ${r.rows&&r.rows.length?`<div class="kv">${r.rows.map(x=>`<div><span>${x[0]}</span><strong>${x[1]} <small>${x[2]}</small></strong></div>`).join("")}</div>`:""}`;
+  af.innerHTML=r.after||"";if(t.bind)t.bind(af,st);
 }
 function show(){const y=window.scrollY;const a=document.activeElement&&document.activeElement.id;tool();window.scrollTo(0,y);if(a&&document.getElementById(a))document.getElementById(a).focus({preventScroll:true});}
 function render(){view==="home"?home():tool();}
-window.scBack=function(){if(view==="load"&&hlBack())return true;if(view!=="home"){view="home";render();window.scrollTo(0,0);return true}return false};
+window.scBack=function(){if(view!=="home"){view="home";render();window.scrollTo(0,0);return true}return false};
 render();
 })();
 </script>
