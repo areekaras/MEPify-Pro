@@ -373,6 +373,24 @@ const ICON={
   gwp:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
   btemp:'<rect x="4" y="7" width="12" height="13" rx="1.5"/><path d="M8 7V5M12 7V5M19 4v10M17.5 15.5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0"/>',
   ct:'<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="3"/><path d="M2 12h3M19 12h3M12 19v3"/>',
+  hydro:'<path d="M3 12h18M7 8v8M17 8v8"/><circle cx="12" cy="6" r="3"/><path d="M12 6l1.5-1.5"/>',
+  flush:'<path d="M3 9h12a4 4 0 0 1 4 4v6M3 14h10"/><path d="M19 19c0 1-.8 2-2 2s-2-1-2-2 2-3 2-3 2 2 2 3z"/>',
+  align:'<rect x="2" y="9" width="8" height="6" rx="1"/><rect x="14" y="8" width="8" height="8" rx="1"/><path d="M10 12h4M12 5v14"/>',
+  torque:'<path d="M14 4l6 6-9 9H5v-6z"/><circle cx="16" cy="8" r="1.5"/>',
+  vib:'<path d="M2 12h3l2-6 3 12 3-12 3 12 2-6h4"/>',
+  pumpt:'<circle cx="11" cy="13" r="6"/><path d="M11 13l3-3M17 9h5M11 7V3h7"/>',
+  fanperf:'<circle cx="12" cy="12" r="9"/><path d="M12 12l4-5M12 12l-6 1M12 12l2 6"/>',
+  hrec:'<path d="M4 7h12l-3-3M20 17H8l3 3"/><circle cx="12" cy="12" r="2"/>',
+  filt:'<rect x="4" y="3" width="16" height="18" rx="1.5"/><path d="M8 3v18M12 3v18M16 3v18"/>',
+  faceu:'<rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M7 9h2M11 9h2M15 9h2M7 14h2M11 14h2M15 14h2"/>',
+  sound:'<path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16 9a4 4 0 0 1 0 6M19 6a8 8 0 0 1 0 12"/>',
+  door:'<path d="M5 21V3h11v18M3 21h18"/><circle cx="13" cy="12" r="1"/><path d="M19 8l2 2-2 2"/>',
+  gtd:'<rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M3 9h18M3 14h18M12 4v16"/>',
+  calib:'<circle cx="12" cy="13" r="8"/><path d="M12 13l4-4M12 5v2M5 13h2M17 13h2"/>',
+  wind:'<path d="M4 12c2-4 4-4 6 0s4 4 6 0 4-4 6 0"/><path d="M2 12h2M20 12h2"/>',
+  zs:'<path d="M12 3v9M6 12h12M8 15h8M10 18h4"/>',
+  vdip:'<path d="M2 8h6l2 8 2-8h10"/><path d="M14 16h8"/>',
+  tray:'<path d="M3 9v8h18V9"/><path d="M3 13h18"/><circle cx="8" cy="11" r="1.5"/><circle cx="11" cy="11" r="1.5"/><circle cx="9.5" cy="8.5" r="1.5"/>',
   calc:'<rect x="5" y="2" width="14" height="20" rx="2.5"/><path d="M8 5.5h8v3.5H8zM8.5 13h.01M12 13h.01M15.5 13h.01M8.5 17h.01M12 17h.01M15.5 17h.01"/>',
   sci:'<path d="M4 7h6M7 4v6M4 17h6M14.5 4.5l5 5M19.5 4.5l-5 5M14 15h6M14 19h6"/>',
   date:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 14h3v3H8z"/>',
@@ -1322,6 +1340,7 @@ const TOOLS=[
   {id:"V",label:"Rated voltage",type:"num",def:"415",unit:"V"},
   {id:"r1",label:"IR reading at 1 minute",type:"num",def:"850",unit:"MΩ"},
   {id:"r10",label:"IR reading at 10 minutes",help:"Leave blank if you only took the 1-minute reading.",type:"num",def:"2400",unit:"MΩ"},
+  {id:"r30",label:"IR reading at 30 seconds (for DAR)",help:"Optional. DAR = 1 min ÷ 30 s, a quick check when a 10-minute test is not practical.",type:"num",def:"",unit:"MΩ",adv:true},
   {id:"T",label:"Winding or cable temperature",type:"num",def:"35",unit:"°C"},
   {id:"tb",label:"Correct to",type:"chips",def:"40",options:[["40","40 °C (IEEE 43)"],["20","20 °C"]],adv:true},
   {id:"min",label:"Project minimum (optional)",help:"Overrides the default minimum below.",type:"num",def:"",unit:"MΩ",adv:true}
@@ -1332,13 +1351,13 @@ const TOOLS=[
   const kV=V/1000,tv=V<1000?"500 V DC (1000 V DC for 690–1000 V)":V<=2500?"500–1000 V DC":V<=5000?"1000–2500 V DC":V<=12000?"2500–5000 V DC":"5000–10000 V DC";
   const kt=Math.pow(0.5,(tb-T)/10),rc=r1*kt;
   const defMin={lvm:5,hvm:100,cab:Math.max(1,kV+1),hvc:Math.max(100,(kV+1)*10)}[v.eq],mn=num(v.min)>0?num(v.min):defMin;
-  const pi=r10>0?r10/r1:NaN;
+  const pi=r10>0?r10/r1:NaN,r30=num(v.r30),dar=r30>0?r1/r30:NaN,darTxt=!isFinite(dar)?"":` DAR is ${B(f(dar,2))}: ${dar<1?"poor, likely wet":dar<1.25?"questionable":dar<1.6?"good":"excellent"}.`;
   const piTxt=!isFinite(pi)?"":r1>5000?" PI is not needed because the 1-minute reading is above 5000 MΩ.":pi<1?` PI is ${B(f(pi,2))}, which is poor: the insulation is likely wet or contaminated.`:pi<2?` PI is ${B(f(pi,2))}, which is questionable. Most specs need 2.0 or more for class B, F and H insulation.`:pi<4?` PI is ${B(f(pi,2))}, which is good.`:` PI is ${B(f(pi,2))}, which is very good.`;
   const piBad=isFinite(pi)&&r1<=5000&&pi<2&&(v.eq==="lvm"||v.eq==="hvm");
   const ok=rc>=mn&&!piBad;
   return{cap:`IR corrected to ${tb} °C`,value:f(rc,rc<10?2:0),unit:"MΩ",status:{ok,text:ok?"Pass":rc<mn?"Below minimum":"PI too low"},
-   say:`Test at ${B(tv)}. Your ${f(r1)} MΩ reading at ${f(T,1)} °C is ${B(f(rc,rc<10?2:0),"MΩ")} at ${tb} °C, against a minimum of ${f(mn,1)} MΩ.`+piTxt,
-   rows:[["Temperature factor",f(kt,3),"×"],["Minimum used",f(mn,1),"MΩ"],["Polarisation index",isFinite(pi)?f(pi,2):"—",""]]};
+   say:`Test at ${B(tv)}. Your ${f(r1)} MΩ reading at ${f(T,1)} °C is ${B(f(rc,rc<10?2:0),"MΩ")} at ${tb} °C, against a minimum of ${f(mn,1)} MΩ.`+piTxt+darTxt,
+   rows:[["Temperature factor",f(kt,3),"×"],["Minimum used",f(mn,1),"MΩ"],["Polarisation index",isFinite(pi)?f(pi,2):"—",""],["DAR (60 s ÷ 30 s)",isFinite(dar)?f(dar,2):"—",""]]};
  },
  note:"IR halves for every 10 °C rise, so readings are corrected to a base temperature. Minimums follow IEEE 43 for machines (5 MΩ random-wound, 100 MΩ form-wound) and a common (kV + 1) MΩ rule for cables. Your project spec governs."},
 
@@ -1385,6 +1404,63 @@ const TOOLS=[
    rows:[["Measured ratio",f(Ip/Im,1),": 1"],["Nameplate ratio",f(K,1),": 1"],["Expected secondary",f(Ip/K,3),"A"]]};
  },
  note:"Never open-circuit a live CT secondary: it produces dangerous high voltage. Short the secondary before disconnecting a meter or relay. Ratio limits shown are at rated current (IEC 61869-2); lower currents allow a wider limit."},
+{id:"wind",g:"elec",icon:"wind",name:"Winding resistance",short:"Phase balance and 20 °C correction",
+ intro:"Enter the three winding or phase-to-phase resistances and the winding temperature. You get the balance and the values corrected to 20 °C.",
+ fields:[
+  {id:"r",label:"Three resistance readings",help:"U-V, V-W, W-U (or U1-U2, V1-V2, W1-W2), separated by spaces.",type:"text",def:"0.412 0.415 0.409"},
+  {id:"un",label:"Unit",type:"chips",def:"Ω",options:[["Ω","Ω"],["mΩ","mΩ"]]},
+  {id:"T",label:"Winding temperature",help:"Use ambient if the motor has been off for many hours.",type:"num",def:"34",unit:"°C"},
+  {id:"mat",label:"Conductor",type:"chips",def:"234.5",options:[["234.5","Copper"],["225","Aluminium"]]},
+  {id:"lim",label:"Allowed imbalance",type:"num",def:"2",unit:"%",adv:true},
+  {id:"fac",label:"Factory value at 20 °C (optional)",type:"num",def:"",unitFrom:v=>v.un,adv:true}
+ ],
+ calc(v){
+  const r=numsOf(v.r),T=num(v.T),k=num(v.mat),lim=num(v.lim)||2,fac=num(v.fac);if(r.length!==3)return{hint:`Enter three readings. You have ${r.length}.`};if(!isFinite(T))return{hint:"Enter the winding temperature."};
+  const av=(r[0]+r[1]+r[2])/3,ub=Math.max(...r.map(x=>Math.abs(x-av)))/av*100,c=(k+20)/(k+T),r20=r.map(x=>x*c),a20=av*c,ok=ub<=lim,u=v.un;
+  return{cap:"Imbalance",value:f(ub,2),unit:"%",status:{ok,text:ok?"Balanced":"Imbalance too high"},
+   say:`The readings are within ${B(f(ub,2),"%")} of their average (limit ${f(lim,1)} %). Corrected to 20 °C the average is ${B(f(a20,4),u)}.`+(fac>0?` That is ${f((a20-fac)/fac*100,1)} % from the factory value.`:"")+(ok?"":" Look for a loose or high-resistance connection, a wrong tap, or shorted turns before energising."),
+   rows:[["Average",f(av,4),u],["Average at 20 °C",f(a20,4),u],["Correction factor",f(c,4),""]],
+   after:tbl(["Phase","Measured","At 20 °C"],r.map((x,i)=>[["1","2","3"][i],f(x,4),f(r20[i],4)]))};
+ },
+ note:"R20 = R × (k + 20) ÷ (k + T), k = 234.5 for copper and 225 for aluminium. Use a 4-wire micro-ohmmeter or low-resistance bridge. 2 % imbalance is a common limit for motors; transformers use the maker's figures."},
+
+{id:"zs",g:"elec",icon:"zs",name:"Earth loop impedance",short:"Maximum Zs for a breaker, pass or fail",
+ intro:"Pick the breaker and enter the measured earth fault loop impedance. You find out if the breaker will trip fast enough on an earth fault.",
+ fields:[
+  {id:"ty",label:"Breaker curve",type:"chips",def:"C",options:[["B","Type B"],["C","Type C"],["D","Type D"]]},
+  {id:"In",label:"Breaker rating",type:"chips",def:"32",options:[6,10,16,20,25,32,40,50,63,80,100,125].map(x=>[String(x),x+" A"])},
+  {id:"U0",label:"Voltage to earth",type:"num",def:"240",unit:"V"},
+  {id:"Zs",label:"Measured Zs",type:"num",def:"0.62",unit:"Ω"},
+  {id:"hot",label:"Allow for conductor heating",help:"Readings are taken cold. Comparing with 80 % of the limit allows for cables at full temperature.",type:"chips",def:"1",options:[["1","Yes (80 % rule)"],["0","No"]],adv:true}
+ ],
+ calc(v){
+  const In=num(v.In),U0=num(v.U0),Zs=num(v.Zs),m={B:5,C:10,D:20}[v.ty],Ia=m*In;if(!(U0>0))return{hint:"Enter the voltage to earth."};
+  const Zmax=0.95*U0/Ia,Zchk=v.hot==="1"?0.8*Zmax:Zmax,ok=Zs>=0&&Zs<=Zchk,If=Zs>0?U0/Zs:NaN;
+  return{cap:"Maximum Zs",value:f(Zchk,3),unit:"Ω",status:Zs>=0?{ok,text:ok?"Pass":"Fail"}:null,
+   say:`A ${In} A type ${v.ty} breaker needs at least ${f(Ia,0)} A to trip instantly, so Zs must not exceed ${B(f(Zmax,3),"Ω")}${v.hot==="1"?`, or ${B(f(Zchk,3),"Ω")} for a cold reading`:""}.`+(Zs>0?` Your ${f(Zs,3)} Ω gives a fault current of about ${f(If,0)} A, so it ${ok?"passes":"fails: use a larger protective conductor, shorten the run, change to a type B or lower-rated breaker, or add an RCD"}.`:""),
+   rows:[["Instant trip current",f(Ia,0),"A"],["Limit (hot)",f(Zmax,3),"Ω"],["Limit for cold reading",f(Zchk,3),"Ω"],["Prospective fault current",isFinite(If)?f(If,0):"—","A"]]};
+ },
+ note:"Zs ≤ Cmin × U0 ÷ Ia with Cmin 0.95 (IEC 60364-4-41 / BS 7671), Ia = 5, 10 or 20 × In for type B, C, D (0.4 s and 5 s disconnection). For fuses and adjustable breakers, use the maker's time-current curve."},
+
+{id:"vdip",g:"elec",icon:"vdip",name:"Voltage dip at motor start",short:"Will a big motor start dip the supply too much?",
+ intro:"Enter the supply (transformer or generator) and the motor. You get the voltage dip when the motor starts.",
+ fields:[
+  {id:"src",label:"Supply",type:"chips",def:"tx",options:[["tx","Transformer"],["gen","Generator"]]},
+  {id:"kva",label:"Supply rating",type:"num",def:"1000",unit:"kVA",half:true},
+  {id:"z",label:"Impedance %Z (or generator X″d)",help:"Transformers 4–6 %, generators often 12–20 %.",type:"num",def:"5",unit:"%",half:true},
+  {id:"kw",label:"Motor rating",type:"num",def:"75",unit:"kW",half:true},
+  {id:"st",label:"Starting method",type:"chips",def:"6.5",options:[["6.5","DOL"],["2.2","Star-delta"],["3","Soft starter"],["1.2","VFD"]]},
+  {id:"base",label:"Load already on the supply",type:"num",def:"400",unit:"kVA",adv:true},
+  {id:"lim",label:"Allowed dip",type:"num",def:"15",unit:"%",adv:true}
+ ],
+ calc(v){
+  const kva=num(v.kva),z=num(v.z)/100,kw=num(v.kw),m=num(v.st),base=num(v.base)||0,lim=num(v.lim)||15;if(!(kva>0&&z>0))return{hint:"Enter the supply rating and impedance."};if(!(kw>0))return{hint:"Enter the motor rating."};
+  const Ssc=kva/z,Sm=kw/(0.9*0.86),Ss=Sm*m,dip=Ss/(Ssc+Ss)*100,ok=dip<=lim;
+  return{cap:"Voltage dip",value:f(dip,1),unit:"%",status:{ok,text:ok?`Within ${lim} %`:`Over ${lim} %`},
+   say:`Starting the ${f(kw)} kW motor ${({"6.5":"direct-on-line","2.2":"star-delta","3":"on a soft starter","1.2":"on a VFD"})[v.st]} draws about ${B(f(Ss,0),"kVA")}. On a supply with ${f(Ssc/1000,1)} MVA fault level this dips the voltage by about ${B(f(dip,1),"%")}.`+(ok?"":" Contactors may drop out and lights flicker. Use a soft starter or VFD, or a larger supply.")+(v.src==="gen"&&base>0?` With ${f(base,0)} kVA already running, also check the generator's motor-starting curve.`:""),
+   rows:[["Supply fault level",f(Ssc,0),"kVA"],["Motor running",f(Sm,0),"kVA"],["Motor starting",f(Ss,0),"kVA"],["Starting current",f(Ss*1000/(SQ3*415),0),"A at 415 V"]]};
+ },
+ note:"Dip ≈ S_start ÷ (S_sc + S_start), where S_sc = kVA ÷ %Z. Ignores cable impedance and upstream source, so the real dip is a little larger. Limits: 15 % at the motor and 10 % at sensitive loads are common."},
 {id:"unbal",g:"elec",icon:"unbal",name:"Voltage & current unbalance",short:"% unbalance and motor derating",
  intro:"Enter the three line-to-line voltages or the three phase currents.",
  fields:[
@@ -1585,6 +1661,37 @@ const TOOLS=[
  },
  note:"Conduit limits follow NEC Chapter 9: 53 % for 1 cable, 31 % for 2 and 40 % for 3 or more. Tray limits vary by project spec, so set yours under More options."},
 
+{id:"tray",g:"elec",icon:"tray",name:"Cable tray sizing",short:"Trefoil, flat or multicore power cables",
+ intro:"Enter the cable size, how the cables are laid and how many circuits. You get the tray width, side height, bend radius and load to choose the tray.",
+ fields:[
+  {id:"arr",label:"Arrangement",type:"chips",def:"tre",options:[["tre","Single-core trefoil"],["flat","Single-core flat"],["mc","Multicore"]]},
+  {id:"D",label:"Cable outside diameter",help:"From the cable datasheet. For example 1C 240 mm² XLPE/SWA about 32 mm.",type:"num",def:"32",unit:"mm",half:true},
+  {id:"n",label:"Number of circuits",type:"num",def:"4",unitFrom:v=>v.arr==="mc"?"cables":"circuits",half:true},
+  {id:"sp",label:"Gap between groups",help:"2 × D apart keeps grouping derating small (IEC 60364-5-52, method F/G). Touching needs a bigger cable.",type:"chips",def:"2",options:[["0","Touching"],["1","1 × D"],["2","2 × D"]]},
+  {id:"spare",label:"Spare space for future cables",type:"num",def:"25",unit:"%"},
+  {id:"ne",label:"Earth / other cables on the same tray",type:"num",def:"1",unit:"cables",half:true,adv:true},
+  {id:"De",label:"Their outside diameter",type:"num",def:"20",unit:"mm",half:true,adv:true},
+  {id:"edge",label:"Clearance to each side rail",type:"num",def:"25",unit:"mm",adv:true},
+  {id:"kg",label:"Weight per cable",help:"From the cable datasheet.",type:"num",def:"3.1",unit:"kg/m",half:true,adv:true},
+  {id:"rate",label:"Tray safe working load",help:"At your support span, from the tray catalogue.",type:"num",def:"",unit:"kg/m",half:true,adv:true}
+ ],
+ calc(v){
+  const D=num(v.D),n=Math.round(num(v.n)),k=num(v.sp),spare=(num(v.spare)||0)/100,ne=Math.max(0,Math.round(num(v.ne)||0)),De=num(v.De)||0,edge=num(v.edge)||0,kg=num(v.kg)||0,rate=num(v.rate);
+  if(!(D>0))return{hint:"Enter the cable outside diameter."};if(!(n>0))return{hint:"Enter the number of circuits."};
+  const tre=v.arr==="tre",mc=v.arr==="mc",wg=tre?2*D:v.arr==="flat"?3*D:D,s=k*D,hg=tre?(1+Math.sqrt(3)/2)*D:D;
+  const used=n*wg+(n-1)*s+(ne>0?ne*De+ne*Math.max(s,De*0.5):0),need=used*(1+spare)+2*edge;
+  const STD=[100,150,200,300,400,450,500,600,750,900,1000,1200];
+  const W=STD.find(x=>x>=need),fit=x=>Math.max(0,Math.floor((x-2*edge+s)/(wg+s)));
+  const side=[50,75,100,125,150].find(x=>x>=hg+10)||150,bend=(mc?12:15)*D,cores=tre||v.arr==="flat"?3:1,load=(n*cores+ne)*kg;
+  const der=k>=2?"small (about 0.94–1.0)":k>=1?"moderate":"large",tiers=W?1:Math.ceil(need/1200);
+  const ew=ne>0?ne*De+ne*Math.max(s,De*0.5):0,fitS=x=>Math.max(0,Math.floor(((x-2*edge)/(1+spare)-ew+s)/(wg+s)));
+  const rows=STD.filter(x=>x>=150&&x<=1200).map(x=>({cls:x===W?"sel":"",c:[x+" mm",Math.max(0,Math.floor((x-2*edge-ew+s)/(wg+s))),fitS(x)]}));
+  return{cap:"Tray width",value:W?W:"> 1200",unit:"mm",status:isFinite(rate)&&rate>0?{ok:load<=rate,text:load<=rate?`Load ${f(load,0)} of ${f(rate,0)} kg/m`:"Tray overloaded"}:{ok:!!W,text:W?`${n} ${mc?"cables":"circuits"} fit`:"Use two trays or two tiers"},
+   say:`${n} ${tre?"trefoil groups":v.arr==="flat"?"flat groups":"cables"} of ${f(D,0)} mm cable, ${k?f(k,0)+" × D apart":"touching"}, take ${B(f(used,0),"mm")} of width. With ${f(spare*100,0)} % spare and side clearance you need ${f(need,0)} mm, so use a ${B(W?W+" mm":"wider")} tray`+(W?` with side rails at least ${B(side+" mm")} high.`:`: split over ${tiers} tiers or trays.`)+` Grouping derating at this spacing is ${der}; check the cable rating with the Cable size tool.`+(tre?" Cleat each trefoil group to resist short-circuit forces (spacing per the cleat maker, often 1–1.5 m).":""),
+   rows:[["Width used",f(used,0),"mm"],["Width needed with spare",f(need,0),"mm"],["Group width",f(wg,0),"mm"],["Layer height",f(hg,0),"mm"],["Minimum bend radius",f(bend,0),"mm"],["Cable load",f(load,1),"kg/m"]],
+   after:tbl(["Tray width",mc?"Cables that fit":"Circuits that fit",`With ${f(spare*100,0)} % spare`],rows)};
+ },
+ note:"Trefoil group width 2D, height 1.87D; flat group 3D. Single layer only: do not stack power cables. Bend radius 15 × D for single-core and 12 × D for multicore XLPE (check the cable maker). Single-core cables need non-magnetic cleats and tray where the spec requires it."},
 {id:"pconv",g:"elec",icon:"pconv",name:"Power converter",short:"kW ↔ kVA ↔ amps",
  intro:"Enter one value and the supply. You get the others.",
  fields:[
@@ -2118,6 +2225,299 @@ const TOOLS=[
  note:"I = P ÷ (√3 V) or P ÷ V. ΔT = kW ÷ (1.207 × m³/s). Output varies with V². Interlocks to test: no heat with fan off, trip on airflow loss, auto and manual-reset high limits, fan overrun."},
 
 /* ===== HVAC additions ===== */
+/* ===== Commissioning additions ===== */
+{id:"hydro",g:"tab",icon:"hydro",name:"Hydrostatic test",short:"Test pressure and temperature correction",
+ intro:"Work out the test pressure, then check whether a pressure change during the hold is a leak or just the water temperature changing.",
+ fields:[
+  {id:"Pd",label:"Design pressure",type:"num",def:"10",unit:"bar g",half:true},
+  {id:"k",label:"Test factor",type:"chips",def:"1.5",options:[["1.5","1.5 × (ASME B31.3 / most specs)"],["1.43","1.43 × (EN 13480)"],["1.3","1.3 ×"],["1.25","1.25 ×"]]},
+  {id:"OD",label:"Pipe outside diameter",type:"num",def:"168.3",unit:"mm",half:true},
+  {id:"t",label:"Wall thickness",type:"num",def:"7.11",unit:"mm",half:true},
+  {id:"mat",label:"Pipe material",type:"chips",def:"st",options:[["st","Carbon / stainless steel"],["cu","Copper"],["pp","Plastic (PPR / HDPE)"]]},
+  {id:"P1",label:"Pressure at start of hold",type:"num",def:"15.2",unit:"bar g",half:true},
+  {id:"T1",label:"Water temperature at start",type:"num",def:"31",unit:"°C",half:true},
+  {id:"P2",label:"Pressure at end of hold",type:"num",def:"14.3",unit:"bar g",half:true},
+  {id:"T2",label:"Water temperature at end",type:"num",def:"30.8",unit:"°C",half:true},
+  {id:"tol",label:"Allowed unexplained drop",type:"num",def:"0.1",unit:"bar",adv:true}
+ ],
+ calc(v){
+  const Pd=num(v.Pd),k=num(v.k),Pt=Pd*k;if(!(Pd>0))return{hint:"Enter the design pressure."};
+  const OD=num(v.OD),t=num(v.t),P1=num(v.P1),P2=num(v.P2),T1=num(v.T1),T2=num(v.T2),tol=num(v.tol)||0.1;
+  const base={cap:"Test pressure",value:f(Pt,2),unit:"bar g",say:`Test at ${B(f(Pt,2),"bar g")} (${f(k,2)} × ${f(Pd,1)} bar). Hold for the time in your spec, often 30 minutes to 2 hours after the pressure settles.`,rows:[["Test pressure",f(Pt*100,0),"kPa g"],["Test pressure",f(Pt*14.5038,0),"psig"]]};
+  if(![P1,P2,T1,T2].every(isFinite)||!(OD>0&&t>0))return base;
+  const BT=[[0,-0.68],[4,0],[5,0.16],[10,0.88],[15,1.51],[20,2.07],[25,2.57],[30,3.03],[40,3.85],[50,4.57],[60,5.22]],Tm=(T1+T2)/2;
+  let beta=BT[BT.length-1][1];for(let i=1;i<BT.length;i++)if(Tm<=BT[i][0]){const[a,fa]=BT[i-1],[b,fb]=BT[i];beta=fa+(fb-fa)*(Tm-a)/(b-a);break;}
+  const M={st:[1.2e-5,200000],cu:[1.7e-5,110000],pp:[1.5e-4,900]}[v.mat],dPdT=(beta*1e-4-3*M[0])/(4.6e-4+OD/(t*M[1]))*10;
+  const exp=dPdT*(T2-T1),act=P2-P1,un=act-exp,ok=un>=-tol;
+  return{cap:"Unexplained pressure change",value:(un>=0?"+":"")+f(un,2),unit:"bar",status:{ok,text:ok?"No leak indicated":"Leak likely"},
+   say:`Test at ${B(f(Pt,2),"bar g")}. Trapped water in this pipe changes about ${B(f(Math.abs(dPdT),2),"bar per °C")}, so the ${f(T2-T1,1)} °C change explains ${f(exp,2)} bar. You saw ${f(act,2)} bar, leaving ${B(f(un,2),"bar")} unexplained.`+(ok?" The pressure change is from temperature, not a leak.":" Walk the line for leaks; check flanges, vents, drains and valve glands.")+" Do the hold out of direct sun and log temperature with the pressure.",
+   rows:[["Test pressure",f(Pt,2),"bar g"],["Pressure change per °C",f(dPdT,2),"bar/°C"],["Expected from temperature",f(exp,2),"bar"],["Measured change",f(act,2),"bar"]]};
+ },
+ note:"ΔP/ΔT = (β − 3α) ÷ (κ + D/(t·E)) for trapped, air-free water (β water expansion, α pipe expansion, κ water compressibility). Air pockets make this much smaller, so vent fully. Follow the test pack and your code's test factor."},
+
+{id:"flush",g:"tab",icon:"flush",name:"Flushing velocity",short:"Flow needed to flush each pipe size",
+ intro:"Pick the pipe size and target flushing velocity. You get the flow needed, and the velocity your flushing pump actually gives.",
+ fields:[
+  {id:"dn",label:"Pipe size (steel Sch 40)",type:"select",def:"5",options:PIPE.map((p,i)=>[String(i),p[0]+" · ID "+p[1]+" mm"])},
+  {id:"vt",label:"Target flushing velocity",help:"Usually at least the design velocity, often 1.0–1.5 m/s minimum (BSRIA BG 29). Use your flushing spec.",type:"num",def:"1.5",unit:"m/s",presets:[["1","1.0"],["1.5","1.5"],["2","2.0"]]},
+  {id:"Qp",label:"Flushing pump flow available",type:"num",def:"5",units:uu("flow"),udef:"L/s"},
+  {id:"Vs",label:"System volume (for turnover time)",type:"num",def:"2000",unit:"L",adv:true}
+ ],
+ calc(v){
+  const p=PIPE[+v.dn],vt=num(v.vt),Qp=si(v,"Qp","flow");if(!p)return{hint:"Pick a pipe size."};if(!(vt>0))return{hint:"Enter the target velocity."};
+  const A=Math.PI*(p[1]/1000)**2/4,Qn=A*vt,va=Qp>0?Qp/A:NaN,Vs=num(v.Vs),ok=va>=vt;
+  const rows=PIPE.map(q=>{const a=Math.PI*(q[1]/1000)**2/4;return{cls:q===p?"sel":"",c:[q[0],f(a*vt*1000,2),Qp>0?f(Qp/a,2):"—"]};});
+  return{cap:"Flow needed",value:f(Qn*1000,2),unit:"L/s",status:Qp>0?{ok,text:ok?"Pump reaches target":"Pump too small for this size"}:null,
+   say:`To flush ${p[0]} at ${f(vt,1)} m/s you need ${B(f(Qn*1000,2),"L/s")} (${f(Qn*3600,1)} m³/h).`+(Qp>0?` Your pump gives ${B(f(va,2),"m/s")} in this size.`+(ok?"":" Flush the larger mains in sections, or use a bigger temporary pump."):"")+(Vs>0&&Qp>0?` One full system turnover takes about ${f(Vs/1000/Qp/60,1)} minutes.`:""),
+   rows:[["Flow needed",f(Qn*3600,2),"m³/h"],["Flow needed",f(Qn*15850.3,1),"US GPM"],["Velocity achieved",f(va,2),"m/s"]],
+   after:tbl(["Size","L/s needed","m/s with your pump"],rows)};
+ },
+ note:"Flush each branch separately with terminals bypassed and strainers fitted with fine flushing mesh. Flush until the water runs clear and samples meet the water-treatment spec."},
+
+{id:"align",g:"tab",icon:"align",name:"Shaft alignment",short:"Tolerance check and shim / move at the feet",
+ intro:"Enter the speed and your offset and angularity readings at the coupling. You get pass or fail and how much to move each motor foot.",
+ fields:[
+  {id:"rpm",label:"Speed",type:"num",def:"1480",unit:"rpm",half:true},
+  {id:"pl",label:"Plane",type:"chips",def:"v",options:[["v","Vertical (shims)"],["h","Horizontal (side move)"]]},
+  {id:"off",label:"Offset at coupling centre",help:"Motor shaft relative to pump shaft. + means motor high (or to the right).",type:"num",def:"0.18",unit:"mm",half:true},
+  {id:"gap",label:"Angularity",help:"Gap difference across the coupling face. + means gap open at top (or right).",type:"num",def:"0.06",unit:"mm",half:true},
+  {id:"D",label:"Coupling diameter (or reading span)",type:"num",def:"100",unit:"mm"},
+  {id:"A",label:"Coupling centre to front foot",type:"num",def:"200",unit:"mm",half:true},
+  {id:"Bf",label:"Front foot to rear foot",type:"num",def:"300",unit:"mm",half:true}
+ ],
+ calc(v){
+  const rpm=num(v.rpm),off=num(v.off),gap=num(v.gap),D=num(v.D),A=num(v.A),Bf=num(v.Bf);if(!(rpm>0))return{hint:"Enter the speed."};if(!isFinite(off)||!isFinite(gap)||!(D>0))return{hint:"Enter the offset, angularity and diameter."};
+  const T=rpm<=1000?[0.13,0.10]:rpm<=2000?[0.09,0.07]:rpm<=3000?[0.06,0.05]:[0.04,0.04],ang=gap/D*100,ok=Math.abs(off)<=T[0]&&Math.abs(ang)<=T[1];
+  const slope=gap/D,fF=off+slope*A,fR=off+slope*(A+Bf),vert=v.pl==="v",act=x=>vert?(x>0?`remove ${f(x,2)} mm of shims`:x<0?`add ${f(-x,2)} mm of shims`:"no change"):(x>0?`move ${f(x,2)} mm left`:x<0?`move ${f(-x,2)} mm right`:"no change");
+  return{cap:"Alignment",big:ok?"Within tolerance":"Correct it",status:{ok,text:`Limits ${T[0]} mm offset, ${T[1]} mm/100 mm angle`},
+   say:`At ${f(rpm,0)} rpm the offset is ${f(Math.abs(off),2)} mm (limit ${T[0]}) and the angle is ${f(Math.abs(ang),3)} mm per 100 mm (limit ${T[1]}).`+(A>0&&Bf>0?` To correct the ${vert?"vertical":"horizontal"} plane: front feet ${B(act(fF))}, rear feet ${B(act(fR))}.`:"")+" Correct vertical first, then horizontal, then re-measure.",
+   rows:[["Offset",f(off,3),"mm"],["Angularity",f(ang,3),"mm/100 mm"],["Front foot move",f(-fF,3),"mm"],["Rear foot move",f(-fR,3),"mm"]]};
+ },
+ note:"Typical acceptable tolerances for short flexible couplings (laser alignment practice). Your pump or coupling maker's values govern. Check soft foot (under 0.05 mm) before aligning, and re-check hot alignment where specified."},
+
+{id:"torque",g:"tab",icon:"torque",name:"Flange bolt torque",short:"Torque for bolt size, grade and lubrication",
+ intro:"Pick the bolt size, grade and lubrication. You get the tightening torque and the passes to use.",
+ fields:[
+  {id:"sz",label:"Bolt size",type:"select",def:"M20",options:[["M10","M10"],["M12","M12"],["M16","M16"],["M20","M20"],["M24","M24"],["M27","M27"],["M30","M30"],["M33","M33"],["M36","M36"]]},
+  {id:"gr",label:"Bolt grade",type:"chips",def:"725",options:[["725","ASTM A193 B7"],["640","ISO 8.8"],["940","ISO 10.9"],["450","Stainless A2/A4-70"]]},
+  {id:"K",label:"Lubrication",type:"chips",def:"0.16",options:[["0.12","Moly / anti-seize"],["0.16","Light oil"],["0.20","Dry / plated"]]},
+  {id:"pc",label:"Target bolt stress",help:"% of yield. 50 % is common for spiral-wound gaskets.",type:"num",def:"50",unit:"% of yield"}
+ ],
+ calc(v){
+  const AS={M10:[10,58],M12:[12,84.3],M16:[16,157],M20:[20,245],M24:[24,353],M27:[27,459],M30:[30,561],M33:[33,694],M36:[36,817]}[v.sz],Y=num(v.gr),K=num(v.K),pc=num(v.pc)/100;
+  if(!AS||!(pc>0&&pc<=0.9))return{hint:"Enter a target between 10 and 90 % of yield."};
+  const F=pc*Y*AS[1],T=K*F*AS[0]/1000;
+  return{cap:"Tightening torque",value:f(T,0),unit:"N·m",
+   say:`Tighten ${v.sz} bolts to ${B(f(T,0),"N·m")} (${f(T*0.7376,0)} ft·lb), giving about ${f(F/1000,1)} kN clamp per bolt. Use a star (cross) pattern: pass 1 at ${f(T*0.3,0)}, pass 2 at ${f(T*0.6,0)}, pass 3 at ${f(T,0)} N·m, then a final round pass at ${f(T,0)} N·m until no bolt turns.`,
+   rows:[["Torque",f(T*0.7376,0),"ft·lb"],["Bolt load",f(F/1000,1),"kN"],["Pass 1 (30 %)",f(T*0.3,0),"N·m"],["Pass 2 (60 %)",f(T*0.6,0),"N·m"]]};
+ },
+ note:"T = K × F × d with F = target stress × yield × tensile stress area. The gasket maker's or the project's bolt torque table governs; this is a check. Use calibrated torque wrenches and new gaskets."},
+
+{id:"vib",g:"tab",icon:"vib",name:"Vibration acceptance",short:"ISO 10816 zones A to D",
+ intro:"Pick the machine size and mounting, then enter the highest vibration velocity you read on the bearings.",
+ fields:[
+  {id:"sz",label:"Machine size",type:"chips",def:"m",options:[["s","Under 15 kW"],["m","15–300 kW"],["l","Over 300 kW"]]},
+  {id:"fd",label:"Foundation",type:"chips",def:"r",options:[["r","Rigid"],["f","Flexible (springs, steel frame)"]],show:v=>v.sz!=="s"},
+  {id:"vr",label:"Highest reading",type:"num",def:"2.4",unit:"mm/s RMS"}
+ ],
+ calc(v){
+  const vr=num(v.vr);if(!(vr>=0))return{hint:"Enter the vibration reading."};
+  const Z=v.sz==="s"?[0.71,1.8,4.5]:v.sz==="m"?(v.fd==="f"?[2.3,4.5,7.1]:[1.4,2.8,4.5]):(v.fd==="f"?[3.5,7.1,11]:[2.3,4.5,7.1]);
+  const zn=vr<=Z[0]?"A":vr<=Z[1]?"B":vr<=Z[2]?"C":"D",ok=zn==="A"||zn==="B";
+  const txt={A:"Zone A: newly commissioned machines normally fall here.",B:"Zone B: acceptable for unrestricted long-term running.",C:"Zone C: not acceptable for long-term running. Find the cause (balance, alignment, looseness, bearings) before handover.",D:"Zone D: severe enough to cause damage. Stop and investigate."}[zn];
+  return{cap:"ISO 10816 zone",value:zn,unit:"",status:{ok,text:ok?"Acceptable":"Not acceptable"},
+   say:`${f(vr,2)} mm/s RMS is in ${B("zone "+zn)}. ${txt}`,
+   rows:[["A / B boundary",Z[0],"mm/s"],["B / C boundary",Z[1],"mm/s"],["C / D boundary",Z[2],"mm/s"]]};
+ },
+ note:"ISO 10816-1 (small machines) and 10816-3 (15 kW to 50 MW), RMS velocity 10–1000 Hz. Measure horizontal, vertical and axial on each bearing. For fans, ISO 14694 categories may apply; the project spec governs."},
+
+{id:"pumpt",g:"tab",icon:"pumpt",name:"Pump performance test",short:"Head, power and efficiency from site readings",
+ intro:"Enter flow, suction and discharge gauge readings and the motor power. You get the real pump head and efficiency to compare with the curve.",
+ fields:[
+  {id:"Q",label:"Measured flow",type:"num",def:"25",units:uu("flow"),udef:"L/s"},
+  {id:"ps",label:"Suction gauge",type:"num",def:"120",unit:"kPa g",half:true},
+  {id:"pd",label:"Discharge gauge",type:"num",def:"420",unit:"kPa g",half:true},
+  {id:"dz",label:"Discharge gauge height above suction gauge",type:"num",def:"0.4",unit:"m",adv:true},
+  {id:"ds",label:"Suction pipe ID",type:"num",def:"154",unit:"mm",half:true,adv:true},
+  {id:"dd",label:"Discharge pipe ID",type:"num",def:"128",unit:"mm",half:true,adv:true},
+  {id:"kw",label:"Motor input power",help:"From a power meter, or √3 × V × I × PF.",type:"num",def:"11.5",unit:"kW",half:true},
+  {id:"me",label:"Motor efficiency",type:"num",def:"92",unit:"%",half:true},
+  {id:"Qd",label:"Design flow",type:"num",def:"25",units:uu("flow"),udef:"L/s",adv:true},
+  {id:"Hd",label:"Design head",type:"num",def:"30",unit:"m",adv:true}
+ ],
+ calc(v){
+  const Q=si(v,"Q","flow"),ps=num(v.ps),pd=num(v.pd);if(!(Q>0))return{hint:"Enter the measured flow."};if(!isFinite(ps)||!isFinite(pd))return{hint:"Enter both gauge readings."};
+  const dz=num(v.dz)||0,ds=num(v.ds)/1000,dd=num(v.dd)/1000,vs=ds>0?Q/(Math.PI*ds*ds/4):0,vd=dd>0?Q/(Math.PI*dd*dd/4):0;
+  const H=(pd-ps)*1000/(998*9.81)+dz+(vd*vd-vs*vs)/(2*9.81),Ph=998*9.81*Q*H/1000,kw=num(v.kw),me=num(v.me)/100,eff=kw>0&&me>0?Ph/(kw*me):NaN;
+  const Qd=si(v,"Qd","flow"),Hd=num(v.Hd);
+  return{cap:"Pump head",value:f(H,1),unit:"m",status:isFinite(eff)?{ok:eff>=0.5,text:`Pump efficiency ${f(eff*100,0)} %`}:null,
+   say:`The pump is giving ${B(f(H,1),"m")} head at ${f(Q*1000,1)} L/s, which is ${f(Ph,2)} kW of hydraulic power.`+(isFinite(eff)?` With ${f(kw,1)} kW into a ${f(me*100,0)} % efficient motor, pump efficiency is ${B(f(eff*100,0),"%")}.`:"")+(Qd>0&&Hd>0?` Against design: flow ${f(Q/Qd*100,0)} %, head ${f(H/Hd*100,0)} %. Plot this point on the pump curve; a point well below the curve points to wrong rotation, a worn impeller, air, or a blocked strainer.`:""),
+   rows:[["Head",f(H*9.81*0.998,0),"kPa"],["Velocity head correction",f((vd*vd-vs*vs)/(2*9.81),2),"m"],["Hydraulic power",f(Ph,2),"kW"],["Pump efficiency",isFinite(eff)?f(eff*100,1):"—","%"],["Wire-to-water efficiency",kw>0?f(Ph/kw*100,1):"—","%"]]};
+ },
+ note:"H = (Pd − Ps) ÷ ρg + gauge height difference + (vd² − vs²) ÷ 2g. Use calibrated gauges on the pump nozzles, not after valves or strainers."},
+
+{id:"fanperf",g:"tab",icon:"fanperf",name:"Fan performance",short:"Air power, fan efficiency and SFP",
+ intro:"Enter the measured airflow, fan pressure and motor input power. You get fan efficiency and specific fan power (SFP).",
+ fields:[
+  {id:"Q",label:"Measured airflow",type:"num",def:"12000",units:["m³/h","CFM","L/s"],udef:"m³/h"},
+  {id:"P",label:"Fan total pressure",help:"Across the fan, or ESP plus internal losses.",type:"num",def:"650",unit:"Pa"},
+  {id:"kw",label:"Motor input power",type:"num",def:"3.9",unit:"kW",half:true},
+  {id:"me",label:"Motor efficiency",type:"num",def:"90",unit:"%",half:true},
+  {id:"dr",label:"Drive",type:"chips",def:"0.95",options:[["1","Direct / plug fan"],["0.95","Belt drive"]]}
+ ],
+ calc(v){
+  const Q=airQ(v,"Q"),P=num(v.P),kw=num(v.kw),me=num(v.me)/100,dr=num(v.dr)||1;if(!(Q>0&&P>0))return{hint:"Enter the airflow and fan pressure."};
+  const Pa=Q*P/1000,eff=kw>0&&me>0?Pa/(kw*me*dr):NaN,sfp=kw>0?kw/Q:NaN;
+  const cat=!isFinite(sfp)?"—":sfp<=0.5?"SFP 1":sfp<=0.75?"SFP 2":sfp<=1.25?"SFP 3":sfp<=2?"SFP 4":sfp<=3?"SFP 5":sfp<=4.5?"SFP 6":"SFP 7";
+  return{cap:"Fan efficiency",value:isFinite(eff)?f(eff*100,0):"—",unit:"%",status:isFinite(sfp)?{ok:sfp<=2,text:`${f(sfp,2)} kW per m³/s (${cat})`}:null,
+   say:`The fan moves ${f(Q*1000,0)} L/s at ${f(P,0)} Pa, which is ${B(f(Pa,2),"kW")} of air power.`+(isFinite(eff)?` Fan efficiency is ${B(f(eff*100,0),"%")} and specific fan power is ${B(f(sfp,2),"kW/(m³/s)")}, category ${cat}.`:"")+(eff<0.5?" Low efficiency points to the fan running far from its best point, wrong rotation, or inlet or outlet losses.":""),
+   rows:[["Air power",f(Pa,2),"kW"],["SFP",isFinite(sfp)?f(sfp,2):"—","kW/(m³/s)"],["SFP category (EN 16798-3)",cat,""],["Shaft power",kw>0?f(kw*me,2):"—","kW"]]};
+ },
+ note:"Air power = Q × p. Fan efficiency = air power ÷ (input × motor × drive efficiency). SFP = electrical input ÷ airflow; lower is better."},
+
+{id:"hrec",g:"tab",icon:"hrec",name:"Heat recovery effectiveness",short:"Thermal wheel or plate exchanger",
+ intro:"Enter the outdoor air, supply air after recovery and extract air temperatures. You get the temperature effectiveness and the heat recovered.",
+ fields:[
+  {id:"t21",label:"Outdoor air entering",type:"num",def:"44",unit:"°C",half:true},
+  {id:"t22",label:"Supply air after recovery",type:"num",def:"31.5",unit:"°C",half:true},
+  {id:"t11",label:"Extract air entering",type:"num",def:"24",unit:"°C",half:true},
+  {id:"Qs",label:"Supply airflow",type:"num",def:"5000",units:["m³/h","CFM","L/s"],udef:"m³/h",half:true},
+  {id:"spec",label:"Datasheet effectiveness",type:"num",def:"65",unit:"%",adv:true}
+ ],
+ calc(v){
+  const a=num(v.t21),b=num(v.t22),c=num(v.t11),Q=airQ(v,"Qs"),sp=num(v.spec);if(![a,b,c].every(isFinite))return{hint:"Enter all three temperatures."};
+  if(Math.abs(a-c)<5)return{hint:"Outdoor and extract air need at least 5 K difference for a reliable result. Test on a hotter (or colder) day."};
+  const e=(b-a)/(c-a),kw=Q>0?1.2*Q*1.006*Math.abs(b-a):NaN;
+  return{cap:"Temperature effectiveness",value:f(e*100,0),unit:"%",status:sp>0?{ok:e*100>=sp*0.9,text:`${f(e*100/sp*100,0)} % of datasheet`}:null,
+   say:`The recovery unit brings the outdoor air ${f(Math.abs(b-a),1)} K of the way toward extract air out of ${f(Math.abs(c-a),1)} K possible, an effectiveness of ${B(f(e*100,0),"%")}.`+(Q>0?` It recovers about ${B(f(kw,1),"kW")} (${f(kw/3.517,2)} TR).`:"")+(sp>0&&e*100<sp*0.9?" Below datasheet: check wheel speed and belt, bypass dampers, seals and that supply and extract flows are balanced.":""),
+   rows:[["Recovered",f(kw,1),"kW"],["Temperature change",f(b-a,1),"K"],["Available difference",f(c-a,1),"K"]]};
+ },
+ note:"EN 308 supply-side temperature efficiency η = (t22 − t21) ÷ (t11 − t21), valid with balanced supply and extract airflow. Sensible only; enthalpy wheels also recover moisture."},
+
+{id:"filt",g:"tab",icon:"filt",name:"Filter pressure drop",short:"How loaded is the filter?",
+ intro:"Enter the clean, final and current pressure drop. You find how loaded the filter is and when to change it.",
+ fields:[
+  {id:"c",label:"Clean (initial) pressure drop",help:"From the filter label or datasheet at design airflow.",type:"num",def:"90",unit:"Pa",half:true},
+  {id:"fn",label:"Final (change) pressure drop",type:"num",def:"250",unit:"Pa",half:true},
+  {id:"m",label:"Reading now",type:"num",def:"185",unit:"Pa"},
+  {id:"qp",label:"Airflow at time of reading",type:"num",def:"100",unit:"% of design",adv:true}
+ ],
+ calc(v){
+  const c=num(v.c),fn=num(v.fn),qp=(num(v.qp)||100)/100;let m=num(v.m);if(!(c>0&&fn>c))return{hint:"Enter clean and final pressure drops (final higher than clean)."};if(!(m>=0))return{hint:"Enter the reading."};
+  const mc=m/Math.pow(qp,1.3),load=(mc-c)/(fn-c)*100;
+  return{cap:"Filter loading",value:f(Math.max(load,0),0),unit:"%",status:{ok:load<80,text:load>=100?"Change now":load>=80?"Change soon":"OK"},
+   say:`At design airflow the filter reads about ${B(f(mc,0),"Pa")}, which is ${B(f(Math.max(load,0),0),"%")} of the way from clean to final.`+(load>=100?" It is at or past final pressure drop: change it.":load>=80?" Order replacements.":"")+(mc<c*0.8?" Lower than clean: the filter may be missing, bypassing or damaged, or the gauge tubes are swapped.":""),
+   rows:[["Corrected reading",f(mc,0),"Pa"],["Clean",f(c,0),"Pa"],["Final",f(fn,0),"Pa"],["Margin left",f(fn-mc,0),"Pa"]]};
+ },
+ note:"Readings at reduced airflow are corrected with ΔP ∝ Q^1.3. During TAB, test with clean filters and design for the mid-life or final ΔP, as the spec requires."},
+
+{id:"faceu",g:"tab",icon:"faceu",name:"Face velocity uniformity",short:"Spread across a coil or filter face",
+ intro:"Enter the velocity grid readings across the coil or filter face. You get the average, the spread and pass or fail.",
+ fields:[
+  {id:"r",label:"Velocity readings",help:"Separated by spaces or commas.",type:"text",def:"2.1 2.3 2.2 2.0 2.4 2.5 2.3 2.1 1.9 2.2 2.4 2.3"},
+  {id:"tol",label:"Allowed deviation from average",type:"num",def:"20",unit:"± %"},
+  {id:"vmax",label:"Maximum face velocity",help:"Cooling coils about 2.5 m/s to avoid water carry-over.",type:"num",def:"2.5",unit:"m/s",adv:true},
+  {id:"A",label:"Face area (optional)",type:"num",def:"",unit:"m²",adv:true}
+ ],
+ calc(v){
+  const r=numsOf(v.r),tol=num(v.tol)||20,vm=num(v.vmax),A=num(v.A);if(r.length<3)return{hint:"Enter at least three readings."};
+  const av=r.reduce((a,b)=>a+b,0)/r.length,dv=r.map(x=>(x-av)/av*100),mx=Math.max(...dv.map(Math.abs)),out=dv.filter(x=>Math.abs(x)>tol).length,hi=Math.max(...r);
+  const ok=out===0&&!(vm>0&&hi>vm);
+  return{cap:"Average face velocity",value:f(av,2),unit:"m/s",status:{ok,text:ok?"Uniform":"Not uniform"},
+   say:`Average is ${B(f(av,2),"m/s")} and the worst point is ${B(f(mx,0),"%")} from it.`+(out?` ${out} point(s) are outside ±${tol} %: check for blocked fins, gaps, bypass, or a poor inlet.`:` All points are within ±${tol} %.`)+(vm>0&&hi>vm?` The highest reading ${f(hi,2)} m/s is above ${f(vm,1)} m/s.`:"")+(A>0?` Airflow is about ${f(av*A*3600,0)} m³/h.`:""),
+   rows:[["Points",r.length,""],["Highest",f(hi,2),"m/s"],["Lowest",f(Math.min(...r),2),"m/s"],["Max deviation",f(mx,1),"%"],["Airflow",A>0?f(av*A*1000,0):"—","L/s"]],
+   after:tbl(["Point","m/s","From average"],r.map((x,i)=>({cls:Math.abs(dv[i])>tol?"sel":"",c:[i+1,f(x,2),(dv[i]>=0?"+":"")+f(dv[i],0)+" %"]})))};
+ },
+ note:"Take an even grid (about one point per 0.1–0.2 m²) about 150 mm from the face. ±20 % of average is a common acceptance; HEPA and cleanroom specs may be tighter."},
+
+{id:"sound",g:"tab",icon:"sound",name:"Sound level",short:"Add dB, background correction, NC rating",
+ intro:"Add sound levels together, take off background noise, or rate a room from octave-band readings.",
+ fields:[
+  {id:"mode",label:"What do you need?",type:"chips",def:"nc",options:[["nc","NC rating"],["bg","Background correction"],["add","Add sources"]]},
+  {id:"oct",label:"Octave-band levels 63 to 8000 Hz",help:"8 readings in dB, separated by spaces.",type:"text",def:"58 52 46 41 37 33 30 27",show:v=>v.mode==="nc"},
+  {id:"tgt",label:"Room target",type:"num",def:"40",unit:"NC",show:v=>v.mode==="nc",presets:[["30","Office 30–35"],["40","Control room 40"],["45","Workshop 45"]]},
+  {id:"Lt",label:"Level with the equipment running",type:"num",def:"48",unit:"dB",half:true,show:v=>v.mode==="bg"},
+  {id:"Lb",label:"Background with it off",type:"num",def:"43",unit:"dB",half:true,show:v=>v.mode==="bg"},
+  {id:"L",label:"Levels to add",help:"Separated by spaces.",type:"text",def:"45 45 42",show:v=>v.mode==="add"}
+ ],
+ calc(v){
+  const lg=x=>10*Math.log10(x);
+  if(v.mode==="add"){const L=numsOf(v.L);if(!L.length)return{hint:"Enter the levels to add."};const T=lg(L.reduce((a,b)=>a+Math.pow(10,b/10),0));
+   return{cap:"Combined level",value:f(T,1),unit:"dB",say:`Together the ${L.length} sources give ${B(f(T,1),"dB")}. Two equal sources add 3 dB; a source 10 dB quieter adds almost nothing.`,rows:[["Loudest single source",f(Math.max(...L),1),"dB"]]};}
+  if(v.mode==="bg"){const Lt=num(v.Lt),Lb=num(v.Lb);if(!isFinite(Lt)||!isFinite(Lb))return{hint:"Enter both readings."};const d=Lt-Lb;
+   if(d<3)return{cap:"Equipment level",big:"Cannot separate",status:{ok:false,text:`Only ${f(d,1)} dB above background`},say:"The equipment is less than 3 dB above background, so its level can't be measured reliably. Measure when the background is quieter (night shift, other plant off)."};
+   const Ls=lg(Math.pow(10,Lt/10)-Math.pow(10,Lb/10));
+   return{cap:"Equipment alone",value:f(Ls,1),unit:"dB",say:`With ${f(d,1)} dB between running and background, the equipment alone is ${B(f(Ls,1),"dB")}.`+(d>=10?" Over 10 dB difference, background makes almost no difference.":""),rows:[["Correction",f(Lt-Ls,1),"dB"]]};}
+  const o=numsOf(v.oct);if(o.length!==8)return{hint:`Enter 8 octave-band readings (63 to 8000 Hz). You have ${o.length}.`};
+  const NC={15:[47,36,29,22,17,14,12,11],20:[51,40,33,26,22,19,17,16],25:[54,44,37,31,27,24,22,21],30:[57,48,41,35,31,29,28,27],35:[60,52,45,40,36,34,33,32],40:[64,56,50,45,41,39,38,37],45:[67,60,54,49,46,44,43,42],50:[71,64,58,54,51,49,48,47],55:[74,67,62,58,56,54,53,52],60:[77,71,67,63,61,59,58,57],65:[80,75,71,68,66,64,63,62]};
+  const ks=Object.keys(NC).map(Number),band=[63,125,250,500,1000,2000,4000,8000];
+  const per=o.map((L,i)=>{if(L<=NC[15][i])return 15;for(let j=1;j<ks.length;j++){const a=NC[ks[j-1]][i],b=NC[ks[j]][i];if(L<=b)return ks[j-1]+5*(L-a)/(b-a);}return 65+5*(L-NC[65][i])/(NC[65][i]-NC[60][i]);});
+  const nc=Math.max(...per),bi=per.indexOf(nc),tg=num(v.tgt),ok=!(tg>0)||nc<=tg;
+  return{cap:"Room rating",value:"NC "+f(Math.ceil(nc),0),unit:"",status:tg>0?{ok,text:ok?`Meets NC ${tg}`:`Above NC ${tg}`}:null,
+   say:`The room rates ${B("NC "+f(Math.ceil(nc),0))}, set by the ${band[bi]} Hz band.`+(band[bi]<=250&&!ok?" Low-frequency noise usually comes from fans and duct rumble: check fan speed, flexible connections and duct velocity.":(!ok?" Mid and high-frequency noise usually comes from diffusers, dampers or high air velocity.":"")),
+   after:tbl(["Band Hz","dB","NC in band"],band.map((b,i)=>({cls:i===bi?"sel":"",c:[b,f(o[i],0),f(Math.ceil(per[i]),0)]})))};
+ },
+ note:"Decibels add logarithmically: L = 10 log Σ10^(L/10). NC uses the tangency method on 63–8000 Hz octave bands. Measure at 1.2 m height, away from walls, per the project acoustic spec."},
+
+{id:"door",g:"tab",icon:"door",name:"Door opening force",short:"Pressurised stair and lobby doors",
+ intro:"Enter the door size, the pressure difference and the door closer force. You get the force needed at the handle and the maximum pressure the door can take.",
+ fields:[
+  {id:"W",label:"Door width",type:"num",def:"0.9",unit:"m",half:true},
+  {id:"H",label:"Door height",type:"num",def:"2.1",unit:"m",half:true},
+  {id:"dp",label:"Pressure difference across the door",type:"num",def:"50",unit:"Pa"},
+  {id:"Fc",label:"Door closer force",help:"Measure with a force gauge with no pressure, or use the closer data.",type:"num",def:"40",unit:"N",half:true},
+  {id:"d",label:"Handle to latch edge",type:"num",def:"0.075",unit:"m",half:true},
+  {id:"lim",label:"Maximum force allowed",type:"chips",def:"100",options:[["100","100 N (EN 12101-6)"],["133","133 N (NFPA 101 / 92)"]]}
+ ],
+ calc(v){
+  const W=num(v.W),H=num(v.H),dp=num(v.dp),Fc=num(v.Fc)||0,d=num(v.d)||0.075,lim=num(v.lim);if(!(W>d&&H>0))return{hint:"Enter the door width and height."};if(!(dp>=0))return{hint:"Enter the pressure difference."};
+  const A=W*H,k=W*A/(2*(W-d)),F=Fc+k*dp,dpmax=(lim-Fc)/k,ok=F<=lim;
+  return{cap:"Force at the handle",value:f(F,0),unit:"N",status:{ok,text:ok?`Within ${lim} N`:`Over ${lim} N`},
+   say:`At ${f(dp,0)} Pa, opening this ${f(W,2)} × ${f(H,2)} m door takes about ${B(f(F,0),"N")} (${f(F/9.81,1)} kgf). The most pressure difference this door can take and stay within ${lim} N is ${B(f(dpmax,0),"Pa")}.`+(ok?"":" Reduce the pressure with a relief damper or VFD control, or use a lighter door closer."),
+   rows:[["Force from pressure",f(k*dp,0),"N"],["Closer force",f(Fc,0),"N"],["Door area",f(A,2),"m²"],["Maximum pressure difference",f(dpmax,0),"Pa"]]};
+ },
+ note:"F = Fdc + W·A·ΔP ÷ (2(W − d)) (NFPA 92 / EN 12101-6). Test with all other doors in the stair closed and the system running in fire mode, then with the fire floor door open."},
+
+{id:"gtd",g:"tab",icon:"gtd",name:"Damper leakage test",short:"Gas-tight or fire damper leakage per m²",
+ intro:"Enter the leakage you measured, the damper size and test pressure. You get leakage per m² and pass or fail against the class.",
+ fields:[
+  {id:"Q",label:"Measured leakage",type:"num",def:"3.2",units:["L/s","m³/h","CFM"],udef:"L/s"},
+  {id:"W",label:"Damper width",type:"num",def:"600",unit:"mm",half:true},
+  {id:"H",label:"Damper height",type:"num",def:"400",unit:"mm",half:true},
+  {id:"P",label:"Pressure during test",type:"num",def:"1000",unit:"Pa",half:true},
+  {id:"cls",label:"Acceptance",type:"select",def:"spec",options:[["spec","Project spec (enter below)"],["15.2|250","AMCA 511 Class 1A (15.2 L/s·m² at 250 Pa)"],["20.3|250","AMCA 511 Class 1 (20.3 L/s·m² at 250 Pa)"],["50.8|250","AMCA 511 Class 2 (50.8 L/s·m² at 250 Pa)"]]},
+  {id:"lim",label:"Spec limit",type:"num",def:"5",unit:"L/s per m²",half:true,show:v=>v.cls==="spec"},
+  {id:"Pl",label:"at pressure",type:"num",def:"1000",unit:"Pa",half:true,show:v=>v.cls==="spec"}
+ ],
+ calc(v){
+  const Q=num(v.Q)*({"L/s":1,"m³/h":1/3.6,"CFM":0.471947}[v.Q_u]||1),A=num(v.W)*num(v.H)/1e6,P=num(v.P);if(!(Q>=0&&A>0&&P>0))return{hint:"Enter the leakage, damper size and test pressure."};
+  let lim,Pl;if(v.cls==="spec"){lim=num(v.lim);Pl=num(v.Pl);}else[lim,Pl]=String(v.cls).split("|").map(Number);if(!(lim>0&&Pl>0))return{hint:"Enter the spec limit and its pressure."};
+  const q=Q/A,qc=q*Math.pow(Pl/P,0.65),ok=qc<=lim;
+  return{cap:"Leakage per m²",value:f(q,2),unit:"L/s·m²",status:{ok,text:ok?"Pass":"Fail"},
+   say:`${f(Q,2)} L/s through ${f(A,3)} m² is ${B(f(q,2),"L/s per m²")} at ${f(P,0)} Pa.`+(Pl!==P?` Corrected to ${f(Pl,0)} Pa that is ${f(qc,2)} L/s per m².`:"")+` The limit is ${f(lim,2)}, so it ${ok?"passes":"fails: check blade and jamb seals, linkage adjustment and actuator end position"}.`,
+   rows:[["Leakage at limit pressure",f(qc,2),"L/s·m²"],["Limit",f(lim,2),"L/s·m²"],["Damper area",f(A,3),"m²"],["Allowed total",f(lim*A,2),"L/s"]]};
+ },
+ note:"Leakage scales with pressure^0.65 when correcting to a different test pressure. Gas-tight dampers on LER, substation and CCR intakes usually have a project-specific limit; use that."},
+
+{id:"calib",g:"tab",icon:"calib",name:"Instrument calibration check",short:"5-point error against tolerance",
+ intro:"Enter the instrument range, the reference values you applied and what the instrument read. You get the error at each point and pass or fail.",
+ fields:[
+  {id:"lo",label:"Range low",type:"num",def:"0",unit:"",half:true},
+  {id:"hi",label:"Range high",type:"num",def:"500",unit:"",half:true},
+  {id:"ref",label:"Reference values applied",type:"text",def:"0 125 250 375 500"},
+  {id:"rd",label:"Instrument readings",type:"text",def:"0.8 126.1 250.9 376.2 501.4"},
+  {id:"tol",label:"Tolerance",type:"num",def:"0.5",unit:"% of span"}
+ ],
+ calc(v){
+  const lo=num(v.lo),hi=num(v.hi),R=numsOf(v.ref),M=numsOf(v.rd),tol=num(v.tol)||0.5,sp=hi-lo;if(!(sp>0))return{hint:"Enter a range with high above low."};
+  if(!R.length||R.length!==M.length)return{hint:`Enter the same number of reference values and readings (${R.length} and ${M.length}).`};
+  const e=M.map((m,i)=>(m-R[i])/sp*100),mx=Math.max(...e.map(Math.abs)),ok=mx<=tol;
+  return{cap:"Largest error",value:f(mx,2),unit:"% of span",status:{ok,text:ok?"As found: pass":"As found: fail"},
+   say:`The worst point is ${B(f(mx,2),"%")} of span against a tolerance of ±${f(tol,2)} %.`+(ok?"":" Adjust zero and span, then repeat the check and record as-left values.")+(e.every(x=>x>0)||e.every(x=>x<0)?" All errors are on one side, which points to a zero offset.":""),
+   rows:[["Span",f(sp),""],["Tolerance",f(tol*sp/100,3),"units"]],
+   after:tbl(["Point","Reference","Reading","Error % span","4–20 mA expected"],R.map((r,i)=>({cls:Math.abs(e[i])>tol?"sel":"",c:[i+1,f(r,3),f(M[i],3),(e[i]>=0?"+":"")+f(e[i],2),f(4+16*(r-lo)/sp,2)]})))};
+ },
+ note:"Check at 0, 25, 50, 75 and 100 % of range, rising then falling for hysteresis. The reference must be at least 3–4 times more accurate than the instrument. Record as-found and as-left."},
 {id:"grille",g:"hvac",icon:"grille",name:"Grille & diffuser size",short:"Neck size from airflow",
  intro:"Enter the airflow and pick the outlet type. You get the size to use and its velocity.",
  fields:[
@@ -3013,7 +3413,7 @@ function home(){
   <button class="tile feat" data-go="trouble"><span class="ic">${svg("trbl")}</span><span class="ft"><b>Troubleshooter</b><span>${Object.values(TSD).reduce((a,v)=>a+v.length,0)} faults across HVAC, electrical, refrigeration and plumbing</span></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
   <div class="group"><h2>Basic calculators</h2><div class="tiles">${TOOLS.filter(t=>t.g==="basic").map(tile).join("")}</div></div>
   <div class="group"><h2>HVAC</h2><div class="tiles">${TOOLS.filter(t=>t.g==="hvac").map(tile).join("")}</div></div>
-  <div class="group"><h2>TAB &amp; commissioning</h2><div class="tiles">${TOOLS.filter(t=>t.g==="tab").map(tile).join("")}</div></div>
+  <div class="group"><h2>Commissioning &amp; TAB</h2><div class="tiles">${TOOLS.filter(t=>t.g==="tab").map(tile).join("")}</div></div>
   <div class="group"><h2>Psychrometrics</h2><div class="tiles">${TOOLS.filter(t=>t.g==="psy").map(tile).join("")}</div></div>
   <div class="group"><h2>Refrigeration</h2><div class="tiles">${TOOLS.filter(t=>t.g==="ref").map(tile).join("")}</div></div>
   <div class="group"><h2>Plumbing</h2><div class="tiles">${TOOLS.filter(t=>t.g==="plumb").map(tile).join("")}</div></div>
