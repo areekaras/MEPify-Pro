@@ -1271,7 +1271,7 @@ jobs:
             if(days<=40000)for(let i=0;i<days;i++){const wd=new Date(lo+i*864e5).getUTCDay();if(!off.includes(wd))work++;}
             const[y,m,d]=ymd(lo,hi+inc*864e5),parts=[y&&plural(y,"year"),m&&plural(m,"month"),(d||!(y||m))&&plural(d,"day")].filter(Boolean).join(", ");
             return{cap:b<a?"Time between (end is before start)":"Time between",value:f(days,0),unit:days===1?"day":"days",
-             say:`From ${dFmt(lo)} to ${dFmt(hi)} is ${B(parts)}. That includes ${B(f(work,0),"working days")} ${{fs:"with a Friday and Saturday weekend",ss:"with a Saturday and Sunday weekend",s:"with Sunday off",f:"with Friday off",n:"with no days off"}[v.wk]||""}.`,
+             say:`From ${dFmt(lo)} to ${dFmt(hi)} is ${B(parts)}. That includes ${B(f(work,0),"working days")} ${ {fs:"with a Friday and Saturday weekend",ss:"with a Saturday and Sunday weekend",s:"with Sunday off",f:"with Friday off",n:"with no days off"}[v.wk]||""}.`,
              rows:[["Weeks",f(days/7,2),"weeks"],["Working days",f(work,0),"days"],["Weekend days",f(days-work,0),"days"],["Hours",f(days*24,0),"h"]]};
            },
            note:"By default the start date counts and the end date does not, so 1 to 2 January is 1 day. Turn on “Count the end date” under More options for an inclusive count. Public holidays are not removed."},
@@ -1767,7 +1767,7 @@ jobs:
             const SZ=[20,30,45,60,80,100,125,150,200,250,300,350,400,500,630,750,800,1000,1250,1500,1750,2000,2500];
             const g=SZ.find(s=>s>=need)||Math.ceil(need/100)*100;
             return{cap:"Generator rating",value:g,unit:"kVA",status:{ok:start<=g*1.5,text:start<=g*1.5?"Motor start looks manageable":"Check the motor-starting capacity"},
-             say:`The running load is ${f(run,0)} kVA, or ${f(need,0)} kVA with margin, so choose a ${B(g+" kVA")} set. Starting the ${f(mk)} kW motor ${{"6":"direct-on-line","2.5":"star-delta","3":"on a soft starter","1.5":"on a VFD"}[v.st]} draws about ${B(f(start,0),"kVA")}. Confirm on the generator's motor-starting (SkVA) curve that it can supply this with no more than 15–20 % voltage dip.`,
+             say:`The running load is ${f(run,0)} kVA, or ${f(need,0)} kVA with margin, so choose a ${B(g+" kVA")} set. Starting the ${f(mk)} kW motor ${ {"6":"direct-on-line","2.5":"star-delta","3":"on a soft starter","1.5":"on a VFD"}[v.st]} draws about ${B(f(start,0),"kVA")}. Confirm on the generator's motor-starting (SkVA) curve that it can supply this with no more than 15–20 % voltage dip.`,
              rows:[["Running load",f(run,0),"kVA"],["Motor starting demand",f(start,0),"kVA"],["Load at motor start",f(step,0),"kVA"]]};
            },
            note:"Starting multipliers are typical: DOL 6 ×, star-delta 2.5 ×, soft starter 3 ×, VFD 1.5 × running kVA. Final selection needs the manufacturer's sizing software."},
