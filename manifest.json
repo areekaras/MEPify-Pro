@@ -1,7 +1,7 @@
 {
- "name": "SiteCalc Pro",
- "short_name": "SiteCalc Pro",
- "description": "HVAC, refrigeration and electrical calculators by Mohamed Shafaf Karumannil",
+ "name": "MEPify",
+ "short_name": "MEPify",
+ "description": "MEP calculators for HVAC, electrical, fire, plumbing and refrigeration by Mohamed Shafaf Karumannil",
  "start_url": "./",
  "scope": "./",
  "display": "standalone",
