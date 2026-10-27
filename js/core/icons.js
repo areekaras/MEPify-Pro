@@ -146,6 +146,7 @@ const ICON={
   flange:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><circle cx="12" cy="6.5" r="1"/><circle cx="12" cy="17.5" r="1"/><circle cx="6.5" cy="12" r="1"/><circle cx="17.5" cy="12" r="1"/>',
   weight:'<path d="M6 9h12l2 11H4z"/><circle cx="12" cy="6" r="2.5"/>',
   bearing:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="5.5" r="1.3"/><circle cx="12" cy="18.5" r="1.3"/><circle cx="5.5" cy="12" r="1.3"/><circle cx="18.5" cy="12" r="1.3"/>',
+  travpts:'<rect x="3" y="5" width="18" height="14" rx="1.5"/><circle cx="7.5" cy="9.5" r="1"/><circle cx="12" cy="9.5" r="1"/><circle cx="16.5" cy="9.5" r="1"/><circle cx="7.5" cy="14.5" r="1"/><circle cx="12" cy="14.5" r="1"/><circle cx="16.5" cy="14.5" r="1"/>',
   job:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>'
 };
 Object.assign(ICON,{

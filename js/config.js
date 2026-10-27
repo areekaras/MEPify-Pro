@@ -1,7 +1,7 @@
 /* MEPify · App version, section list and section names. Add a new section here.
    by Mohamed Shafaf Karumannil */
 
-const APPV="1.18";
+const APPV="1.19";
 const GROUPS=[["hvac","HVAC","air","Loads, airflow, ducts, coils, fans, water and heating"],["tab","Commissioning & TAB","trav","Testing, adjusting, balancing and handover checks"],
   ["ref","Refrigeration","pt","Pressures, superheat, subcooling and charge"],["elec","Electrical","cable","Cables, protection, motors, earthing and testing"],
   ["plumb","Plumbing","pipe","Pipe sizing, pumps, drainage and hot water"],["fire","Fire protection","fire","Sprinklers, fire pumps, hydrants and clean agents"],

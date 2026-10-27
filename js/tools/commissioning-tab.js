@@ -32,6 +32,65 @@ TOOLS.push(
  },
  note:"Average √Pv, not Pv. Choose a straight run about 7.5 diameters after and 3 before any fitting. Velocity = √(2 Pv ÷ ρ)."},
 
+{id:"travpts",g:"tab",icon:"travpts",name:"Duct traverse points",short:"Log-Tchebycheff or equal-area points and airflow",
+ intro:"Pick the method and enter the duct size. You get where to put every test point. Then type the velocity readings in order to get the airflow in L/s, m³/h and CFM.",
+ fields:[
+  {id:"meth",label:"Method",type:"chips",def:"lt",options:[["lt","Log-Tchebycheff"],["ea","Equal area"]]},
+  {id:"shape",label:"Duct shape",type:"chips",def:"rect",options:[["rect","Rectangular"],["round","Round"]]},
+  {id:"W",label:"Width",type:"num",def:"600",units:["mm","in"],udef:"mm",half:true,show:v=>v.shape==="rect"},
+  {id:"H",label:"Height",type:"num",def:"400",units:["mm","in"],udef:"mm",half:true,show:v=>v.shape==="rect"},
+  {id:"D",label:"Diameter",type:"num",def:"400",units:["mm","in"],udef:"mm",show:v=>v.shape==="round"},
+  {id:"nlr",label:"Points per side",help:"Auto follows ASHRAE 111 for each side: 5 below 760 mm, 6 up to 915 mm, 7 above.",type:"chips",def:"a",options:[["a","Auto"],["5","5"],["6","6"],["7","7"]],adv:true,show:v=>v.meth!=="ea"&&v.shape==="rect"},
+  {id:"nlc",label:"Points per diameter",help:"Auto: 6 up to 250 mm, 8 up to 600 mm, 10 above.",type:"chips",def:"a",options:[["a","Auto"],["6","6"],["8","8"],["10","10"]],adv:true,show:v=>v.meth!=="ea"&&v.shape==="round"},
+  {id:"ner",label:"Points per side",help:"Auto keeps points no more than 150 mm apart, with 4 to 8 per side.",type:"chips",def:"a",options:[["a","Auto"],["4","4"],["5","5"],["6","6"],["7","7"],["8","8"]],adv:true,show:v=>v.meth==="ea"&&v.shape==="rect"},
+  {id:"nec",label:"Equal-area rings",help:"Auto: 3 rings up to 300 mm, 4 up to 600 mm, 5 up to 1200 mm, 6 above. Each ring gives 2 points on every diameter.",type:"chips",def:"a",options:[["a","Auto"],["3","3"],["4","4"],["5","5"],["6","6"]],adv:true,show:v=>v.meth==="ea"&&v.shape==="round"},
+  {id:"vu",label:"Velocity readings in",type:"chips",def:"ms",options:[["ms","m/s"],["fpm","fpm"]]},
+  {id:"r",label:"Velocity readings",help:"Type every point in order, separated by spaces or commas. Rectangular: hole 1 from the top down, then hole 2, and so on. Round: the first diameter wall to wall, then the second.",type:"text",def:"4.6 5.1 5.3 5.0 4.4 4.9 5.5 5.7 5.4 4.8 5.0 5.6 5.8 5.5 4.9 4.8 5.4 5.6 5.3 4.7 4.3 4.9 5.1 4.8 4.2"},
+  {id:"Qd",label:"Design airflow",help:"Optional. Leave blank to skip the % of design check.",type:"num",def:"4300",units:["m³/h","CFM","L/s"],udef:"m³/h",adv:true}
+ ],
+ calc(v){
+  const mm=id=>{const x=num(v[id]);return v[id+"_u"]==="in"?x*25.4:x;},lt=v.meth!=="ea",round=v.shape==="round";
+  const ins=x=>f(x/25.4,2);
+  let A,cols,rows,dep,pos=[],need;
+  if(round){
+   const D=mm("D");if(!(D>0))return{hint:"Enter the duct diameter."};A=Math.PI*D*D/4e6;
+   let fr;
+   if(lt){fr=LRD[v.nlc==="a"?nRoundP(D):+v.nlc];}
+   else{const k=v.nec==="a"?(D<=300?3:D<=600?4:D<=1200?5:6):+v.nec,rr=[];for(let i=1;i<=k;i++)rr.push(Math.sqrt((2*i-1)/(2*k)));
+    fr=[...rr.slice().reverse().map(x=>(1-x)/2),...rr.map(x=>(1+x)/2)];}
+   dep=fr.map(x=>x*D);rows=fr.length;cols=2;need=`${2*rows} points: 2 diameters 90° apart × ${rows} points each`;
+  }else{
+   const W=mm("W"),H=mm("H");if(!(W>0&&H>0))return{hint:"Enter the duct width and height."};A=W*H/1e6;
+   let nw,nh,fw,fh;
+   if(lt){nw=v.nlr==="a"?nRectP(W):+v.nlr;nh=v.nlr==="a"?nRectP(H):+v.nlr;fw=LTR[nw];fh=LTR[nh];}
+   else{const ea=s=>Math.min(8,Math.max(4,Math.ceil(s/150))),g=n=>Array.from({length:n},(_,i)=>(2*i+1)/(2*n));
+    nw=v.ner==="a"?ea(W):+v.ner;nh=v.ner==="a"?ea(H):+v.ner;fw=g(nw);fh=g(nh);}
+   pos=fw.map(x=>x*W);dep=fh.map(x=>x*H);cols=nw;rows=nh;need=`${nw*nh} points: ${nw} holes across the width × ${nh} depths`;
+  }
+  const N=cols*rows,mth=lt?"log-Tchebycheff":"equal-area",fpm=v.vu==="fpm",r=numsOf(v.r);
+  const layout=round
+   ?tbl(["Point","From wall (mm)","(in)"],dep.map((d,i)=>[i+1,f(d,0),ins(d)]))
+   :tbl(["","From edge (mm)","(in)"],[...pos.map((p,i)=>["Hole "+(i+1)+" across width",f(p,0),ins(p)]),...dep.map((d,i)=>["Depth "+(i+1)+" into duct",f(d,0),ins(d)])]);
+  const grid=()=>{const hd=round?["From wall (mm)","Diameter 1","Diameter 2"]:["Depth (mm)",...pos.map((_,i)=>"H"+(i+1))];
+   return tbl(hd,dep.map((d,j)=>[f(d,0),...Array.from({length:cols},(_,c)=>{const x=r[c*rows+j];return x==null?"—":f(x,fpm?0:2);})]));};
+  if(!r.length)return{hint:`Enter your velocity readings. The ${mth} method needs ${need}.`,after:layout};
+  const vs=r.map(x=>Math.max(0,fpm?x*0.00508:x)),neg=r.filter(x=>x<=0).length;
+  const va=vs.reduce((a,b)=>a+b,0)/vs.length,mx=Math.max(...vs),mn=Math.min(...vs),Q=va*A;
+  const good=vs.filter(x=>x>0.1*mx).length/vs.length,Qd=airQ(v,"Qd"),pct=Q/Qd*100,hasD=isFinite(pct)&&Qd>0;
+  const done=r.length===N;
+  const status=!done?{ok:false,text:`${r.length} of ${N} points entered`}:hasD?{ok:Math.abs(pct-100)<=10,text:`${f(pct,0)} % of design`}:{ok:true,text:`All ${N} points entered`};
+  return{cap:"Measured airflow",value:f(Q*1000,0),unit:"L/s",status,
+   say:`${mth[0].toUpperCase()+mth.slice(1)} traverse: average velocity ${B(f(va,2),"m/s")} over ${f(A,3)} m² gives ${B(f(Q*1000,0),"L/s")} = ${B(f(Q*3600,0),"m³/h")} = ${B(f(Q*2118.88,0),"CFM")}.`
+    +(hasD?` That is ${B(f(pct,0),"%")} of design.`:"")
+    +(done?"":` You need ${need}.`)
+    +(neg?` ${neg} point(s) read zero or negative: swirl or reverse flow there, note it in the report.`:"")
+    +(good<0.75?" Fewer than 75 % of points are above 10 % of the highest reading, so this plane is poor. Move to a straighter run if you can.":""),
+   rows:[["Airflow",f(Q*3600,0),"m³/h"],["Airflow",f(Q*2118.88,0),"CFM"],["Average velocity",f(va,2),"m/s"],["Average velocity",f(va/0.00508,0),"fpm"],
+    ["Duct area",f(A,4),"m²"],["Highest / lowest point",`${f(mx,2)} / ${f(mn,2)}`,"m/s"],["Points above 10 % of max",f(good*100,0),"%"],["Points",`${r.length} / ${N}`,""]],
+   after:layout+grid()};
+ },
+ note:"Log-Tchebycheff (ASHRAE 111, ISO 3966) places points to allow for slower air near the walls, so a plain average gives the flow with fewer points. Equal area divides the duct into equal rectangles (centres no more than 150 mm apart) or equal-area rings in round ducts (EPA Method 1 positions) and averages all points. Traverse a straight run about 7.5 diameters after and 3 before any fitting. Q = V<sub>avg</sub> × A; 1 m³/s = 1000 L/s = 3600 m³/h = 2118.88 CFM. ASHRAE: at least 75 % of readings should be above 10 % of the highest one."},
+
 {id:"bal",g:"tab",icon:"bal",name:"Terminal balancing",short:"Proportional method: % and targets",
  intro:"Enter design and measured airflow for each terminal in the same order. You get each terminal's % of design, the index terminal and the reading to set the others to.",
  fields:[
