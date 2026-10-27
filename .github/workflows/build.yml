@@ -1,5 +1,5 @@
 # MEPify (formerly SiteCalc Pro) - by Mohamed Shafaf Karumannil
-# Builds the APK from index.html in this repo.
+# Builds the APK from index.html, css/ and js/ in this repo.
 name: Build APK
 on:
   push:
@@ -288,9 +288,11 @@ jobs:
               <foreground android:drawable="@drawable/ic_launcher_foreground" />
           </adaptive-icon>
           EOF_FILE
-          # The app itself comes from index.html in the repo (one copy only).
+          # The app comes from index.html plus the css/ and js/ folders in the repo.
           mkdir -p app/src/main/assets
           cp ../index.html app/src/main/assets/index.html
+          cp -r ../css ../js app/src/main/assets/
+          test -f app/src/main/assets/js/main.js
           # Version code goes up automatically with every build so phones accept the update.
           sed -i "s/versionCode 14/versionCode $((GITHUB_RUN_NUMBER + 100))/" app/build.gradle
           find . -type f | sort

@@ -1,0 +1,39 @@
+/* MEPify · Colours, section colours and dark theme
+   by Mohamed Shafaf Karumannil */
+
+/* ===== Premium look v1.14 ===== */
+:root{
+  --bg:#F2F4F6; --surface:#FFFFFF; --ink:#0D1B2A; --muted:#5F6F80; --line:#E3E8ED;
+  --accent:#17607C; --accent-ink:#FFFFFF; --accent-soft:#E3EFF3;
+  --cool:#1A7FA3; --cool-soft:#E0F1F7; --pl:#2E9D5A; --pl-soft:#E3F4EA;
+  --ok:#1E8A55; --ok-soft:#E2F3EA; --bad:#C2362B; --bad-soft:#FBE7E5;
+  --plate:#0F2E3D; --plate-ink:#F1F6F8; --plate-muted:#A9BDC8;
+  --amb:#F29A55; --amb-ink:#2A1404; --shadow:0 1px 0 #E3E8ED,0 6px 18px rgb(13 27 42/.05);
+  --c-hvac:#2F6FDB; --c-tab:#12968A; --c-psy:#6E56CF; --c-ref:#0E9BBE; --c-plumb:#2E9D5A; --c-fire:#C8431B; --c-util:#8B5E34; --c-hse:#C026D3; --c-haz:#CA8A04; --c-mech:#65A30D; --c-elec:#D97F0E; --c-basic:#5F6F80; --c-top:#C2362B;
+  --f-display:"Inter Display","Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-data:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0B1620; --surface:#132330; --ink:#FFFFFF; --muted:#FFFFFF; --line:#21374A;
+  --accent:#1F7FA3; --accent-ink:#FFFFFF; --accent-soft:#163847;
+  --cool:#5CC4E6; --cool-soft:#123445; --pl:#6CCB8E; --pl-soft:#15302A;
+  --ok:#5BD08E; --ok-soft:#14321F; --bad:#F2766A; --bad-soft:#3A1A17;
+  --plate:#18394A; --plate-ink:#FFFFFF; --plate-muted:#FFFFFF; --amb:#C96A1E; --amb-ink:#FFFFFF; --shadow:none;
+  --c-hvac:#7FA8F0; --c-tab:#4FCFBF; --c-psy:#A996F2; --c-ref:#5CD0EA; --c-plumb:#6CCB8E; --c-fire:#F58A64; --c-util:#D9A877; --c-hse:#E879F9; --c-haz:#FACC15; --c-mech:#A3E635; --c-elec:#F2B157; --c-basic:#A9B7C3; --c-top:#F2766A; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0B1620; --surface:#132330; --ink:#FFFFFF; --muted:#FFFFFF; --line:#21374A;
+  --accent:#1F7FA3; --accent-ink:#FFFFFF; --accent-soft:#163847;
+  --cool:#5CC4E6; --cool-soft:#123445; --pl:#6CCB8E; --pl-soft:#15302A;
+  --ok:#5BD08E; --ok-soft:#14321F; --bad:#F2766A; --bad-soft:#3A1A17;
+  --plate:#18394A; --plate-ink:#FFFFFF; --plate-muted:#FFFFFF; --amb:#C96A1E; --amb-ink:#FFFFFF; --shadow:none;
+  --c-hvac:#7FA8F0; --c-tab:#4FCFBF; --c-psy:#A996F2; --c-ref:#5CD0EA; --c-plumb:#6CCB8E; --c-fire:#F58A64; --c-util:#D9A877; --c-hse:#E879F9; --c-haz:#FACC15; --c-mech:#A3E635; --c-elec:#F2B157; --c-basic:#A9B7C3; --c-top:#F2766A; color-scheme:dark }
+/* Dark theme: every word in white. Icons keep their section colour. */
+html.dk body,html.dk body *:not(.ic):not(.ic *):not(.x-ic):not(.x-ic *){color:#FFFFFF!important}
+html.dk input::placeholder,html.dk textarea::placeholder{color:rgb(255 255 255/.6)!important}
+html.dk .chips button[aria-pressed="true"],html.dk .x-seg button[aria-pressed="true"]{background:#FFFFFF1F;border-color:#FFFFFF}
+
+body{-webkit-font-smoothing:antialiased;letter-spacing:-.005em}
+body.x-tabbed{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+body.x-tool{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
+.inp input,.inp select,.kv strong,.sumg strong,.hlv,.tbl,.ptt,.ptab table,.conv div,.calc-disp .rs,.keys button,.sl-t b{font-variant-numeric:tabular-nums}
