@@ -371,6 +371,8 @@ const ICON={
   vac:'<circle cx="12" cy="13" r="8"/><path d="M12 13l-3-4M8 17h8"/>',
   cop:'<path d="M4 20V10M10 20V4M16 20v-8"/><path d="M2 20h20"/>',
   gwp:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+  btemp:'<rect x="4" y="7" width="12" height="13" rx="1.5"/><path d="M8 7V5M12 7V5M19 4v10M17.5 15.5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0"/>',
+  ct:'<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="3"/><path d="M2 12h3M19 12h3M12 19v3"/>',
   calc:'<rect x="5" y="2" width="14" height="20" rx="2.5"/><path d="M8 5.5h8v3.5H8zM8.5 13h.01M12 13h.01M15.5 13h.01M8.5 17h.01M12 17h.01M15.5 17h.01"/>',
   sci:'<path d="M4 7h6M7 4v6M4 17h6M14.5 4.5l5 5M19.5 4.5l-5 5M14 15h6M14 19h6"/>',
   date:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 14h3v3H8z"/>',
@@ -1340,6 +1342,49 @@ const TOOLS=[
  },
  note:"IR halves for every 10 °C rise, so readings are corrected to a base temperature. Minimums follow IEEE 43 for machines (5 MΩ random-wound, 100 MΩ form-wound) and a common (kV + 1) MΩ rule for cables. Your project spec governs."},
 
+{id:"ct",g:"elec",icon:"ct",name:"CT ratio",short:"Primary current, CT selection, burden, ratio test",
+ intro:"Work out the real current from a CT secondary reading, choose a CT for a load, check the burden, or check a ratio test result.",
+ fields:[
+  {id:"mode",label:"What do you need?",type:"chips",def:"read",options:[["read","Secondary to primary"],["sel","Choose a CT"],["burd","Burden check"],["test","Ratio test"]]},
+  {id:"pri",label:"CT primary rating",type:"num",def:"400",unit:"A",half:true,show:v=>v.mode!=="sel"},
+  {id:"sec",label:"CT secondary rating",type:"chips",def:"5",options:[["5","5 A"],["1","1 A"]]},
+  {id:"Is",label:"Secondary current measured",type:"num",def:"3.6",unit:"A",show:v=>v.mode==="read"},
+  {id:"vt",label:"VT ratio (optional)",help:"For energy meters, for example 11000/110 = 100. Leave 1 for LV.",type:"num",def:"1",unit:"",adv:true,show:v=>v.mode==="read"},
+  {id:"fla",label:"Full-load current of the feeder",type:"num",def:"280",unit:"A",show:v=>v.mode==="sel"},
+  {id:"use",label:"Used for",type:"chips",def:"m",options:[["m","Metering"],["p","Protection"]],show:v=>v.mode==="sel"||v.mode==="test"},
+  {id:"va",label:"CT rated burden",type:"num",def:"15",unit:"VA",half:true,show:v=>v.mode==="burd"},
+  {id:"dev",label:"Meters and relays burden",help:"Add the VA of every device on the CT circuit.",type:"num",def:"2.5",unit:"VA",half:true,show:v=>v.mode==="burd"},
+  {id:"L",label:"Cable length, one way",type:"num",def:"40",unit:"m",half:true,show:v=>v.mode==="burd"},
+  {id:"mm",label:"Cable size",type:"chips",def:"2.5",options:[["1.5","1.5 mm²"],["2.5","2.5 mm²"],["4","4 mm²"],["6","6 mm²"]],show:v=>v.mode==="burd"},
+  {id:"Ip",label:"Primary current injected",type:"num",def:"200",unit:"A",half:true,show:v=>v.mode==="test"},
+  {id:"Im",label:"Secondary current measured",type:"num",def:"2.49",unit:"A",half:true,show:v=>v.mode==="test"},
+  {id:"cls",label:"Accuracy class",type:"chips",def:"0.5",options:[["0.2","0.2"],["0.5","0.5"],["1","1"],["3","3"],["1p","5P / 10P (±1 %)"]],show:v=>v.mode==="test"}
+ ],
+ calc(v){
+  const sec=num(v.sec)||5,pri=num(v.pri);
+  if(v.mode==="sel"){const fla=num(v.fla);if(!(fla>0))return{hint:"Enter the full-load current."};
+   const STD=[5,10,15,20,25,30,40,50,60,75,100,150,200,250,300,400,500,600,750,800,1000,1200,1250,1500,1600,2000,2500,3000,4000,5000];
+   const need=fla*(v.use==="m"?1.25:1.0),p=STD.find(x=>x>=need)||Math.ceil(need/500)*500,load=fla/p*100;
+   return{cap:"CT ratio",value:`${p}/${sec}`,unit:"A",status:{ok:load>=40&&load<=100,text:`Full load at ${f(load,0)} % of CT rating`},
+    say:`For ${f(fla)} A full load, use a ${B(p+"/"+sec+" A")} CT. At full load the secondary carries ${B(f(fla/p*sec,2),"A")}.`+(v.use==="m"?" For metering, keep normal load between about 40 and 100 % of the CT rating so the meter stays accurate.":" For protection, also check the accuracy limit factor (for example 5P20) covers the fault current, and that the relay settings fit the ratio."),
+    rows:[["CT ratio",f(p/sec,0),": 1"],["Secondary at full load",f(fla/p*sec,2),"A"],["Load on CT",f(load,0),"%"]]};}
+  if(!(pri>0))return{hint:"Enter the CT primary rating."};const K=pri/sec;
+  if(v.mode==="read"){const Is=num(v.Is),vt=num(v.vt)||1;if(!(Is>=0))return{hint:"Enter the secondary current."};const Ip=Is*K;
+   return{cap:"Primary current",value:f(Ip,1),unit:"A",status:{ok:Is<=sec*1.2,text:Is>sec?"Above CT rating":`${f(Is/sec*100,0)} % of CT rating`},
+    say:`${f(Is,2)} A on a ${f(pri)}/${sec} A CT means ${B(f(Ip,1),"A")} is flowing in the primary (ratio ${f(K,0)}).`+(vt!==1?` Meter multiplier with the VT is ${B(f(K*vt,0))}: multiply the meter reading by this.`:` Multiply meter readings by ${B(f(K,0))}.`),
+    rows:[["CT ratio",f(K,0),": 1"],["Meter multiplier",f(K*vt,0),"×"],["Secondary loading",f(Is/sec*100,0),"%"]]};}
+  if(v.mode==="burd"){const va=num(v.va),dev=num(v.dev)||0,L=num(v.L)||0,A=num(v.mm);if(!(va>0))return{hint:"Enter the CT rated burden."};
+   const R=2*L*0.0216/A,lead=sec*sec*R,tot=dev+lead,ok=tot<=va;
+   return{cap:"Total burden",value:f(tot,2),unit:"VA",status:{ok,text:ok?`Within ${f(va)} VA rating`:"Over the CT rating"},
+    say:`The ${f(L)} m cable loop (${f(2*L)} m of ${A} mm²) adds ${B(f(lead,2),"VA")} at ${sec} A. With ${f(dev,1)} VA of devices, the total is ${B(f(tot,2),"VA")} against the CT's ${f(va)} VA.`+(ok?"":` Over-burdened CTs lose accuracy and may saturate. Use bigger cable, a 1 A CT, or a CT with a higher VA.`)+(sec===5&&lead>dev?" Most of the burden is the cable; a 1 A CT would cut it by 25 times.":""),
+    rows:[["Cable resistance (loop)",f(R,3),"Ω"],["Cable burden",f(lead,2),"VA"],["Devices",f(dev,2),"VA"],["Spare",f(va-tot,2),"VA"]]};}
+  const Ip=num(v.Ip),Im=num(v.Im);if(!(Ip>0&&Im>0))return{hint:"Enter the injected and measured currents."};
+  const err=(K*Im-Ip)/Ip*100,lim=v.cls==="1p"?1:num(v.cls),ok=Math.abs(err)<=lim;
+  return{cap:"Ratio error",value:(err>=0?"+":"")+f(err,2),unit:"%",status:{ok,text:ok?`Within class ${v.cls==="1p"?"5P/10P":v.cls}`:"Outside class limit"},
+   say:`Injecting ${f(Ip)} A should give ${B(f(Ip/K,3),"A")} on the secondary. You measured ${f(Im,3)} A, a ratio error of ${B((err>=0?"+":"")+f(err,2),"%")} against a limit of ±${lim} %.`+(ok?"":" Check the CT tap or ratio setting, the test set, open or shorted turns, and that the secondary is not shorted elsewhere."),
+   rows:[["Measured ratio",f(Ip/Im,1),": 1"],["Nameplate ratio",f(K,1),": 1"],["Expected secondary",f(Ip/K,3),"A"]]};
+ },
+ note:"Never open-circuit a live CT secondary: it produces dangerous high voltage. Short the secondary before disconnecting a meter or relay. Ratio limits shown are at rated current (IEC 61869-2); lower currents allow a wider limit."},
 {id:"unbal",g:"elec",icon:"unbal",name:"Voltage & current unbalance",short:"% unbalance and motor derating",
  intro:"Enter the three line-to-line voltages or the three phase currents.",
  fields:[
@@ -2125,6 +2170,52 @@ const TOOLS=[
  },
  note:"IEC 62485-2: Q = 0.05 × n × Igas × Crt × 10⁻³ m³/h. Natural ventilation area A = 28 × Q cm². Locate the extract at high level; hydrogen rises. Your project spec and C&E for the battery room govern."},
 
+{id:"btemp",g:"hvac",icon:"btemp",name:"Battery temperature",short:"Life at temperature, charge voltage, room cooling",
+ intro:"Batteries last longest at 20–25 °C. Check how heat shortens life, the charge voltage to set for the temperature, and the cooling a battery room needs.",
+ fields:[
+  {id:"mode",label:"What do you need?",type:"chips",def:"room",options:[["room","Room heat & cooling"],["life","Life at temperature"],["comp","Charge voltage"]]},
+  {id:"bt",label:"Battery type",type:"chips",def:"vrla",options:[["vrla","VRLA (sealed lead-acid)"],["vla","Vented lead-acid"],["nicd","Vented NiCd"],["li","Lithium-ion"]],onSet:v=>{v.vf={vrla:"2.27",vla:"2.23",nicd:"1.42",li:"3.40"}[v.bt];}},
+  {id:"n",label:"Number of cells",type:"num",def:"55",unit:"cells",half:true,show:v=>v.mode!=="life"},
+  {id:"C",label:"Capacity",type:"num",def:"300",unit:"Ah",half:true,show:v=>v.mode==="room"},
+  {id:"vf",label:"Float voltage per cell at reference temperature",help:"From the battery datasheet.",type:"num",def:"2.27",unit:"V/cell",show:v=>v.mode==="comp"},
+  {id:"Tb",label:"Battery temperature",type:"num",def:"35",unit:"°C",show:v=>v.mode!=="room"},
+  {id:"yrs",label:"Design life at 20–25 °C",type:"num",def:"10",unit:"years",show:v=>v.mode==="life"},
+  {id:"ch",label:"Charging state",type:"chips",def:"f",options:[["f","Float"],["b","Boost / equalise"]],show:v=>v.mode==="room"},
+  {id:"oth",label:"Charger, UPS and other heat in the room",help:"From the charger or UPS datasheet (losses), plus lights.",type:"num",def:"1.2",unit:"kW",show:v=>v.mode==="room"},
+  {id:"A",label:"Wall and roof area exposed to outside",type:"num",def:"40",unit:"m²",half:true,show:v=>v.mode==="room"},
+  {id:"U",label:"Average U-value",type:"num",def:"0.6",unit:"W/m²K",half:true,show:v=>v.mode==="room"},
+  {id:"Q",label:"Extract airflow",help:"Use the Battery room ventilation tool. The same amount of outdoor air comes in.",type:"num",def:"150",unit:"m³/h",show:v=>v.mode==="room"},
+  {id:"To",label:"Outdoor design temperature",type:"num",def:"46",unit:"°C",half:true,show:v=>v.mode==="room"},
+  {id:"Tr",label:"Room target",type:"num",def:"25",unit:"°C",half:true,show:v=>v.mode==="room"}
+ ],
+ calc(v){
+  const bt=v.bt,NM={vrla:"VRLA",vla:"vented lead-acid",nicd:"NiCd",li:"lithium-ion"}[bt];
+  if(v.mode==="life"){
+   const T=num(v.Tb),y=num(v.yrs);if(!isFinite(T))return{hint:"Enter the battery temperature."};
+   const base=bt==="nicd"?20:25,halfK={vrla:8.3,vla:8.3,nicd:20,li:15}[bt],fac=T<=base?1:Math.pow(0.5,(T-base)/halfK);
+   const rws=[20,25,30,35,40,45,50].map(t=>({cls:Math.abs(t-T)<2.5?"sel":"",c:[t+" °C",f((t<=base?1:Math.pow(0.5,(t-base)/halfK))*100,0)+" %",y>0?f(y*(t<=base?1:Math.pow(0.5,(t-base)/halfK)),1)+" yrs":"—"]}));
+   return{cap:"Expected life",value:y>0?f(y*fac,1):f(fac*100,0),unit:y>0?"years":"% of rated",status:{ok:fac>=0.7,text:fac>=0.95?"Good temperature":fac>=0.7?"Some life lost":"Large life loss"},
+    say:`A ${NM} battery kept at ${f(T,1)} °C lasts about ${B(f(fac*100,0),"%")} of its rated life`+(y>0?`, so ${B(f(y*fac,1),"years")} instead of ${f(y,0)}.`:".")+(T>base?` Every ${f(halfK,0)} K above ${base} °C roughly halves ${bt==="nicd"?"remaining ":""}life. Keep the room at 20–25 °C with air conditioning.`:" That is at or below the reference temperature, so no life is lost to heat."),
+    rows:[["Life factor",f(fac,2),"×"],["Reference temperature",base,"°C"],["Halves every",f(halfK,1),"K"]],after:tbl(["Room temperature","Life","Years"],rws)};
+  }
+  if(v.mode==="comp"){
+   const n=num(v.n),T=num(v.Tb),vf=num(v.vf);if(!(n>0&&vf>0))return{hint:"Enter the cells and float voltage."};if(!isFinite(T))return{hint:"Enter the battery temperature."};
+   if(bt==="li")return{cap:"Charge voltage",value:f(n*vf,1),unit:"V",say:`Lithium-ion batteries are not temperature-compensated: the battery management system (BMS) controls charging. Keep the float at ${B(f(n*vf,1),"V")} and the room at 15–30 °C. Charging below 0 °C damages the cells.`,rows:[["Per cell",f(vf,3),"V"]]};
+   const ref=bt==="nicd"?20:25,k={vrla:-0.003,vla:-0.0025,nicd:-0.0025}[bt],Tc=Math.min(Math.max(T,0),45),vc=vf+k*(Tc-ref);
+   return{cap:"Float voltage to set",value:f(n*vc,1),unit:"V",
+    say:`At ${f(T,1)} °C, set the charger to ${B(f(vc,3),"V per cell")}, which is ${B(f(n*vc,1),"V")} for ${f(n,0)} cells (${f(n*vf,1)} V at ${ref} °C). Too high in a hot room overcharges and dries out the battery; too low in a cold room undercharges it.`+(T!==Tc?" Compensation is usually limited to 0–45 °C, so that limit is applied.":""),
+    rows:[["Per cell",f(vc,3),"V"],["Change",f((vc-vf)*n,2),"V"],["Compensation",f(k*1000,1),"mV/°C/cell"],["Reference",ref,"°C"]]};
+  }
+  const n=num(v.n),C=num(v.C),oth=(num(v.oth)||0)*1000,A=num(v.A)||0,U=num(v.U)||0,Qa=num(v.Q)||0,To=num(v.To),Tr=num(v.Tr);
+  if(!(n>0&&C>0))return{hint:"Enter the cells and capacity."};if(!isFinite(To)||!isFinite(Tr))return{hint:"Enter the outdoor and room temperatures."};
+  const vc={vrla:2.27,vla:2.23,nicd:1.42,li:3.4}[bt],mA={vrla:{f:1,b:8},vla:{f:1,b:4},nicd:{f:1,b:10},li:{f:0.05,b:0.05}}[bt][v.ch];
+  const Pb=n*vc*mA*C/1000,Pw=U*A*(To-Tr),Pv=1.2*Qa/3600*1006*(To-Tr),tot=Pb+oth+Pw+Pv,tr=tot/3517;
+  const Tfree=Qa>0?To+(Pb+oth)/(1.2*Qa/3600*1006):NaN;
+  return{cap:"Cooling needed",value:f(tot/1000,2),unit:"kW",status:{ok:true,text:`${f(tr,2)} TR to hold ${f(Tr,0)} °C`},
+   say:`The batteries give off about ${B(f(Pb,0),"W")} on ${v.ch==="f"?"float":"boost"} charge. With the charger and UPS (${f(oth/1000,1)} kW), wall gains and the hot outdoor air drawn in by the extract fan, the room needs ${B(f(tot/1000,2),"kW")} (${f(tr,2)} TR) of cooling to stay at ${f(Tr,0)} °C.`+(isFinite(Tfree)?` With ventilation only and no AC, the room would reach about ${B(f(Tfree,0),"°C")}.`:"")+" Use AC sized for this, with the extract fan still running for hydrogen.",
+   rows:[["Battery heat",f(Pb,0),"W"],["Charger / UPS / lights",f(oth,0),"W"],["Walls and roof",f(Pw,0),"W"],["Ventilation air",f(Pv,0),"W"],["Total",f(tot,0),"W"],["Total",f(tot*3.412,0),"BTU/h"],["Room with ventilation only",isFinite(Tfree)?f(Tfree,0):"—","°C"]]};
+ },
+ note:"Life: lead-acid roughly halves for every 8–10 K above 25 °C (IEEE 1188 / Eurobat), NiCd about every 20 K above 20 °C, lithium about every 15 K. Charge compensation: VRLA −3, vented lead-acid and NiCd −2.5 mV/°C per cell. Battery heat uses the float or boost current per IEC 62485-2. Always follow the battery maker's data."},
 {id:"kv",g:"hvac",icon:"kv",name:"Valve Kv / Cv",short:"Size a valve, or flow from ΔP",
  intro:"Size a control or balancing valve, or find the flow through a balancing valve from its ΔP reading.",
  fields:[
