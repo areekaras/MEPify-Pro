@@ -557,6 +557,7 @@ const app=document.getElementById("app");
 const SQ3=Math.sqrt(3);
 const ICON={
   cool:'<path d="M12 2v20M4 7l16 10M4 17 20 7M9 3.5 12 6l3-2.5M9 20.5 12 18l3 2.5"/>',
+  mflow:'<path d="M3 8h10M3 16h10"/><path d="M10 5l3 3-3 3M10 13l3 3-3 3"/><circle cx="18.5" cy="12" r="3"/>',
   ach:'<path d="M20 11a8 8 0 0 0-14.3-4.6L4 8M4 3v5h5M4 13a8 8 0 0 0 14.3 4.6L20 16M20 21v-5h-5"/>',
   duct:'<path d="M3 7h13v10H3zM16 9l5-2v10l-5-2"/><path d="M7 7v10"/>',
   chw:'<path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"/><path d="M9 14a3 3 0 0 0 3 3"/>',
@@ -1619,6 +1620,40 @@ const TOOLS=[
  },
  note:"Peak-hour estimate using equivalent temperature differences and Gulf solar gains (west glass 550 W/m², east 500, south 300, north 120). Defaults are for Qatar summer design (46 °C). Good for checks and budgets; use HAP or a full CLTD/RTS method for final design."},
 
+
+{id:"mflow",g:"hvac",icon:"mflow",name:"Mass flow and volume flow",short:"kg/s ↔ m³/s using density (kg/m³)",
+ intro:"Mass flow (kg/s) and volume flow (m³/s) are linked by the fluid density (kg/m³). Pick the fluid and what you know. You get the other values in all common units.",
+ fields:[
+  {id:"mode",label:"What do you want to find?",type:"chips",def:"vol",options:[["vol","Volume flow"],["mass","Mass flow"],["rho","Density"]]},
+  {id:"fl",label:"Fluid",type:"chips",def:"water",options:[["water","Water"],["air","Air"],["custom","Other (enter density)"]],show:v=>v.mode!=="rho"},
+  {id:"t",label:"Fluid temperature",type:"num",def:"12",unit:"°C",half:true,show:v=>v.mode!=="rho"&&v.fl!=="custom"},
+  {id:"alt",label:"Site altitude",help:"Air only. Ras Laffan is about 5 m.",type:"num",def:"0",unit:"m",half:true,show:v=>v.mode!=="rho"&&v.fl==="air"},
+  {id:"rho",label:"Density",type:"num",def:"1000",unit:"kg/m³",show:v=>v.mode!=="rho"&&v.fl==="custom"},
+  {id:"m",label:"Mass flow",type:"num",def:"25",units:["kg/s","kg/h","t/h","lb/h"],udef:"kg/s",show:v=>v.mode!=="mass"},
+  {id:"q",label:"Volume flow",type:"num",def:"0.025",units:["m³/s","m³/h","L/s","CFM","US GPM"],udef:"m³/s",show:v=>v.mode!=="vol"}
+ ],
+ calc(v){
+  const MU={"kg/s":1,"kg/h":1/3600,"t/h":1000/3600,"lb/h":0.45359237/3600},QU={"m³/s":1,"m³/h":1/3600,"L/s":0.001,"CFM":0.000471947,"US GPM":0.0000630902};
+  const t=num(v.t),alt=num(v.alt)||0;let rho,src="";
+  if(v.mode==="rho"){const m=num(v.m)*MU[v.m_u||"kg/s"],q=num(v.q)*QU[v.q_u||"m³/s"];
+   if(!(m>0&&q>0))return{hint:"Enter the mass flow and the volume flow."};
+   rho=m/q;
+   return{cap:"Density",value:f(rho,rho<10?3:1),unit:"kg/m³",say:`${B(f(m,3),"kg/s")} ÷ ${B(f(q,4),"m³/s")} = ${B(f(rho,rho<10?3:1),"kg/m³")}. `+(rho>950&&rho<1010?"That is about water.":rho>1&&rho<1.4?"That is about air.":""),
+    rows:[["Specific volume",f(1/rho,4),"m³/kg"],["Relative to water",f(rho/1000,3),""],["In lb/ft³",f(rho*0.062428,3),"lb/ft³"]]};}
+  if(v.fl==="water"){if(!(t>=0&&t<=100))return{hint:"Water temperature must be 0 to 100 °C."};rho=1000*(1-(t+288.9414)/(508929.2*(t+68.12963))*(t-3.9863)**2);src=`water at ${f(t,1)} °C`;}
+  else if(v.fl==="air"){if(!(t>-50&&t<200))return{hint:"Air temperature must be −50 to 200 °C."};if(!(alt>=-400&&alt<6000))return{hint:"Enter an altitude between 0 and 6000 m."};
+   rho=PSY.p(alt)*1000/(287.05*(t+273.15));src=`dry air at ${f(t,1)} °C${alt?`, ${f(alt,0)} m altitude`:""}`;}
+  else{rho=num(v.rho);if(!(rho>0))return{hint:"Enter the fluid density in kg/m³."};src=`density ${f(rho)} kg/m³`;}
+  let m,q;
+  if(v.mode==="vol"){m=num(v.m)*MU[v.m_u||"kg/s"];if(!(m>0))return{hint:"Enter the mass flow."};q=m/rho;}
+  else{q=num(v.q)*QU[v.q_u||"m³/s"];if(!(q>0))return{hint:"Enter the volume flow."};m=q*rho;}
+  const rq=[["Volume flow",f(q,4),"m³/s"],["Volume flow",f(q*3600,1),"m³/h"],["Volume flow",f(q*1000,2),"L/s"],[v.fl==="air"?"Airflow":"Flow",f(v.fl==="air"?q/0.000471947:q/0.0000630902,0),v.fl==="air"?"CFM":"US GPM"]];
+  const rm=[["Mass flow",f(m,3),"kg/s"],["Mass flow",f(m*3600,0),"kg/h"],["Mass flow",f(m*3.6,2),"t/h"]];
+  const rows=(v.mode==="vol"?rq.slice(1):rm.slice(1)).concat(v.mode==="vol"?rm.slice(0,1):rq.slice(0,2)).concat([["Density used",f(rho,rho<10?3:1),"kg/m³"]]);
+  return v.mode==="vol"?{cap:"Volume flow",value:f(q*1000,2),unit:"L/s",say:`${B(f(m,3),"kg/s")} of ${src} (${f(rho,rho<10?3:1)} kg/m³) is ${B(f(q,4),"m³/s")}, which is ${B(f(q*3600,1),"m³/h")}.`,rows}
+   :{cap:"Mass flow",value:f(m,3),unit:"kg/s",say:`${B(f(q*3600,1),"m³/h")} of ${src} (${f(rho,rho<10?3:1)} kg/m³) is ${B(f(m,3),"kg/s")}, which is ${B(f(m*3600,0),"kg/h")}.`,rows};
+ },
+ note:"Volume flow = mass flow ÷ density. kg/s and kg/m³ are different quantities and cannot be converted directly. Water density from the Kell equation; dry air from the ideal gas law at the altitude pressure. Humid air is about 1 % lighter."},
 
 {id:"ach",g:"hvac",icon:"ach",name:"Air changes",short:"Airflow needed for a room",
  intro:"Enter the room size and how many times per hour the air must be replaced.",
