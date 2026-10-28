@@ -21,8 +21,8 @@ const hlR=()=>{const p=hlP();return p&&p.rooms.find(r=>r.id===HLS.room);};
 const kW=w=>f(w/1000,2),TR=w=>f(w/3517,2),hh=h=>String(h).padStart(2,"0")+":00";
 function hlGet(path){const[o,...ks]=path.split(".");let x=o==="s"?hlP():hlR();for(const k of ks){if(x==null)return"";x=x[k];}return x==null?"":x;}
 function hlSet(path,val){const[o,...ks]=path.split(".");let x=o==="s"?hlP():hlR();ks.slice(0,-1).forEach(k=>{if(x[k]==null)x[k]={};x=x[k];});
-  const n=parseFloat(val);x[ks[ks.length-1]]=o==="s"&&ks[ks.length-1]!=="name"&&isFinite(n)?n:val;}
-function hlNum(path,label,unit,help,half){return `<label class="field" data-half="${half?1:0}"><span class="lbl">${label}</span>${help?`<span class="help">${help}</span>`:""}<span class="inp"><input data-p="${path}" type="number" inputmode="decimal" step="any" value="${esc(hlGet(path))}" placeholder="0">${unit?`<em>${unit}</em>`:""}</span></label>`;}
+  const n=num(val);x[ks[ks.length-1]]=o==="s"&&ks[ks.length-1]!=="name"&&isFinite(n)?n:val;}
+function hlNum(path,label,unit,help,half){return `<label class="field" data-half="${half?1:0}"><span class="lbl">${label}</span>${help?`<span class="help">${help}</span>`:""}<span class="inp"><input data-p="${path}" type="text" inputmode="decimal" autocomplete="off" value="${esc(hlGet(path))}" placeholder="0">${unit?`<em>${unit}</em>`:""}</span></label>`;}
 function hlChips(path,label,opts){const v=String(hlGet(path));return `<div class="field"><span class="lbl">${label}</span><div class="chips">${opts.map(o=>`<button type="button" data-c="${path}" data-v="${o[0]}" aria-pressed="${v===String(o[0])}">${o[1]}</button>`).join("")}</div></div>`;}
 const row2=(a,b)=>`<div class="row2">${a}${b}</div>`;
 function hlChart(arr,pk){const mx=Math.max(1,...arr),W=240,H=64;
@@ -137,7 +137,7 @@ function hlRoom(){
   <div class="card">
    <div class="lbl">Outside walls and glass</div><span class="help" style="margin-top:-10px">Wall area without the windows. Leave 0 where there is no outside wall.</span>
    <div class="hlgrid"><span></span><span>Wall m²</span><span>Glass m²</span>
-   ${HL.ORI.map(([o])=>`<b>${o}</b><span class="inp"><input data-p="r.walls.${o}" type="number" inputmode="decimal" step="any" value="${esc(hlGet("r.walls."+o))}" placeholder="0" aria-label="${o} wall area"></span><span class="inp"><input data-p="r.wins.${o}" type="number" inputmode="decimal" step="any" value="${esc(hlGet("r.wins."+o))}" placeholder="0" aria-label="${o} glass area"></span>`).join("")}</div>
+   ${HL.ORI.map(([o])=>`<b>${o}</b><span class="inp"><input data-p="r.walls.${o}" type="text" inputmode="decimal" autocomplete="off" value="${esc(hlGet("r.walls."+o))}" placeholder="0" aria-label="${o} wall area"></span><span class="inp"><input data-p="r.wins.${o}" type="text" inputmode="decimal" autocomplete="off" value="${esc(hlGet("r.wins."+o))}" placeholder="0" aria-label="${o} glass area"></span>`).join("")}</div>
    ${hlChips("r.roof","Roof above is exposed to sun?",[[false,"No, floor above"],[true,"Yes, roof"]])}
    ${R.roof?hlNum("r.roofA","Roof area","m²","Leave empty to use the floor area."):""}
    ${row2(hlNum("r.part","Wall to unconditioned space","m²","Store, stair, plant room."),hlNum("r.pdt","Temperature difference","K"))}

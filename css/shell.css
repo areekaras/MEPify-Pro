@@ -66,10 +66,10 @@ html.dk .x-st{color:#FFFFFF66!important}html.dk .x-st[aria-pressed="true"]{color
 .x-btn{width:42px;height:42px;border-radius:13px;border:0;background:var(--surface);box-shadow:var(--shadow);display:grid;place-items:center;cursor:pointer;flex:none;padding:0}
 html.dk .x-btn{border:1px solid var(--line)}
 .x-btn svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.x-band{border-radius:20px;padding:18px;margin-bottom:14px;color:#fff;background:var(--g)}
+.x-band{border-radius:20px;padding:18px;margin-bottom:14px;color:#fff;background:var(--g);background:color-mix(in srgb,var(--g) 70%,#0D1B2A)}
 html.dk .x-band{background:color-mix(in srgb,var(--g) 30%,var(--surface))}
 .x-band b{font:600 24px var(--f-display);letter-spacing:-.02em;display:block;color:#fff}
-.x-band p{margin:4px 0 0;font-size:13.5px;color:rgb(255 255 255/.9)}
+.x-band p{margin:4px 0 0;font-size:13.5px;color:#fff}
 
 /* bottom tab bar */
 .x-tabs{position:fixed;left:0;right:0;bottom:0;z-index:15;display:flex;background:var(--surface);border-top:1px solid var(--line);padding:8px max(8px,env(safe-area-inset-left,0px)) calc(10px + env(safe-area-inset-bottom,0px))}
@@ -214,3 +214,22 @@ html.dk .keys button{border:1px solid var(--line)}
 @media (prefers-reduced-motion:reduce){.x-rdo{transition:none}}
 body.x-tabbed #toast{bottom:calc(92px + env(safe-area-inset-bottom,0px))}
 body.x-tool #toast{bottom:calc(100px + env(safe-area-inset-bottom,0px))}
+
+/* ===== Wider screens (tablets, desktops): use the space ===== */
+@media (min-width:720px){
+  .wrap{max-width:760px}
+  .x-secs{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .x-tabs{padding-left:max(8px,calc(50% - 380px));padding-right:max(8px,calc(50% - 380px))}
+}
+@media (min-width:1080px){
+  .wrap{max-width:1120px}
+  .x-secs{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .x-lst{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .x-lst .x-it:nth-child(odd){border-right:1px solid var(--line)}
+  /* tool screen: inputs on the left, the answer stays in view on the right */
+  .tool:has(> .card + #ans){display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px 22px;align-items:start}
+  .tool:has(> .card + #ans) > *{grid-column:1/-1}
+  .tool:has(> .card + #ans) > .card{grid-column:1;grid-row:2}
+  .tool:has(> .card + #ans) > #ans{grid-column:2;grid-row:2;position:sticky;top:16px;max-height:calc(100vh - 120px);overflow:auto}
+  .x-tabs{padding-left:max(8px,calc(50% - 560px));padding-right:max(8px,calc(50% - 560px))}
+}

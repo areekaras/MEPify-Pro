@@ -16,7 +16,7 @@ TOOLS.push(
   if(v.mode==="p"){
    const pv=num(v.P);if(!isFinite(pv))return{hint:"Enter the gauge pressure.",after:tbl};
    const P=toAbs(pv,pu),tb=refT(k,P,"b"),td=refT(k,P,"d");
-   if(!isFinite(tb)||!isFinite(td))return{hint:`That pressure is outside the ${refRange(k)} range for ${r.n}. Check the gauge and the unit.`,after:tbl};
+   if(!isFinite(tb)||!isFinite(td))return{hint:refOutHint(k,[["gauge pressure",pv,pu,isFinite(td)?"b":"d"]]),after:tbl};
    const lbl=`${f(pv,2)} ${pu}`;
    if(!bl)return{cap:"Saturation temperature",value:f(td,1),unit:"°C",say:`At ${lbl}, ${r.n} boils and condenses at ${B(f(td,1),"°C")}.`,rows:[["Absolute pressure",f(P,2),"bar a"],["In psig",f((P-PATM)/0.0689476,1),"psig"]],after:tbl};
    return{cap:"Dew temperature (vapour)",value:f(td,1),unit:"°C",
@@ -54,12 +54,12 @@ TOOLS.push(
  },
  bind(af,st){
   const R=af.querySelector("#slR"),lab=af.querySelector("#slT");if(!R)return;
-  const upd=x=>{const T=Math.min(65,Math.max(-40,Math.round(x*2)/2));st.ts=String(T);save();R.value=T;lab.textContent=f(T,1);
+  const upd=x=>{const T=Math.min(refMax(st.ref),Math.max(-40,Math.round(x*2)/2));st.ts=String(T);save();R.value=T;lab.textContent=f(T,1);
    document.getElementById("ans").innerHTML=ansHTML(byId("slide").calc(st));};
   R.addEventListener("input",()=>upd(+R.value));
   af.querySelectorAll("[data-step]").forEach(b=>b.onclick=()=>upd(slideT(st)+ +b.dataset.step));
  },
- note:"Range −40 to 65 °C. Same property data as the Pressure–temperature tool. Gauge readings assume sea-level air pressure."},
+ note:"Range from −40 °C up to 65–100 °C depending on the refrigerant (near its critical point). Same property data as the Pressure–temperature tool. Gauge readings assume sea-level air pressure."},
 
 {id:"sh",g:"ref",icon:"sh",name:"Superheat",short:"Suction pressure + line temp",
  intro:"Measure suction pressure at the service port and the suction line temperature near the evaporator outlet or compressor.",
@@ -72,7 +72,7 @@ TOOLS.push(
   const k=v.ref,pv=num(v.P),Tl=num(v.T);
   if(!isFinite(pv))return{hint:"Enter the suction pressure."};if(!isFinite(Tl))return{hint:"Enter the suction line temperature."};
   const P=toAbs(pv,v.P_u),Te=refT(k,P,"d");
-  if(!isFinite(Te))return{hint:`That suction pressure is outside the ${refRange(k)} range for ${REF[k].n}. Check the gauge and unit.`};
+  if(!isFinite(Te))return{hint:refOutHint(k,[["suction pressure",pv,v.P_u,"d"]])};
   const SH=Tl-Te,st=shState(SH);
   if(SH<-1)return{hint:`The line is ${f(-SH,1)} K colder than the boiling temperature (${f(Te,1)} °C), which is not possible. Check the probe position, the pressure reading and the refrigerant type.`};
   const msg=SH<2?"Liquid refrigerant may be reaching the compressor. Check for overcharge, TXV overfeeding or low evaporator airflow."
@@ -96,7 +96,7 @@ TOOLS.push(
   const k=v.ref,pv=num(v.P),Tl=num(v.T);
   if(!isFinite(pv))return{hint:"Enter the liquid line pressure."};if(!isFinite(Tl))return{hint:"Enter the liquid line temperature."};
   const P=toAbs(pv,v.P_u),Tc=refT(k,P,"b");
-  if(!isFinite(Tc))return{hint:`That pressure is outside the ${refRange(k)} range for ${REF[k].n}. Check the gauge and unit.`};
+  if(!isFinite(Tc))return{hint:refOutHint(k,[["liquid line pressure",pv,v.P_u,"b"]])};
   const SC=Tc-Tl,st=scState(SC);
   if(SC<-1)return{hint:`The liquid line is ${f(-SC,1)} K hotter than the condensing temperature (${f(Tc,1)} °C), which is not possible. Check the probe, the gauge and the refrigerant type.`};
   const msg=SC<1?"There is no liquid seal, so flash gas may reach the expansion valve. This usually means low charge."
@@ -126,7 +126,7 @@ TOOLS.push(
   const k=v.ref,ps=num(v.Ps),ts=num(v.Ts),pl=num(v.Pl),tl=num(v.Tl),amb=num(v.amb);
   if(![ps,ts,pl,tl].every(isFinite))return{hint:"Enter all four readings: suction pressure and temperature, liquid pressure and temperature."};
   const Te=refT(k,toAbs(ps,v.Ps_u),"d"),Tc=refT(k,toAbs(pl,v.Pl_u),"b");
-  if(!isFinite(Te)||!isFinite(Tc))return{hint:`A pressure is outside the ${refRange(k)} range for ${REF[k].n}. Check the gauges, units and refrigerant type.`};
+  if(!isFinite(Te)||!isFinite(Tc))return{hint:refOutHint(k,[["suction pressure",ps,v.Ps_u,"d"],["liquid line pressure",pl,v.Pl_u,"b"]])};
   const SH=ts-Te,SC=Tc-tl;
   if(SH<-1||SC<-1)return{hint:"A temperature reading is impossible for these pressures. Check probe positions, gauge units and the refrigerant type."};
   if(Tc<=Te)return{hint:"The liquid pressure must be higher than the suction pressure. Check which gauge is which."};
@@ -253,10 +253,13 @@ TOOLS.push(
  calc(v){
   const ps=num(v.ps),pd=num(v.pd);if(!isFinite(ps)||!isFinite(pd))return{hint:"Enter suction and discharge pressure."};
   const Ps=toAbs(ps,v.ps_u),Pd=toAbs(pd,v.pd_u),cr=Pd/Ps,Te=refT(v.ref,Ps,"d"),Tc=refT(v.ref,Pd,"b");
-  if(!isFinite(Te)||!isFinite(Tc))return{hint:`A pressure is outside the ${refRange(v.ref)} range for ${REF[v.ref].n}. Check the gauges and unit.`};
+  if(!isFinite(Te)||!isFinite(Tc))return{hint:refOutHint(v.ref,[["suction pressure",ps,v.ps_u,"d"],["discharge pressure",pd,v.pd_u,"b"]])};
+  if(Pd<=Ps)return{hint:"The discharge pressure must be higher than the suction pressure. Check that the two readings are not swapped."};
+  const odd=Te>20||Tc>70||Te<-35,fits=odd?refFits(Ps,Pd,v.ref):[];
+  const warn=odd?` These temperatures are unusual for ${REF[v.ref].n} (evaporating ${f(Te,1)} °C, condensing ${f(Tc,1)} °C).`+(fits.length?` The readings would fit ${refOr(fits)}: check the refrigerant selected.`:" Check the gauges and the refrigerant selected."):"";
   const carnot=(Te+273.15)/(Tc-Te),cap=num(v.cap),pw=num(v.pw),real=cap>0&&pw>0?cap/pw:NaN;
-  return{cap:"Compression ratio",value:f(cr,2),unit:"",status:{ok:cr<=6,text:cr<=4?"Normal for AC":cr<=6?"High-ish":"Very high"},
-   say:`Evaporating at ${B(f(Te,1),"°C")} and condensing at ${B(f(Tc,1),"°C")} gives a compression ratio of ${B(f(cr,2))}. The ideal (Carnot) COP is ${f(carnot,1)}; real systems reach about 40–55 % of that.`+(isFinite(real)?` Your measured COP is ${B(f(real,2))}, which is ${f(real/carnot*100,0)} % of ideal.`:"")+(cr>6?" A high ratio means hot running and lower capacity: check the condenser, charge and airflow.":""),
+  return{cap:"Compression ratio",value:f(cr,2),unit:"",status:odd?{ok:false,text:"Check refrigerant"}:{ok:cr<=6,text:cr<=4?"Normal for AC":cr<=6?"High-ish":"Very high"},
+   say:`Evaporating at ${B(f(Te,1),"°C")} and condensing at ${B(f(Tc,1),"°C")} gives a compression ratio of ${B(f(cr,2))}. The ideal (Carnot) COP is ${f(carnot,1)}; real systems reach about 40–55 % of that.`+(isFinite(real)?` Your measured COP is ${B(f(real,2))}, which is ${f(real/carnot*100,0)} % of ideal.`:"")+(cr>6?" A high ratio means hot running and lower capacity: check the condenser, charge and airflow.":"")+warn,
    rows:[["Evaporating",f(Te,1),"°C"],["Condensing",f(Tc,1),"°C"],["Lift (Tc − Te)",f(Tc-Te,1),"K"],["Carnot COP",f(carnot,2),""],["Measured COP",isFinite(real)?f(real,2):"—",""]]};
  },
  note:"Compression ratio = absolute discharge ÷ absolute suction. Air-conditioning scroll compressors usually run 2.5–4. Every 1 K less lift saves about 2–3 % energy."},

@@ -1,7 +1,7 @@
 /* MEPify · Refrigerant saturation data, P/T helpers and P/T slider
    by Mohamed Shafaf Karumannil */
 
-/* ---------- REFRIGERANTS: saturation pressure, bar absolute, -40..65 °C every 5 °C ----------
+/* ---------- REFRIGERANTS: saturation pressure, bar absolute, from -40 °C every 5 °C (to 65 °C here, higher in REF_HI) ----------
    Pure fluids: NIST Chemistry WebBook. Blends (bubble b / dew d): manufacturer property tables.
    Refrigerants added in v1.21 come from CoolProp 7.2; checked against the tables above: pure fluids identical,
    R-410A and R-407C within 0.04 %, R-404A within 1.2 %. */
@@ -60,32 +60,77 @@ const REF={
  R502:{n:"R-502",b:[1.2591,1.5636,1.9223,2.3414,2.8271,3.386,4.0251,4.7511,5.5715,6.4935,7.5247,8.673,9.9465,11.353,12.902,14.603,16.464,18.496,20.711,23.12,25.738,28.581],
         d:[1.2352,1.5381,1.8954,2.3133,2.7982,3.3568,3.9957,4.7221,5.5431,6.466,7.4985,8.6483,9.9234,11.332,12.883,14.585,16.448,18.482,20.699,23.109,25.728,28.572]}
 };
+/* v1.22: data above 65 °C, up to near the critical point (max 100 °C), from CoolProp 7.2.
+   Joined onto the tables above without changing any existing value. */
+const REF_HI={
+ R32:{"b":[48.768,54.168]},
+ R22:{"b":[29.973,33.176,36.637,40.377,44.421]},
+ R134a:{"b":[21.168,23.641,26.332,29.258,32.442,35.912]},
+ R290:{"b":[25.867,28.492,31.318,34.36,37.639,41.193]},
+ R600a:{"b":[10.875,12.107,13.438,14.874,16.42,18.081,19.865]},
+ R717:{"b":[33.125,37.096,41.413,46.095,51.164,56.642,62.551]},
+ R513A:{"b":[21.686,24.144],"d":[21.679,24.135]},
+ R1234yf:{"b":[20.445,22.723,25.194,27.879,30.803]},
+ R1234ze:{"b":[16.11,18.011,20.077,22.321,24.755,27.395,30.26]},
+ R1233zd:{"b":[5.1126,5.81,6.5765,7.4166,8.3345,9.335,10.423]},
+ R449A:{"b":[35.887,39.645],"d":[33.819,37.816]},
+ R454C:{"b":[32.768,36.069],"d":[29.722,33.234]},
+ R407A:{"b":[35.796,39.59],"d":[33.784,37.806]},
+ R417A:{"b":[28.664,31.786],"d":[27.589,30.79]},
+ R1270:{"b":[30.802,33.885,37.205,40.788]},
+ R123:{"b":[3.7722,4.3042,4.8909,5.5357,6.2423,7.0142,7.8553]},
+ R143a:{"b":[35.527]},
+ R152a:{"b":[18.864,21.051,23.424,25.996,28.78,31.791,35.05]},
+ R245fa:{"b":[6.0933,6.948,7.8901,8.9253,10.059,11.298,12.649]},
+ R227ea:{"b":[14.874,16.649,18.583,20.688,22.981,25.479,28.216]},
+ R600:{"b":[8.0908,9.0616,10.116,11.258,12.493,13.825,15.259]},
+ R12:{"b":[18.802,20.811,22.975,25.304,27.808,30.501,33.399]},
+ R502:{"b":[31.67],"d":[31.662]}
+};
+for(const k in REF_HI){const r=REF[k],h=REF_HI[k];r.b=r.b.concat(h.b);if(r.d&&h.d)r.d=r.d.concat(h.d);}
 const RT0=-40,RDT=5,PATM=1.01325;
 const GAUGE={"bar g":1,"psig":0.0689476,"kPa g":0.01};
 const REF_ORDER=["R410A", "R32", "R454B", "R22", "R134a", "R407C", "R404A", "R513A", "R1234yf", "R290", "R600a", "R717", "R744", "R452B", "R454C", "R1234ze", "R449A", "R452A", "R507A", "R407A", "R407F", "R422D", "R417A", "R1270", "R1233zd", "R123", "R125", "R143a", "R152a", "R227ea", "R245fa", "R600", "R170", "R23", "R12", "R502"]; // order shown in the refrigerant lists
 const REFOPTS=REF_ORDER.filter(k=>REF[k]).map(k=>[k,REF[k].n]);
 /* temperature range covered by a refrigerant's data, e.g. "−40 to 30 °C" */
-const refRange=k=>{const c=REF[k].b;return `−40 to ${RT0+RDT*(c.length-1)} °C`;};
+const refMax=k=>RT0+RDT*(REF[k].b.length-1);
+const refRange=k=>`−40 to ${refMax(k)} °C`;
 const refCurve=(k,kind)=>{const r=REF[k];return kind==="d"&&r.d?r.d:r.b;};
 function refP(k,t,kind){const c=refCurve(k,kind),x=(t-RT0)/RDT,i=Math.floor(x);if(x<0||x>c.length-1)return NaN;const j=Math.min(i,c.length-2),fr=x-j;return Math.exp(Math.log(c[j])+(Math.log(c[j+1])-Math.log(c[j]))*fr);}
 function refT(k,P,kind){const c=refCurve(k,kind);if(!(P>=c[0]&&P<=c[c.length-1]))return NaN;let i=0;while(i<c.length-2&&P>c[i+1])i++;const a=Math.log(c[i]),b=Math.log(c[i+1]);return RT0+RDT*(i+(Math.log(P)-a)/(b-a));}
 const isBlend=k=>!!REF[k].d;
 const toAbs=(v,u)=>v*(GAUGE[u]||1)+PATM;
+/* Help when a reading is outside a refrigerant's data: says which reading, the limit, typical values,
+   and which refrigerants the suction/discharge pair would fit. items: [label, gauge value, unit, "d" suction | "b" liquid/discharge] */
+const refOr=a=>a.length>1?a.slice(0,-1).join(", ")+" or "+a[a.length-1]:a.join("");
+const refG=(P,u)=>{const fc=GAUGE[u]||1;return f((P-PATM)/fc,fc<0.05?0:1);};
+function refFits(Ps,Pd,skip){return REF_ORDER.filter(k=>REF[k]&&k!==skip).filter(k=>{const te=refT(k,Ps,"d"),tc=refT(k,Pd,"b");return te>=-30&&te<=15&&tc>=25&&tc<=65;}).slice(0,3).map(k=>REF[k].n);}
+function refTypical(k,u){const r=REF[k],dk=isBlend(k)?"d":"b",d1=refP(k,40,"b"),d2=refP(k,55,"b");
+  return `Typical ${r.n} air-conditioning readings: suction about ${refG(refP(k,0,dk),u)}–${refG(refP(k,10,dk),u)} ${u}`+(isFinite(d2)?`, liquid/discharge about ${refG(d1,u)}–${refG(d2,u)} ${u}.`:".");}
+function refOutHint(k,items){
+  const r=REF[k],u=items[0][2],out=[];
+  items.forEach(([nm,pv,uu,kind])=>{const c=refCurve(k,kind),P=toAbs(pv,uu);if(isFinite(refT(k,P,kind)))return;
+    out.push(P>c[c.length-1]?`The ${nm} (${f(pv,2)} ${uu}) is higher than ${r.n} can be in the data: ${refG(c[c.length-1],uu)} ${uu} is ${refMax(k)} °C.`
+      :`The ${nm} (${f(pv,2)} ${uu}) is lower than ${r.n} can be in the data: ${refG(c[0],uu)} ${uu} is −40 °C.`);});
+  const lo=items.find(x=>x[3]==="d"),hi=items.find(x=>x[3]==="b");
+  const fits=lo&&hi?refFits(toAbs(lo[1],lo[2]),toAbs(hi[1],hi[2]),k):[];
+  return out.join(" ")+" "+refTypical(k,u)+(fits.length?` These readings would fit ${refOr(fits)}: check the refrigerant selected.`:" Check the gauge, the unit and the refrigerant selected.");
+}
 function ptTable(k,u){const r=REF[k],bl=isBlend(k),fac=GAUGE[u]||1;let h=`<div class="card" style="padding:12px"><div class="lbl" style="font-size:13px">${r.n} pressure–temperature chart (${u})</div><div class="ptt"><div class="pr head"><span>°C</span>${bl?"<span>Liquid (bubble)</span><span>Vapour (dew)</span>":"<span>Pressure</span>"}</div>`;
   for(let i=0;i<r.b.length;i++){const t=RT0+i*RDT;const g=x=>f((x-PATM)/fac,fac<0.05?0:2);h+=`<div class="pr"><span>${t}</span><span>${g(r.b[i])}</span>${bl?`<span>${g(r.d[i])}</span>`:""}</div>`;}
   return h+`</div><p class="note">Gauge pressure at sea level. Negative values are vacuum.</p></div>`;}
 const shState=x=>x<2?{ok:false,text:"Too low"}:x<4?{ok:false,text:"Low"}:x<=12?{ok:true,text:"Normal range"}:x<=20?{ok:false,text:"High"}:{ok:false,text:"Very high"};
 const scState=x=>x<1?{ok:false,text:"No subcooling"}:x<3?{ok:false,text:"Low"}:x<=10?{ok:true,text:"Normal range"}:x<=15?{ok:false,text:"High"}:{ok:false,text:"Very high"};
 /* P/T slider */
-const slideT=v=>{const t=num(v.ts);return isFinite(t)?Math.min(65,Math.max(-40,t)):5;};
+const slideT=v=>{const t=num(v.ts),mx=REF[v.ref]?refMax(v.ref):65;return isFinite(t)?Math.min(mx,Math.max(-40,t)):5;};
 function slideHTML(k,pu,T){
-  const fac=GAUGE[pu],kind=isBlend(k)?"d":"b",ticks=[-40,-20,0,20,40,60];
-  const pos=t=>((t+40)/105*100).toFixed(2);
+  const fac=GAUGE[pu],kind=isBlend(k)?"d":"b",mx=refMax(k),ticks=[-40,-20,0,20,40,60,80,100].filter(t=>t<=mx-5);
+  const pos=t=>((t+40)/(mx+40)*100).toFixed(2);
   const g=t=>f((refP(k,t,kind)-PATM)/fac,fac<0.05?0:1);
   return `<div class="card slide"><div class="sl-top"><button type="button" class="sl-b" data-step="-0.5" aria-label="Down 0.5 °C">−</button>
    <div class="sl-t"><b id="slT">${f(T,1)}</b><span>°C saturation</span></div>
    <button type="button" class="sl-b" data-step="0.5" aria-label="Up 0.5 °C">+</button></div>
-   <input type="range" id="slR" class="sl-r" min="-40" max="65" step="0.5" value="${T}" aria-label="Saturation temperature">
+   <input type="range" id="slR" class="sl-r" min="-40" max="${mx}" step="0.5" value="${T}" aria-label="Saturation temperature">
    <div class="sl-sc" aria-hidden="true">${ticks.map(t=>`<span style="left:${pos(t)}%"><i></i>${t}°<em>${g(t)}</em></span>`).join("")}</div>
    <p class="note">Top row °C, bottom row ${pu}${isBlend(k)?" (dew)":""}.</p></div>`;
 }

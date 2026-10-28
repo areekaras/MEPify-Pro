@@ -77,7 +77,7 @@ ol.ts-steps li:last-child{border-bottom:0}
 .ts-steps b{display:block;font-size:16px;line-height:1.35}.ts-steps li.done b{color:var(--muted)}
 .ts-steps p{margin:3px 0 0;color:var(--muted);font-size:14.5px}
 .ts-steps li.found{background:var(--bad-soft);margin-inline:-16px;padding-inline:16px}
-.ts-tool{display:inline-block;margin-top:6px;font:600 12px var(--f-body);color:var(--cool);background:var(--cool-soft);padding:2px 8px;border-radius:999px}
+.ts-tool,.steps span.ts-tool{display:inline-block;margin-top:6px;font:600 12px var(--f-body);color:var(--cool);color:color-mix(in srgb,var(--cool) 82%,#000);background:var(--cool-soft);padding:2px 8px;border-radius:999px}
 .ts-st{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
 .ts-st button{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:600;cursor:pointer;min-height:36px}
 .ts-st button[aria-pressed="true"].ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}

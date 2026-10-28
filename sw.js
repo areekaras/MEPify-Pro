@@ -1,5 +1,5 @@
 // MEPify offline cache
-const C="mepify-v21";
+const C="mepify-v22";
 const FILES=[
   "./",
   "index.html",

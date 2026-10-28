@@ -23,7 +23,9 @@
 .inp input::-webkit-outer-spin-button,.inp input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .inp em{font-style:normal;color:var(--muted);font:500 15px var(--f-data);padding-right:12px;white-space:nowrap}
 .inp select.u{flex:none;font-size:15px;color:var(--accent);padding:12px 26px 12px 10px;border-left:1px solid var(--line);background:linear-gradient(45deg,transparent 50%,currentColor 50%) right 12px center/5px 5px no-repeat,linear-gradient(-45deg,transparent 50%,currentColor 50%) right 8px center/5px 5px no-repeat;color:var(--accent)}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+/* long units in half-width fields wrap instead of pushing the field off screen */
+.row2 .inp em{white-space:normal;max-width:6.5em;line-height:1.15;font-size:13px;text-align:right}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chips button{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 14px;font-size:14px;font-weight:500;cursor:pointer;min-height:40px}
 .chips button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--ink);font-weight:600}
@@ -72,7 +74,7 @@ details.more .in{display:flex;flex-direction:column;gap:16px;padding-top:14px}
 .conv{display:flex;flex-direction:column}
 .conv div{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid rgb(255 255 255/.1);font-family:var(--f-data);font-size:17px;font-variant-numeric:tabular-nums}
 .conv div:last-child{border-bottom:0}
-.conv span{color:var(--plate-muted)} .conv .me strong{color:var(--accent)}
+.conv span{color:var(--plate-muted)} .conv .me strong{color:var(--amb)}
 /* P/T slider */
 .slide{gap:12px}
 .sl-top{display:flex;align-items:center;justify-content:space-between;gap:12px}

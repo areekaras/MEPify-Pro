@@ -3,8 +3,8 @@
 
 /* ---------- steppers and readout ---------- */
 function stepVal(s,dir){
-  const v=parseFloat(s);if(!isFinite(v))return dir>0?"1":"0";
-  const dec=(String(s).split(".")[1]||"").length;
+  const v=num(s);if(!isFinite(v))return dir>0?"1":"0";
+  const dec=(String(v).split(".")[1]||"").length;
   let st=v===0?1:Math.pow(10,Math.floor(Math.log10(Math.abs(v)))-1);if(!dec)st=Math.max(1,st);else st=Math.max(st,Math.pow(10,-dec));
   let n=v+dir*st;if(v>=0&&n<0)n=0;
   const d=Math.max(0,-Math.floor(Math.log10(st)+1e-9));return String(parseFloat(n.toFixed(d)));
@@ -38,7 +38,7 @@ function fieldHTML(t,fl,st){
   const us=fl.units||(fl.unitsFrom&&fl.unitsFrom(st)),uk=fl.ukey||fl.id+"_u";
   const unit=us?`<select class="u" aria-label="Unit" id="f-${t.id}-${uk}" data-k="${uk}">${us.map(u=>`<option${st[uk]===u?" selected":""}>${u}</option>`).join("")}</select>`:(fl.unitFrom||fl.unit)?`<em>${fl.unitFrom?fl.unitFrom(st):fl.unit}</em>`:"";
   const pre=fl.presets?`<div class="chips sm" data-pre="${fl.id}">${fl.presets.map(p=>`<button type="button" data-v="${p[0]}" aria-pressed="${st[fl.id]===p[0]}">${p[1]}</button>`).join("")}</div>`:"";
-  return `<label class="field" data-half="${fl.half?1:0}">${lab}<span class="inp"><input id="f-${t.id}-${fl.id}" data-k="${fl.id}" type="number" inputmode="decimal" step="any" value="${st[fl.id]}" placeholder="0">${unit}<span class="x-stp"><button type="button" data-stp="f-${t.id}-${fl.id}" data-d="-1" aria-label="Decrease" tabindex="-1">−</button><button type="button" data-stp="f-${t.id}-${fl.id}" data-d="1" aria-label="Increase" tabindex="-1">+</button></span></span></label>${pre?`<div style="margin-top:-8px">${pre}</div>`:""}`;
+  return `<label class="field" data-half="${fl.half?1:0}">${lab}<span class="inp"><input id="f-${t.id}-${fl.id}" data-k="${fl.id}" type="text" inputmode="decimal" autocomplete="off" value="${st[fl.id]}" placeholder="0">${unit}<span class="x-stp"><button type="button" data-stp="f-${t.id}-${fl.id}" data-d="-1" aria-label="Decrease" tabindex="-1">−</button><button type="button" data-stp="f-${t.id}-${fl.id}" data-d="1" aria-label="Increase" tabindex="-1">+</button></span></span></label>${pre?`<div style="margin-top:-8px">${pre}</div>`:""}`;
 }
 function group(t,list,st){
   let out="",buf=[];
