@@ -40,6 +40,7 @@ function home(){
   ${hlResumeCard()}
   <button class="tile feat" data-go="trouble"><span class="ic">${svg("trbl")}</span><span class="ft"><b>Troubleshooter</b><span>Find the cause of ${nF} common faults</span></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
   <div id="homegroups"></div>
+  <button type="button" class="x-sugl" data-sugl>${svg("idea")}Have an idea? Send a suggestion</button>
   <p class="credit">MEPify v${APPV}<br>Designed by Mohamed Shafaf Karumannil</p>`;
   const box=document.getElementById("homegroups");
   const card=t=>`<button type="button" class="x-fv" data-go="${t.id}">${gIcon(t.g,t.icon)}<b>${t.name}</b></button>`;
@@ -65,6 +66,7 @@ function home(){
   const hq=document.getElementById("hq");hq.addEventListener("input",()=>{HQ=hq.value;fill();});
   app.querySelectorAll("header~[data-go]").forEach(b=>b.onclick=()=>openTool(b.dataset.go));
   app.querySelector("[data-set]").onclick=()=>go("v:set");
+  app.querySelector("[data-sugl]").onclick=()=>{BACK="home";openTool("suggest");};
   app.querySelectorAll("[data-resume]").forEach(b=>b.onclick=hlResume);
 }
 function topBar(title,extra){return `<div class="x-top"><button type="button" class="x-btn" data-xback aria-label="Back">${svg("x_back")}</button><h2>${title}</h2>${extra||""}</div>`;}

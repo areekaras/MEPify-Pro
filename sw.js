@@ -1,5 +1,5 @@
 // MEPify offline cache
-const C="mepify-v19";
+const C="mepify-v20";
 const FILES=[
   "./",
   "index.html",
@@ -52,6 +52,7 @@ const FILES=[
   "js/tools/site-safety.js",
   "js/tools/hazardous-areas.js",
   "js/tools/piping-mechanical.js",
+  "js/tools/suggestion-box.js",
   "js/app/state.js",
   "js/app/heat-load-screens.js",
   "js/app/heat-load-systems.js",

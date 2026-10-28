@@ -97,6 +97,7 @@ path to the `FILES` list in `sw.js` so it works offline.
 | `js/tools/steam-gas-air.js` | Steam, gas & air tools |
 | `js/tools/site-safety.js` | Site safety tools |
 | `js/tools/hazardous-areas.js` | Hazardous areas tools |
+| `js/tools/suggestion-box.js` | Suggestion box: customers send ideas or problems by email or share (address in `js/config.js`) |
 | `js/tools/piping-mechanical.js` | Piping & mechanical tools |
 
 ### Screens
