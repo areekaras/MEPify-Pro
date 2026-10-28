@@ -16,10 +16,12 @@ function setView(){
   <div class="x-set"><h3>Suggestion box</h3><p>An idea for a new tool, a result that looks wrong, or anything to improve? Send it straight to the developer.</p>
    <div class="r"><button type="button" class="x-pri" data-sug style="width:100%">${svg("idea")}Send a suggestion</button></div></div>
   <div class="x-set"><h3>About</h3><p><b>MEPify v${APPV}</b><br>Designed by Mohamed Shafaf Karumannil.<br>${nT} tools and ${nF} troubleshooting faults. Works fully offline.</p>
+   <div class="r"><button type="button" class="x-sec2" data-fdl style="width:100%">${svg("f_team")}Meet the founders</button></div>
    <p>Results are for site checks and quick estimates. Confirm final designs against the project specification, the manufacturer's data and the applicable code.</p></div>`;
   bindTop();
   app.querySelectorAll("[data-s]").forEach(i=>i.addEventListener("input",()=>{SET[i.dataset.s]=i.value;saveSet();}));
   app.querySelectorAll("[data-theme-seg] button").forEach(b=>b.onclick=()=>{SET.theme=b.dataset.v;saveSet();applyTheme();setView();});
+  app.querySelector("[data-fdl]").onclick=()=>{BACK="v:set";openTool("founders");};
   app.querySelector("[data-sug]").onclick=()=>{BACK="v:set";openTool("suggest");};
   const w=app.querySelector("[data-wipe]");if(w)w.onclick=()=>{if(!w.classList.contains("armed")){w.classList.add("armed");w.lastChild.textContent="Tap again to delete all";return;}LOG=[];saveLog();setView();};
 }

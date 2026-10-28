@@ -40,6 +40,7 @@ function home(){
   ${hlResumeCard()}
   <button class="tile feat" data-go="trouble"><span class="ic">${svg("trbl")}</span><span class="ft"><b>Troubleshooter</b><span>Find the cause of ${nF} common faults</span></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
   <div id="homegroups"></div>
+  <button type="button" class="x-fdl" data-fdl><span class="fd-av">${FOUNDERS.map(p=>`<img src="${p.photo}" alt="" width="40" height="40">`).join("")}</span><span><b>Meet the founders</b><small>${FOUNDERS.map(p=>p.short).join(" & ")} · work with us</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
   <button type="button" class="x-sugl" data-sugl>${svg("idea")}Have an idea? Send a suggestion</button>
   <p class="credit">MEPify v${APPV}<br>Designed by Mohamed Shafaf Karumannil</p>`;
   const box=document.getElementById("homegroups");
@@ -66,6 +67,7 @@ function home(){
   const hq=document.getElementById("hq");hq.addEventListener("input",()=>{HQ=hq.value;fill();});
   app.querySelectorAll("header~[data-go]").forEach(b=>b.onclick=()=>openTool(b.dataset.go));
   app.querySelector("[data-set]").onclick=()=>go("v:set");
+  app.querySelector("[data-fdl]").onclick=()=>{BACK="home";openTool("founders");};
   app.querySelector("[data-sugl]").onclick=()=>{BACK="home";openTool("suggest");};
   app.querySelectorAll("[data-resume]").forEach(b=>b.onclick=hlResume);
 }
