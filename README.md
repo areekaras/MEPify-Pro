@@ -61,6 +61,8 @@ path to the `FILES` list in `sw.js` so it works offline.
 |---|---|
 | `js/data/plumbing.js` | Plumbing data: units, pipe materials, pipe tables and friction helpers |
 | `js/data/commissioning.js` | TAB, HVAC and refrigeration data: V-belts, charge limits, GWP and more |
+| `js/data/refrigerant-list.js` | All 368 ASHRAE refrigerants: safety group, GWP, ODP, limits, boiling and critical point |
+| `js/data/refrigerant-lookup.js` | Refrigerant search, safety-group text and the GWP list |
 | `js/data/refrigeration-faults.js` | Refrigeration fault finder data: [cause, what to check, how to fix] |
 | `js/data/fire-steam-gas-air.js` | Fire protection, steam, gas and compressed air data |
 | `js/data/kitchen-pool.js` | Kitchen hood exhaust rates and dew point helper |

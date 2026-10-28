@@ -1,7 +1,7 @@
 /* MEPify · App version, section list and section names. Add a new section here.
    by Mohamed Shafaf Karumannil */
 
-const APPV="1.20";
+const APPV="1.21";
 /* Suggestion box: where customer suggestions are sent (js/tools/suggestion-box.js). */
 const FEEDBACK_EMAIL="shafafk92@gmail.com";
 const GROUPS=[["hvac","HVAC","air","Loads, airflow, ducts, coils, fans, water and heating"],["tab","Commissioning & TAB","trav","Testing, adjusting, balancing and handover checks"],

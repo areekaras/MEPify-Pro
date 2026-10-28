@@ -5,7 +5,7 @@ TOOLS.push(
 {id:"pt",g:"ref",icon:"pt",name:"Pressure–temperature",short:"Gauge reading to saturation temp",
  intro:"Pick the refrigerant and enter a gauge pressure or a temperature. A full pressure–temperature chart is shown below.",
  fields:[
-  {id:"ref",label:"Refrigerant",type:"chips",def:"R410A",options:REFOPTS},
+  {id:"ref",label:"Refrigerant",type:"select",def:"R410A",options:REFOPTS},
   {id:"mode",label:"What do you have?",type:"chips",def:"p",options:[["p","A gauge pressure"],["t","A temperature"]]},
   {id:"pu",label:"Pressure unit",type:"chips",def:"bar g",options:Object.keys(GAUGE).map(u=>[u,u])},
   {id:"P",label:"Gauge pressure",type:"num",def:"8.5",unitFrom:v=>v.pu,show:v=>v.mode==="p"},
@@ -16,7 +16,7 @@ TOOLS.push(
   if(v.mode==="p"){
    const pv=num(v.P);if(!isFinite(pv))return{hint:"Enter the gauge pressure.",after:tbl};
    const P=toAbs(pv,pu),tb=refT(k,P,"b"),td=refT(k,P,"d");
-   if(!isFinite(tb)||!isFinite(td))return{hint:`That pressure is outside the −40 to 65 °C range for ${r.n}. Check the gauge and the unit.`,after:tbl};
+   if(!isFinite(tb)||!isFinite(td))return{hint:`That pressure is outside the ${refRange(k)} range for ${r.n}. Check the gauge and the unit.`,after:tbl};
    const lbl=`${f(pv,2)} ${pu}`;
    if(!bl)return{cap:"Saturation temperature",value:f(td,1),unit:"°C",say:`At ${lbl}, ${r.n} boils and condenses at ${B(f(td,1),"°C")}.`,rows:[["Absolute pressure",f(P,2),"bar a"],["In psig",f((P-PATM)/0.0689476,1),"psig"]],after:tbl};
    return{cap:"Dew temperature (vapour)",value:f(td,1),unit:"°C",
@@ -25,19 +25,19 @@ TOOLS.push(
   }
   const T=num(v.T);if(!isFinite(T))return{hint:"Enter the temperature.",after:tbl};
   const pb=refP(k,T,"b"),pd=refP(k,T,"d");
-  if(!isFinite(pb))return{hint:`Enter a temperature between −40 and 65 °C for ${r.n}.`,after:tbl};
+  if(!isFinite(pb))return{hint:`Enter a temperature in the ${refRange(k)} range for ${r.n}.`,after:tbl};
   const fac=GAUGE[pu],g=x=>f((x-PATM)/fac,2);
   if(!bl)return{cap:"Gauge pressure",value:g(pb),unit:pu,say:`To boil or condense at ${f(T,1)} °C, ${r.n} must be at ${B(g(pb),pu)}.`,rows:[["Absolute pressure",f(pb,2),"bar a"],["In psig",f((pb-PATM)/0.0689476,1),"psig"]],after:tbl};
   return{cap:"Dew pressure (vapour)",value:g(pd),unit:pu,
    say:`At ${f(T,1)} °C, ${r.n} reads ${B(g(pd),pu)} on the vapour side (dew) and ${B(g(pb),pu)} on the liquid side (bubble).`,
    rows:[["Bubble pressure (liquid)",g(pb),pu],["Dew pressure",f(pd,2),"bar a"]],after:tbl};
  },
- note:"Data: NIST for pure refrigerants and manufacturer property tables for R-410A, R-407C and R-404A. Gauge readings assume sea-level air pressure."},
+ note:"Data: NIST for pure refrigerants, manufacturer property tables for R-410A, R-407C and R-404A, and CoolProp 7.2 for the other refrigerants (checked against the NIST and manufacturer tables). Some blends and CO₂ have data only up to their critical point or where the blend model stops; the range is shown when you go past it. Gauge readings assume sea-level air pressure."},
 
 {id:"slide",g:"ref",icon:"slide",name:"P/T slider",short:"Drag temperature, read pressure",
  intro:"Drag the slider to any saturation temperature and the gauge pressure follows. Use − and + for 0.5 °C steps.",
  fields:[
-  {id:"ref",label:"Refrigerant",type:"chips",def:"R410A",options:REFOPTS},
+  {id:"ref",label:"Refrigerant",type:"select",def:"R410A",options:REFOPTS},
   {id:"pu",label:"Pressure unit",type:"chips",def:"bar g",options:Object.keys(GAUGE).map(u=>[u,u])}
  ],
  calc(v){
@@ -64,7 +64,7 @@ TOOLS.push(
 {id:"sh",g:"ref",icon:"sh",name:"Superheat",short:"Suction pressure + line temp",
  intro:"Measure suction pressure at the service port and the suction line temperature near the evaporator outlet or compressor.",
  fields:[
-  {id:"ref",label:"Refrigerant",type:"chips",def:"R410A",options:REFOPTS},
+  {id:"ref",label:"Refrigerant",type:"select",def:"R410A",options:REFOPTS},
   {id:"P",label:"Suction pressure",type:"num",def:"8.5",units:Object.keys(GAUGE),udef:"bar g"},
   {id:"T",label:"Suction line temperature",help:"Clamp the probe on bare pipe and insulate over it.",type:"num",def:"12",unit:"°C"}
  ],
@@ -72,7 +72,7 @@ TOOLS.push(
   const k=v.ref,pv=num(v.P),Tl=num(v.T);
   if(!isFinite(pv))return{hint:"Enter the suction pressure."};if(!isFinite(Tl))return{hint:"Enter the suction line temperature."};
   const P=toAbs(pv,v.P_u),Te=refT(k,P,"d");
-  if(!isFinite(Te))return{hint:`That suction pressure is outside the −40 to 65 °C range for ${REF[k].n}. Check the gauge and unit.`};
+  if(!isFinite(Te))return{hint:`That suction pressure is outside the ${refRange(k)} range for ${REF[k].n}. Check the gauge and unit.`};
   const SH=Tl-Te,st=shState(SH);
   if(SH<-1)return{hint:`The line is ${f(-SH,1)} K colder than the boiling temperature (${f(Te,1)} °C), which is not possible. Check the probe position, the pressure reading and the refrigerant type.`};
   const msg=SH<2?"Liquid refrigerant may be reaching the compressor. Check for overcharge, TXV overfeeding or low evaporator airflow."
@@ -88,7 +88,7 @@ TOOLS.push(
 {id:"sc",g:"ref",icon:"sc",name:"Subcooling",short:"Liquid pressure + liquid line temp",
  intro:"Measure the liquid line pressure (or discharge pressure) and the liquid line temperature near the condenser outlet.",
  fields:[
-  {id:"ref",label:"Refrigerant",type:"chips",def:"R410A",options:REFOPTS},
+  {id:"ref",label:"Refrigerant",type:"select",def:"R410A",options:REFOPTS},
   {id:"P",label:"Liquid line pressure",type:"num",def:"26",units:Object.keys(GAUGE),udef:"bar g"},
   {id:"T",label:"Liquid line temperature",type:"num",def:"40",unit:"°C"}
  ],
@@ -96,7 +96,7 @@ TOOLS.push(
   const k=v.ref,pv=num(v.P),Tl=num(v.T);
   if(!isFinite(pv))return{hint:"Enter the liquid line pressure."};if(!isFinite(Tl))return{hint:"Enter the liquid line temperature."};
   const P=toAbs(pv,v.P_u),Tc=refT(k,P,"b");
-  if(!isFinite(Tc))return{hint:`That pressure is outside the −40 to 65 °C range for ${REF[k].n}. Check the gauge and unit.`};
+  if(!isFinite(Tc))return{hint:`That pressure is outside the ${refRange(k)} range for ${REF[k].n}. Check the gauge and unit.`};
   const SC=Tc-Tl,st=scState(SC);
   if(SC<-1)return{hint:`The liquid line is ${f(-SC,1)} K hotter than the condensing temperature (${f(Tc,1)} °C), which is not possible. Check the probe, the gauge and the refrigerant type.`};
   const msg=SC<1?"There is no liquid seal, so flash gas may reach the expansion valve. This usually means low charge."
@@ -112,7 +112,7 @@ TOOLS.push(
 {id:"chg",g:"ref",icon:"chg",name:"Charge check",short:"Diagnose charge from 4 readings",
  intro:"Enter suction and liquid readings and the outdoor temperature. You get superheat, subcooling and the most likely problem.",
  fields:[
-  {id:"ref",label:"Refrigerant",type:"chips",def:"R410A",options:REFOPTS},
+  {id:"ref",label:"Refrigerant",type:"select",def:"R410A",options:REFOPTS},
   {id:"meter",label:"Expansion device",type:"chips",def:"txv",options:[["txv","TXV / EEV"],["fixed","Fixed orifice / capillary"]]},
   {id:"Ps",label:"Suction pressure",type:"num",def:"8.5",units:Object.keys(GAUGE),udef:"bar g"},
   {id:"Ts",label:"Suction line temperature",type:"num",def:"12",unit:"°C"},
@@ -126,7 +126,7 @@ TOOLS.push(
   const k=v.ref,ps=num(v.Ps),ts=num(v.Ts),pl=num(v.Pl),tl=num(v.Tl),amb=num(v.amb);
   if(![ps,ts,pl,tl].every(isFinite))return{hint:"Enter all four readings: suction pressure and temperature, liquid pressure and temperature."};
   const Te=refT(k,toAbs(ps,v.Ps_u),"d"),Tc=refT(k,toAbs(pl,v.Pl_u),"b");
-  if(!isFinite(Te)||!isFinite(Tc))return{hint:`A pressure is outside the −40 to 65 °C range for ${REF[k].n}. Check the gauges, units and refrigerant type.`};
+  if(!isFinite(Te)||!isFinite(Tc))return{hint:`A pressure is outside the ${refRange(k)} range for ${REF[k].n}. Check the gauges, units and refrigerant type.`};
   const SH=ts-Te,SC=Tc-tl;
   if(SH<-1||SC<-1)return{hint:"A temperature reading is impossible for these pressures. Check probe positions, gauge units and the refrigerant type."};
   if(Tc<=Te)return{hint:"The liquid pressure must be higher than the suction pressure. Check which gauge is which."};
@@ -244,7 +244,7 @@ TOOLS.push(
 {id:"cop",g:"ref",icon:"cop",name:"Compression ratio & COP",short:"System efficiency from gauge pressures",
  intro:"Enter the refrigerant and gauge pressures. You get the compression ratio, saturation temperatures and ideal COP. Add capacity and power for the real COP.",
  fields:[
-  {id:"ref",label:"Refrigerant",type:"chips",def:"R410A",options:REFOPTS},
+  {id:"ref",label:"Refrigerant",type:"select",def:"R410A",options:REFOPTS},
   {id:"ps",label:"Suction pressure",type:"num",def:"8.5",units:Object.keys(GAUGE),udef:"bar g"},
   {id:"pd",label:"Discharge pressure",type:"num",def:"27",units:Object.keys(GAUGE),udef:"bar g"},
   {id:"cap",label:"Measured cooling capacity",type:"num",def:"",unit:"kW",half:true,adv:true},
@@ -253,7 +253,7 @@ TOOLS.push(
  calc(v){
   const ps=num(v.ps),pd=num(v.pd);if(!isFinite(ps)||!isFinite(pd))return{hint:"Enter suction and discharge pressure."};
   const Ps=toAbs(ps,v.ps_u),Pd=toAbs(pd,v.pd_u),cr=Pd/Ps,Te=refT(v.ref,Ps,"d"),Tc=refT(v.ref,Pd,"b");
-  if(!isFinite(Te)||!isFinite(Tc))return{hint:`A pressure is outside the −40 to 65 °C range for ${REF[v.ref].n}. Check the gauges and unit.`};
+  if(!isFinite(Te)||!isFinite(Tc))return{hint:`A pressure is outside the ${refRange(v.ref)} range for ${REF[v.ref].n}. Check the gauges and unit.`};
   const carnot=(Te+273.15)/(Tc-Te),cap=num(v.cap),pw=num(v.pw),real=cap>0&&pw>0?cap/pw:NaN;
   return{cap:"Compression ratio",value:f(cr,2),unit:"",status:{ok:cr<=6,text:cr<=4?"Normal for AC":cr<=6?"High-ish":"Very high"},
    say:`Evaporating at ${B(f(Te,1),"°C")} and condensing at ${B(f(Tc,1),"°C")} gives a compression ratio of ${B(f(cr,2))}. The ideal (Carnot) COP is ${f(carnot,1)}; real systems reach about 40–55 % of that.`+(isFinite(real)?` Your measured COP is ${B(f(real,2))}, which is ${f(real/carnot*100,0)} % of ideal.`:"")+(cr>6?" A high ratio means hot running and lower capacity: check the condenser, charge and airflow.":""),
@@ -311,17 +311,43 @@ TOOLS.push(
 {id:"gwp",g:"ref",icon:"gwp",name:"Refrigerant GWP / CO₂e",short:"tCO₂e and leak-check frequency",
  intro:"Enter the refrigerant and its charge. You get the CO₂-equivalent and how often leak checks are needed.",
  fields:[
-  {id:"r",label:"Refrigerant",type:"select",def:"R410A",options:Object.keys(GWP).map(k=>[k,k.replace("R","R-")])},
+  {id:"r",label:"Refrigerant",type:"select",def:"R410A",options:GWPOPTS},
   {id:"kg",label:"Charge in the system",type:"num",def:"12",unit:"kg",half:true},
   {id:"lk",label:"Refrigerant added this year",help:"For leak rate. Leave 0 if none.",type:"num",def:"0",unit:"kg",half:true},
   {id:"ld",label:"Automatic leak detection fitted?",type:"chips",def:"0",options:[["0","No"],["1","Yes"]],adv:true}
  ],
  calc(v){
-  const g=GWP[v.r],kg=num(v.kg),lk=num(v.lk)||0;if(!(kg>0))return{hint:"Enter the charge."};const t=kg*g/1000,ld=v.ld==="1";
+  const ar4=v.r in GWP,x=ar4?null:GWPX[v.r],g=ar4?GWP[v.r]:x?x.g:NaN,nm=ar4?v.r.replace("R","R-"):x?x.n:v.r,kg=num(v.kg),lk=num(v.lk)||0;if(!(kg>0))return{hint:"Enter the charge."};if(!isFinite(g))return{hint:"Pick a refrigerant from the list."};const t=kg*g/1000,ld=v.ld==="1";
   const freq=t<5?"No periodic leak check required":t<50?(ld?"Every 24 months":"Every 12 months"):t<500?(ld?"Every 12 months":"Every 6 months"):(ld?"Every 6 months":"Every 3 months, and leak detection is mandatory");
   return{cap:"CO₂-equivalent",value:f(t,1),unit:"tCO₂e",
-   say:`${f(kg,1)} kg of ${v.r.replace("R","R-")} (GWP ${g}) equals ${B(f(t,1),"tonnes CO₂e")}. Leak checks: ${B(freq.toLowerCase())}.`+(lk>0?` Adding ${f(lk,1)} kg this year is a ${B(f(lk/kg*100,1),"%")} leak rate.`:""),
-   rows:[["GWP (AR4)",g,""],["Leak rate",lk>0?f(lk/kg*100,1):"—","%"],["CO₂e of top-up",f(lk*g/1000,2),"t"]]};
+   say:`${f(kg,1)} kg of ${nm} (GWP ${f(g)}) equals ${B(f(t,1),"tonnes CO₂e")}. Leak checks: ${B(freq.toLowerCase())}.`+(lk>0?` Adding ${f(lk,1)} kg this year is a ${B(f(lk/kg*100,1),"%")} leak rate.`:""),
+   rows:[[ar4?"GWP (IPCC AR4)":"GWP (refrigerant list)",f(g),""],["Leak rate",lk>0?f(lk/kg*100,1):"—","%"],["CO₂e of top-up",f(lk*g/1000,2),"t"]]};
  },
- note:"GWP values from IPCC AR4 as used in EU F-gas rules. Check intervals follow the EU F-gas thresholds (5, 50, 500 tCO₂e). Your country's regulations may differ."}
+ note:"GWP values from IPCC AR4 as used in EU F-gas rules for the main refrigerants (top of the list); the others come from the ASHRAE refrigerant list. Check intervals follow the EU F-gas thresholds (5, 50, 500 tCO₂e). Your country's regulations may differ."},
+
+{id:"refdb",g:"ref",icon:"refdb",name:"Refrigerant data",short:"Safety group, GWP, ODP and properties of 368 refrigerants",
+ intro:"Search by number, chemical name or trade name. You get the ASHRAE safety group, GWP, ODP, exposure limits, boiling point and critical point.",
+ fields:[
+  {id:"q",label:"Search",help:"A number (R-454B or 454b), a chemical name (propane) or a trade name (Puron).",type:"text",def:"R-454B"},
+  {id:"sg",label:"Safety group",type:"chips",def:"all",options:[["all","All"],["A1","A1"],["A2L","A2L"],["A2","A2"],["A3","A3"],["B","B (toxic)"]],adv:true}
+ ],
+ calc(v){
+  const q=String(v.q||"").trim(),list=refFind(q,v.sg);
+  if(!list.length)return{hint:q?`No refrigerant matches “${esc(q)}”${v.sg!=="all"?" in safety group "+v.sg:""}. Try a number like 32 or 410A, or a name like propane.`:"Type a refrigerant number or name."};
+  const r=list[0],sg=r.sg.replace("?",""),pt=refKeyOf(r.num),blend=/%/.test(r.formula)||/^R-[45]\d\d/.test(r.num);
+  const val=(x,u)=>x?[x,u||""]:null;
+  const rows=[["Type",!REF_TYPES[r.type]?r.type:/organic/i.test(r.type)?REF_TYPES[r.type]:`${r.type} · ${REF_TYPES[r.type]}`,""],val(r.formula,""),val(r.alias,""),["GWP (100-year)",r.gwp||"—",""],["ODP",r.odp||"—",""],
+   ["Safety group (ASHRAE 34)",r.sg||"—",""],val(r.oel,"ppm"),val(r.rclp,"ppm"),val(r.rclg,"g/m³"),val(r.mm,"g/mol"),val(r.bp,"°C"),val(r.tc,"°C"),val(r.pc,"kPa"),val(r.life,"")];
+  const lbl=[null,blend?"Composition":"Formula",blend?"Trade names":"CAS number",null,null,null,"Exposure limit (OEL)","Concentration limit (RCL)","Concentration limit (RCL)","Molar mass",blend?"Bubble / dew point":"Boiling point","Critical temperature","Critical pressure","Atmospheric lifetime (years)"];
+  const out=rows.map((x,i)=>x&&lbl[i]?[lbl[i],x[0],x[1]]:x).filter(Boolean);
+  const more=list.length>1?`<div class="card rdb"><div class="lbl" style="font-size:13px">${list.length>60?`Showing 60 of ${list.length} matches. Type more to narrow it down.`:`${list.length} matches. Tap one to see its data.`}</div>${list.slice(0,60).map(x=>`<button type="button" class="rdb-row${x===r?" on":""}" data-refpick="${esc(x.num)}"><b>${esc(x.num)}</b><span>${esc(x.name)}</span><em>${esc(x.sg||"")}</em></button>`).join("")}</div>`:"";
+  return{cap:r.name,value:r.num,unit:"",status:sg?{ok:sg==="A1",text:`${r.sg} · ${REF_SG[sg]||""}`}:null,
+   say:`${B(r.num)} is ${refTypeText(r.type)}${blend&&r.formula?" ("+esc(r.formula)+")":""}${blend&&r.alias?", sold as "+esc(r.alias):""}.`
+    +(sg?` Safety group ${B(r.sg)}: ${(REF_SG[sg]||"").toLowerCase()}.`:" No ASHRAE safety group is listed.")
+    +(r.gwp?` GWP ${B(r.gwp)}`:"")+(r.odp?`${r.gwp?",":""} ODP ${B(r.odp)}`:"")+(r.gwp||r.odp?".":"")
+    +(pt?` Pressure–temperature data for ${REF[pt].n} is in the P/T, superheat and subcooling tools.`:""),
+   rows:out,after:more};
+ },
+ bind(af,st){af.querySelectorAll("[data-refpick]").forEach(b=>b.onclick=()=>{st.q=b.dataset.refpick;save();show();window.scrollTo({top:0,behavior:"smooth"});});},
+ note:"Data from the ASHRAE Standard 34 refrigerant list. Safety group: A = lower toxicity, B = higher toxicity; 1 = no flame spread, 2L = mildly flammable, 2 = flammable, 3 = highly flammable. GWP is the 100-year value relative to CO₂; ODP is relative to R-11. ? = uncertain in the source. Check the manufacturer's safety data sheet before use."}
 );

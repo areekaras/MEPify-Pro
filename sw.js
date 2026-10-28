@@ -1,5 +1,5 @@
 // MEPify offline cache
-const C="mepify-v20";
+const C="mepify-v21";
 const FILES=[
   "./",
   "index.html",
@@ -25,6 +25,8 @@ const FILES=[
   "js/basic/dates.js",
   "js/data/plumbing.js",
   "js/data/commissioning.js",
+  "js/data/refrigerant-list.js",
+  "js/data/refrigerant-lookup.js",
   "js/data/refrigeration-faults.js",
   "js/data/fire-steam-gas-air.js",
   "js/data/kitchen-pool.js",
