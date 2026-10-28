@@ -1,5 +1,5 @@
 // MEPify offline cache
-const C="mepify-v23";
+const C="mepify-v24";
 const FILES=[
   "./",
   "index.html",
@@ -69,5 +69,8 @@ self.addEventListener("install",e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))));self.clients.claim();});
 self.addEventListener("fetch",e=>{
   if(e.request.method!=="GET")return;
-  e.respondWith(fetch(e.request).then(r=>{if(r.ok&&new URL(e.request.url).origin===location.origin){const cp=r.clone();caches.open(C).then(c=>c.put(e.request,cp));}return r;}).catch(()=>caches.match(e.request,{ignoreSearch:true}).then(m=>m||caches.match("index.html"))));
+  const same=new URL(e.request.url).origin===location.origin;
+  // always check the server for a newer file (skips the browser's 10-minute cache), fall back to the offline copy
+  const net=same&&e.request.mode!=="navigate"?fetch(e.request,{cache:"no-cache"}):fetch(e.request,e.request.mode==="navigate"?undefined:{});
+  e.respondWith(net.then(r=>{if(r.ok&&new URL(e.request.url).origin===location.origin){const cp=r.clone();caches.open(C).then(c=>c.put(e.request,cp));}return r;}).catch(()=>caches.match(e.request,{ignoreSearch:true}).then(m=>m||caches.match("index.html"))));
 });
