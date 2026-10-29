@@ -49,24 +49,25 @@ function fdUI(el,st){
  if(!Array.isArray(st.ints))st.ints=[];
  if(!["both",...FOUNDERS.map(p=>p.id)].includes(st.to))st.to="both";
  ["msg","name","company","contact"].forEach(k=>{if(typeof st[k]!=="string")st[k]=k==="name"?(SET.name||""):"";});
- const card=p=>`<article class="fd-card">
-   <div class="fd-top"><img class="fd-ph" src="${p.photo}" alt="${esc(p.name)}" width="104" height="104" loading="lazy">
-    <div class="fd-id"><h3>${esc(p.name)}</h3><div class="fd-role">${esc(p.role)}</div><p class="fd-title">${esc(p.title)}</p></div>
-    <div class="fd-yrs"><b>${esc(p.years)}</b><span>Years <br>experience</span></div></div>
-   <p class="fd-bio">${esc(p.bio)}</p>
-   <blockquote class="fd-q">${esc(p.quote)}</blockquote>
-   <div class="fd-h">Expertise &amp; services</div>
-   <div class="fd-svc">${p.services.map(([ic,t,d])=>`<div><span class="fd-ic">${svg(ic)}</span><span><b>${esc(t)}</b><small>${esc(d)}</small></span></div>`).join("")}</div>
-   <div class="fd-h">Key skills</div>
-   <div class="fd-sk">${p.skills.map(s=>`<span>${esc(s)}</span>`).join("")}</div>
-   <div class="fd-btns">
-    <button type="button" class="x-pri" data-fd-go="${p.id}" data-int="job">${svg("f_mail")}Discuss an opportunity</button>
-    <button type="button" class="x-sec2" data-fd-go="${p.id}" data-int="collab">${svg("f_team")}Work with me</button>
-    ${p.linkedin?`<a class="x-sec2" href="${esc(p.linkedin)}" target="_blank" rel="noopener">${svg("f_in")}View LinkedIn</a>`:""}
-   </div></article>`;
+ // two-column table: one column per founder, one row per topic
+ const row=(h,cell)=>`<div class="fd-rh">${h}</div>${FOUNDERS.map(p=>`<div class="fd-td">${cell(p)}</div>`).join("")}`;
+ const table=`<div class="fd-tbl" style="--n:${FOUNDERS.length}">
+   ${FOUNDERS.map(p=>`<div class="fd-th"><img class="fd-ph" src="${p.photo}" alt="${esc(p.name)}" width="96" height="96" loading="lazy">
+     <h3>${esc(p.name)}</h3><div class="fd-role">${esc(p.role)}</div></div>`).join("")}
+   ${row("Profile",p=>`<p class="fd-title">${esc(p.title)}</p>`)}
+   ${row("Experience",p=>`<span class="fd-yrs"><b>${esc(p.years)}</b> years</span>`)}
+   ${row("About",p=>`<p class="fd-bio">${esc(p.bio)}</p>`)}
+   ${row("Focus",p=>`<blockquote class="fd-q">${esc(p.quote)}</blockquote>`)}
+   ${row("Expertise &amp; services",p=>`<ul class="fd-svc">${p.services.map(([ic,t,d])=>`<li><span class="fd-ic">${svg(ic)}</span><span><b>${esc(t)}</b><small>${esc(d)}</small></span></li>`).join("")}</ul>`)}
+   ${row("Key skills",p=>`<div class="fd-sk">${p.skills.map(x=>`<span>${esc(x)}</span>`).join("")}</div>`)}
+   ${row("Contact",p=>`<div class="fd-btns">
+     <button type="button" class="x-pri" data-fd-go="${p.id}" data-int="job">${svg("f_mail")}Discuss an opportunity</button>
+     <button type="button" class="x-sec2" data-fd-go="${p.id}" data-int="collab">${svg("f_team")}Work with ${esc(p.short)}</button>
+     ${p.linkedin?`<a class="x-sec2" href="${esc(p.linkedin)}" target="_blank" rel="noopener">${svg("f_in")}LinkedIn</a>`:""}</div>`)}
+  </div>`;
  el.innerHTML=`<div class="fd">
   <div class="fd-hero"><h2>Engineering experience. Technology expertise.</h2></div>
-  ${FOUNDERS.map(card).join("")}
+  ${table}
   <section class="fd-inq" id="fd-inq">
    <div class="fd-tag">Let's work together</div>
    <h3>Have a project or opportunity in mind?</h3>

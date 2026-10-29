@@ -106,3 +106,9 @@ details.more .in{display:flex;flex-direction:column;gap:16px;padding-top:14px}
 .causes p span{display:inline-block;min-width:38px;margin-right:6px;font:600 11px var(--f-body);letter-spacing:.06em;text-transform:uppercase;color:var(--cool)}
 .causes p+p span{color:var(--ok)}
 .golink{align-self:flex-start;border:1.5px solid var(--accent);background:var(--accent-soft);color:var(--ink);border-radius:999px;padding:9px 16px;font-weight:600;font-size:14px;cursor:pointer}
+/* half-width fields: on phones the − + buttons are hidden there so the number has room to type */
+@media (min-width:401px) and (max-width:620px){.row2 .x-stp{display:none}}
+.row2 .inp input{min-width:64px}
+/* phones in portrait: side-by-side fields stack, so every number box has room to type */
+@media (max-width:620px){.row2{grid-template-columns:minmax(0,1fr)}}
+.inp input{min-width:72px}

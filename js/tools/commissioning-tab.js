@@ -17,8 +17,8 @@ TOOLS.push(
  ],
  calc(v){
   let A,rows,cols,depths,pos;
-  if(v.shape==="round"){const D=num(v.D);if(!(D>0))return{hint:"Enter the duct diameter."};const n=nRoundP(D);A=Math.PI*D*D/4e6;rows=2;cols=n;depths=LRD[n].map(x=>x*D);}
-  else{const W=num(v.W),H=num(v.H);if(!(W>0&&H>0))return{hint:"Enter the duct width and height."};cols=nRectP(W);rows=nRectP(H);A=W*H/1e6;pos=LTR[cols].map(x=>x*W);depths=LTR[rows].map(x=>x*H);}
+  if(v.shape==="round"){const D=num(v.D);if(!(D>0))return{hint:"Enter the duct diameter."};if(D>5000)return{hint:`That duct size looks too big (${f(D,0)} mm). Check the number and the unit.`};const n=nRoundP(D);A=Math.PI*D*D/4e6;rows=2;cols=n;depths=LRD[n].map(x=>x*D);}
+  else{const W=num(v.W),H=num(v.H);if(!(W>0&&H>0))return{hint:"Enter the duct width and height."};if(Math.max(W,H)>5000)return{hint:`That duct size looks too big (${f(Math.max(W,H),0)} mm). Check the number and the unit.`};cols=nRectP(W);rows=nRectP(H);A=W*H/1e6;pos=LTR[cols].map(x=>x*W);depths=LTR[rows].map(x=>x*H);}
   const N=rows*cols,T=num(v.T),rho=isFinite(T)?1.2041*293.15/(273.15+T):1.2,r=numsOf(v.r);
   const geo=v.shape==="round"?tbl(["Point","Depth from wall (mm)"],depths.map((d,i)=>[i+1,f(d,0)])):
    tbl(["","Position (mm)"],[...pos.map((p,i)=>["Hole "+(i+1)+" across width",f(p,0)]),...depths.map((d,i)=>["Depth "+(i+1)+" into duct",f(d,0)])]);
@@ -53,14 +53,14 @@ TOOLS.push(
   const ins=x=>f(x/25.4,2);
   let A,cols,rows,dep,pos=[],need;
   if(round){
-   const D=mm("D");if(!(D>0))return{hint:"Enter the duct diameter."};A=Math.PI*D*D/4e6;
+   const D=mm("D");if(!(D>0))return{hint:"Enter the duct diameter."};if(D>5000)return{hint:`That duct size looks too big (${f(D,0)} mm). Check the number and the unit.`};A=Math.PI*D*D/4e6;
    let fr;
    if(lt){fr=LRD[v.nlc==="a"?nRoundP(D):+v.nlc];}
    else{const k=v.nec==="a"?(D<=300?3:D<=600?4:D<=1200?5:6):+v.nec,rr=[];for(let i=1;i<=k;i++)rr.push(Math.sqrt((2*i-1)/(2*k)));
     fr=[...rr.slice().reverse().map(x=>(1-x)/2),...rr.map(x=>(1+x)/2)];}
    dep=fr.map(x=>x*D);rows=fr.length;cols=2;need=`${2*rows} points: 2 diameters 90° apart × ${rows} points each`;
   }else{
-   const W=mm("W"),H=mm("H");if(!(W>0&&H>0))return{hint:"Enter the duct width and height."};A=W*H/1e6;
+   const W=mm("W"),H=mm("H");if(!(W>0&&H>0))return{hint:"Enter the duct width and height."};if(Math.max(W,H)>5000)return{hint:`That duct size looks too big (${f(Math.max(W,H),0)} mm). Check the number and the unit.`};A=W*H/1e6;
    let nw,nh,fw,fh;
    if(lt){nw=v.nlr==="a"?nRectP(W):+v.nlr;nh=v.nlr==="a"?nRectP(H):+v.nlr;fw=LTR[nw];fh=LTR[nh];}
    else{const ea=s=>Math.min(8,Math.max(4,Math.ceil(s/150))),g=n=>Array.from({length:n},(_,i)=>(2*i+1)/(2*n));
