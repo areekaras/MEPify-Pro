@@ -84,16 +84,23 @@ jobs:
           sys.exit(1 if fails else 0)
           EOF
 
-      - name: Screenshots as text (so they can be read back without downloading)
+      - name: Screenshot home-light as text (readable without downloading)
         if: always()
         run: |
-          for f in shots/*.png; do
-            [ -f "$f" ] || continue
-            n=$(basename "$f" .png)
-            sips -Z 900 -s format jpeg -s formatOptions 55 "$f" --out "shots/$n.jpg" >/dev/null
-            base64 -i "shots/$n.jpg" | tr -d '\n' | fold -w 50000 > "shots/$n.b64"
-            i=1; while read -r part; do echo "::notice title=shot $n $i::$part"; i=$((i+1)); done < "shots/$n.b64"
-          done
+          f=shots/home-light.png; [ -f "$f" ] || exit 0
+          sips -Z 760 -s format jpeg -s formatOptions 40 "$f" --out shots/home-light.jpg >/dev/null
+          base64 -i shots/home-light.jpg | tr -d '\n' | fold -w 4000 > shots/home-light.b64
+          c=$(wc -l < shots/home-light.b64); [ "$c" -le 10 ] || { echo "::warning::home-light screenshot too big for text ($c parts)"; exit 0; }
+          i=1; while read -r part; do echo "::notice title=shot home-light $i::$part"; i=$((i+1)); done < shots/home-light.b64
+
+      - name: Screenshot home-dark as text (readable without downloading)
+        if: always()
+        run: |
+          f=shots/home-dark.png; [ -f "$f" ] || exit 0
+          sips -Z 760 -s format jpeg -s formatOptions 40 "$f" --out shots/home-dark.jpg >/dev/null
+          base64 -i shots/home-dark.jpg | tr -d '\n' | fold -w 4000 > shots/home-dark.b64
+          c=$(wc -l < shots/home-dark.b64); [ "$c" -le 10 ] || { echo "::warning::home-dark screenshot too big for text ($c parts)"; exit 0; }
+          i=1; while read -r part; do echo "::notice title=shot home-dark $i::$part"; i=$((i+1)); done < shots/home-dark.b64
 
       - name: Package
         if: always()

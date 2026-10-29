@@ -19,7 +19,7 @@ enum SelfTest {
       r.tools=typeof TOOLS!=="undefined"?TOOLS.length:0;r.opened=0;r.toolErrors=[];
       if(typeof TOOLS!=="undefined"){TOOLS.forEach(function(t){try{BACK="home";openTool(t.id);r.opened++;}catch(e){r.toolErrors.push(t.id+": "+e.message);}});}
       try{BACK="home";go("home");}catch(e){}
-      r.faults=typeof FAULTS!=="undefined"?FAULTS.length:null;
+      try{r.faults=FAULTS.length;}catch(e){r.faults="n/a";}
       r.scriptErrors=window.__mepErr||[];
       r.native=!!(window.SiteCalcNative&&window.SiteCalcNative.platform==="iOS app");
       r.safeTop=getComputedStyle(document.body).paddingTop;
