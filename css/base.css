@@ -31,7 +31,7 @@ body{margin:0}[hidden]{display:none!important}img{max-width:100%}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
-  padding-block:0 calc(32px + env(safe-area-inset-bottom,0px))}
+  padding-block:env(safe-area-inset-top,0px) calc(32px + env(safe-area-inset-bottom,0px))}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
 .wrap{max-width:600px;margin:0 auto}
 button{font:inherit;color:inherit}

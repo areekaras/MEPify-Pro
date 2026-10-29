@@ -19,7 +19,7 @@ function sugText(st){
   if(tool)lines.push(`Tool: ${plain(tool.name)}`);
   if(String(st.name||"").trim())lines.push(`Name: ${String(st.name).trim()}`);
   if(String(st.contact||"").trim())lines.push(`Reply to: ${String(st.contact).trim()}`);
-  lines.push(`App: MEPify v${APPV} (${window.SiteCalcNative?"Android app":"web"})`,`Date: ${new Date().toLocaleDateString("en-GB")}`);
+  lines.push(`App: MEPify v${APPV} (${window.SiteCalcNative?(window.SiteCalcNative.platform||"Android app"):"web"})`,`Date: ${new Date().toLocaleDateString("en-GB")}`);
   return{subject,body:lines.join("\n")};
 }
 
